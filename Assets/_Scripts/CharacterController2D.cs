@@ -11,8 +11,7 @@ public class CharacterController2D : MonoBehaviour
 
     public float runSpeed;
     public float climbSpeed;
-    public float pushSpeed;
-    public float pullSpeed;
+    public float pushPullSpeed;
 	public float gravity; 	
 	public float jumpForce;	 
 	public bool canJump = true; 	
@@ -29,7 +28,8 @@ public class CharacterController2D : MonoBehaviour
     static int SpeedHash = Animator.StringToHash("Speed");
     static int isClimbingHash = Animator.StringToHash("isClimbing");
     static int isClimbingUpHash = Animator.StringToHash("isClimbingUp");
-    static int isClimbingDownHash = Animator.StringToHash("isClimbingDown");
+    static int isPushingHash = Animator.StringToHash("isPushing");
+    static int isPullingHash = Animator.StringToHash("isPulling");
 
     void Start ()
     {	
@@ -55,19 +55,18 @@ public class CharacterController2D : MonoBehaviour
         //  Climbing
         if (currentState == PlayerState.Climbing)
         {
-            moveDirection.y = Input.GetAxisRaw("Vertical");
-
+            //  Get input from y axis.
+            float yAxis = Input.GetAxisRaw("Vertical");
+            moveDirection.y = yAxis * climbSpeed;
 
             //  Animation
-            animator.speed = 1;
-            if (moveDirection.y > 0)
+            animator.speed = 1;     //  Remove when idle animation exist
+            if (yAxis > 0)
                 animator.SetBool(isClimbingUpHash, true);
-            else if (moveDirection.y < 0)
+            else if (yAxis < 0)
                 animator.SetBool(isClimbingUpHash, false);
             else
-                animator.speed = 0;
-
-            moveDirection.y *= climbSpeed;
+                animator.speed = 0; //  Replace with idle animation
         }
 
         //  Apply gravity
@@ -79,12 +78,12 @@ public class CharacterController2D : MonoBehaviour
         //  Moving Horizontally
         if (currentState == PlayerState.None || currentState == PlayerState.Climbing)
         {
-            moveDirection.x = Input.GetAxis("Horizontal");
+            //  Get input from x axis.
+            float xAxis = Input.GetAxisRaw("Horizontal");
+            moveDirection.x = xAxis * runSpeed;
 
             //  Animation
-            animator.SetFloat(SpeedHash, Mathf.Abs(moveDirection.x));
-
-            moveDirection.x *= runSpeed;
+            animator.SetFloat(SpeedHash, Mathf.Abs(xAxis));
         }
 
         //  Move
@@ -141,37 +140,54 @@ public class CharacterController2D : MonoBehaviour
         if (Vector3.Distance(interactingBody.transform.position, transform.position) < interactiveDistance * 2)
         {
             //  Get input axis
-            moveDirection.x = Input.GetAxis("Horizontal");
+            float xAxis = Input.GetAxisRaw("Horizontal");
+            moveDirection.x = xAxis * pushPullSpeed;
             Vector3 bodyMoveDirection;
+
+            animator.speed = 1; //  Remove when idle animation exist
 
             //  Pushing - RIGHT
             if (moveDirection.x > 0 && facingDirection == FacingDirection.Right)
             {
-                bodyMoveDirection = new Vector3(moveDirection.x, 0, 0) * pushSpeed * 11 * Time.deltaTime;
-                moveDirection *= pushSpeed;
+                bodyMoveDirection = new Vector3(xAxis, 0, 0) * pushPullSpeed * 11 * Time.deltaTime;
                 interactingBody.MovePosition(interactingBody.transform.position + bodyMoveDirection);
+
+                //  Animation
+                animator.SetBool(isPushingHash, true);
+                animator.SetBool(isPullingHash, false);
             }
             //  Pushing - LEFT
             else if (moveDirection.x < 0 && facingDirection == FacingDirection.Left)
             {
-                bodyMoveDirection = new Vector3(moveDirection.x, 0, 0) * pushSpeed * 11 * Time.deltaTime;
-                moveDirection *= pushSpeed;
+                bodyMoveDirection = new Vector3(xAxis, 0, 0) * pushPullSpeed * 11 * Time.deltaTime;
                 interactingBody.MovePosition(interactingBody.transform.position + bodyMoveDirection);
+
+                //  Animation
+                animator.SetBool(isPushingHash, true);
+                animator.SetBool(isPullingHash, false);
             }
             //  Pulling - RIGHT
             else if (moveDirection.x > 0 && facingDirection == FacingDirection.Left)
             {
-                bodyMoveDirection = new Vector3(moveDirection.x, 0, 0) * pullSpeed * 13 * Time.deltaTime;
-                moveDirection *= pullSpeed;
+                bodyMoveDirection = new Vector3(xAxis, 0, 0) * pushPullSpeed * 13 * Time.deltaTime;
                 interactingBody.MovePosition(interactingBody.transform.position + bodyMoveDirection);
+
+                //  Animation
+                animator.SetBool(isPushingHash, false);
+                animator.SetBool(isPullingHash, true);
             }
             //  Pulling - LEFT
             else if (moveDirection.x < 0 && facingDirection == FacingDirection.Right)
             {
-                bodyMoveDirection = new Vector3(moveDirection.x, 0, 0) * pullSpeed * 13 * Time.deltaTime;
-                moveDirection *= pullSpeed;
+                bodyMoveDirection = new Vector3(xAxis, 0, 0) * pushPullSpeed * 13 * Time.deltaTime;
                 interactingBody.MovePosition(interactingBody.transform.position + bodyMoveDirection);
+
+                //  Animation
+                animator.SetBool(isPushingHash, false);
+                animator.SetBool(isPullingHash, true);
             }
+            else
+                animator.speed = 0;     //  Replace later with idle animation
         }
         else
             CancelPushPullInteraction();
@@ -186,6 +202,11 @@ public class CharacterController2D : MonoBehaviour
         //interactingBody.isKinematic = false;
         //interactingBody.transform.SetParent(null);
         interactingBody = null;
+
+        //  Animation
+        animator.SetBool(isPushingHash, false);
+        animator.SetBool(isPullingHash, false);
+        animator.speed = 1;     //  Remove when idle animation exist
     }
     #endregion
 
@@ -245,7 +266,7 @@ public class CharacterController2D : MonoBehaviour
             
             // Animation
             animator.SetBool(isClimbingHash, false);
-            animator.speed = 1;
+            animator.speed = 1; //  Remove when idle animation exist
         }
     }
 }
