@@ -39,6 +39,7 @@ public class CharacterController2D : MonoBehaviour
 
 	void Update ()
     {
+        //  Check and update the facing direction of the player
         if (currentState == PlayerState.None)
             UpdateFacingDirection();
 
@@ -72,7 +73,12 @@ public class CharacterController2D : MonoBehaviour
         //  Apply gravity
         if (currentState != PlayerState.Climbing)
         {
-            moveDirection += Physics.gravity * gravity * Time.deltaTime;
+            if (charController.isGrounded)
+                moveDirection = new Vector3(moveDirection.x, 0, moveDirection.z);
+            else
+                moveDirection += Physics.gravity * gravity * Time.deltaTime;
+
+            //Debug.Log(moveDirection);
         }
 
         //  Moving Horizontally
@@ -142,15 +148,13 @@ public class CharacterController2D : MonoBehaviour
             //  Get input axis
             float xAxis = Input.GetAxisRaw("Horizontal");
             moveDirection.x = xAxis * pushPullSpeed;
-            Vector3 bodyMoveDirection;
 
             animator.speed = 1; //  Remove when idle animation exist
 
             //  Pushing - RIGHT
             if (moveDirection.x > 0 && facingDirection == FacingDirection.Right)
             {
-                bodyMoveDirection = new Vector3(xAxis, 0, 0) * pushPullSpeed * 11 * Time.deltaTime;
-                interactingBody.MovePosition(interactingBody.transform.position + bodyMoveDirection);
+                interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 11.5f * Time.deltaTime);
 
                 //  Animation
                 animator.SetBool(isPushingHash, true);
@@ -159,8 +163,7 @@ public class CharacterController2D : MonoBehaviour
             //  Pushing - LEFT
             else if (moveDirection.x < 0 && facingDirection == FacingDirection.Left)
             {
-                bodyMoveDirection = new Vector3(xAxis, 0, 0) * pushPullSpeed * 11 * Time.deltaTime;
-                interactingBody.MovePosition(interactingBody.transform.position + bodyMoveDirection);
+                interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 11.5f * Time.deltaTime);
 
                 //  Animation
                 animator.SetBool(isPushingHash, true);
@@ -169,8 +172,7 @@ public class CharacterController2D : MonoBehaviour
             //  Pulling - RIGHT
             else if (moveDirection.x > 0 && facingDirection == FacingDirection.Left)
             {
-                bodyMoveDirection = new Vector3(xAxis, 0, 0) * pushPullSpeed * 13 * Time.deltaTime;
-                interactingBody.MovePosition(interactingBody.transform.position + bodyMoveDirection);
+                interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 12 * Time.deltaTime);
 
                 //  Animation
                 animator.SetBool(isPushingHash, false);
@@ -179,8 +181,7 @@ public class CharacterController2D : MonoBehaviour
             //  Pulling - LEFT
             else if (moveDirection.x < 0 && facingDirection == FacingDirection.Right)
             {
-                bodyMoveDirection = new Vector3(xAxis, 0, 0) * pushPullSpeed * 13 * Time.deltaTime;
-                interactingBody.MovePosition(interactingBody.transform.position + bodyMoveDirection);
+                interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 12 * Time.deltaTime);
 
                 //  Animation
                 animator.SetBool(isPushingHash, false);
