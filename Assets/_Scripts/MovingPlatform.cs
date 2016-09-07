@@ -4,7 +4,6 @@ using System.Collections;
 public class MovingPlatform : MonoBehaviour
 {
 
-    public Transform platform;
     public Transform[] wayPoints;
     public float transitionSpeed;
     public float idleDuration;
@@ -17,7 +16,7 @@ public class MovingPlatform : MonoBehaviour
     void Start()
     {
         currentWaypoint = wayPoints[0];
-        platform.position = currentWaypoint.position;
+        transform.position = currentWaypoint.position;
 
         StartCoroutine(PlatformTransition());
     }
@@ -28,12 +27,12 @@ public class MovingPlatform : MonoBehaviour
         while (true)
         {
             //  scaling function
-            while (Mathf.Abs(platform.position.magnitude - currentWaypoint.position.magnitude) > 0.1f)
+            while (Mathf.Abs(transform.position.magnitude - currentWaypoint.position.magnitude) > 0.1f)
             {
                 if (transitionType == TransitionTypes.None)
-                    platform.position = Vector3.MoveTowards(platform.position, currentWaypoint.position, Time.deltaTime * transitionSpeed);
+                    transform.position = Vector3.MoveTowards(transform.position, currentWaypoint.position, Time.deltaTime * transitionSpeed);
                 else if(transitionType == TransitionTypes.Smooth)
-                    platform.position = Vector3.Lerp(platform.position, currentWaypoint.position, Time.deltaTime * transitionSpeed);
+                    transform.position = Vector3.Lerp(transform.position, currentWaypoint.position, Time.deltaTime * transitionSpeed);
 
                 //Debug.Log(Mathf.Abs(platform.position.magnitude - currentWaypoint.position.magnitude));
                 yield return null;
@@ -53,5 +52,22 @@ public class MovingPlatform : MonoBehaviour
     {
         nextWayPoint = (nextWayPoint + 1) % wayPoints.Length;
         return wayPoints[nextWayPoint];
+    }
+
+    //  Detect when player is on the platform
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(Tags.Player))
+        {
+            other.transform.SetParent(transform);
+            //Debug.Log("Player is on moving platform!");
+        }
+    }
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag(Tags.Player))
+        {
+            other.transform.SetParent(null);
+        }
     }
 }
