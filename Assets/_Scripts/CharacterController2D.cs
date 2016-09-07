@@ -24,13 +24,23 @@ public class CharacterController2D : MonoBehaviour
     private Vector3 moveDirection = Vector3.zero;
     private CharacterController charController;
 
-	void Start ()
+    //  Animation
+    private Animator animator;
+    static int SpeedHash = Animator.StringToHash("Speed");
+    static int isClimbingHash = Animator.StringToHash("isClimbing");
+    static int isClimbingUpHash = Animator.StringToHash("isClimbingUp");
+    static int isClimbingDownHash = Animator.StringToHash("isClimbingDown");
+
+    void Start ()
     {	
 		charController = GetComponent<CharacterController> ();
+        animator = GetComponent<Animator>();
 	}
 
 	void Update ()
     {
+        if (currentState == PlayerState.None)
+            UpdateFacingDirection();
 
         //  Check Push/Pull, else perform push/pull
         if (Input.GetKeyDown(KeyCode.E) && charController.isGrounded)
@@ -46,6 +56,17 @@ public class CharacterController2D : MonoBehaviour
         if (currentState == PlayerState.Climbing)
         {
             moveDirection.y = Input.GetAxisRaw("Vertical");
+
+
+            //  Animation
+            animator.speed = 1;
+            if (moveDirection.y > 0)
+                animator.SetBool(isClimbingUpHash, true);
+            else if (moveDirection.y < 0)
+                animator.SetBool(isClimbingUpHash, false);
+            else
+                animator.speed = 0;
+
             moveDirection.y *= climbSpeed;
         }
 
@@ -59,14 +80,17 @@ public class CharacterController2D : MonoBehaviour
         if (currentState == PlayerState.None || currentState == PlayerState.Climbing)
         {
             moveDirection.x = Input.GetAxis("Horizontal");
+
+            //  Animation
+            animator.SetFloat(SpeedHash, Mathf.Abs(moveDirection.x));
+
             moveDirection.x *= runSpeed;
         }
 
         //  Move
         charController.Move(moveDirection * 10 * Time.deltaTime);
 
-        if (currentState == PlayerState.None)
-            UpdateFacingDirection();
+
 
         /*if ((charController.collisionFlags & CollisionFlags.Above) != 0)
         {
@@ -181,30 +205,19 @@ public class CharacterController2D : MonoBehaviour
         if (moveDirection.x > 0)
         {
             facingDirection = FacingDirection.Right;
+            transform.rotation = Quaternion.Euler(0, 90, 0);        //  for 3d models
             if (transform.localScale.x < 0)
 		        transform.localScale = theScale;	
         }
         else if (moveDirection.x < 0)
         {
             facingDirection = FacingDirection.Left;
+            transform.rotation = Quaternion.Euler(0, -90, 0);       // for 3d models
             if (transform.localScale.x > 0)
 		        transform.localScale = theScale;	
         }
     }
     #endregion
-
-    //Moving Platform handling
-    /*void OnControllerColliderHit(ControllerColliderHit other)
-    {
-        if (other.gameObject.GetComponent<MovingPlatform>() != null && (playerController.collisionFlags & CollisionFlags.Below) != 0)
-        {
-            gameObject.transform.SetParent(other.transform);
-        }
-        else
-        {
-            gameObject.transform.SetParent(null);
-        }
-    }*/
 
     void OnTriggerStay(Collider other)
     {
@@ -213,7 +226,13 @@ public class CharacterController2D : MonoBehaviour
         {
             float moveDirInput = Input.GetAxis("Vertical");
             if (moveDirInput > 0 || moveDirInput < 0)
+            {
                 currentState = PlayerState.Climbing;
+                
+                // Animation
+                animator.SetBool(isClimbingHash, true);
+                transform.rotation = Quaternion.Euler(0, 0, 0);       // for 3d models
+            }
         }
         #endregion
     }
@@ -221,7 +240,13 @@ public class CharacterController2D : MonoBehaviour
     void OnTriggerExit(Collider other)
     {
         if (currentState == PlayerState.Climbing && other.CompareTag(Tags.Ladder))
+        {
             currentState = PlayerState.None;
+            
+            // Animation
+            animator.SetBool(isClimbingHash, false);
+            animator.speed = 1;
+        }
     }
 }
 
