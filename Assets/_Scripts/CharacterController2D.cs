@@ -12,7 +12,8 @@ public class CharacterController2D : MonoBehaviour
     public float runSpeed;
     public float climbSpeed;
     public float pushPullSpeed;
-	public float gravity; 	
+	public float gravity;
+    public float terminalVelocity; 	
 	public float jumpForce;	 
 	public bool canJump = true; 	
     public bool laddersEnabled = true;
@@ -33,9 +34,10 @@ public class CharacterController2D : MonoBehaviour
     int isPullingHash = Animator.StringToHash("isPulling");
     int jumpTriggerHash = Animator.StringToHash("jumpTrigger");
 
-    void Start ()
-    {	
-		charController = GetComponent<CharacterController> ();
+    void Awake ()
+    {
+        //  Find and assign references
+        charController = GetComponent<CharacterController> ();
         animator = GetComponent<Animator>();
 	}
 
@@ -60,21 +62,11 @@ public class CharacterController2D : MonoBehaviour
             TestClimbing();
 
         //  Apply gravity
-        if (currentState != PlayerState.Climbing)
-        {
-            if (!charController.isGrounded)
-            {
-                moveDirection += Physics.gravity * gravity * Time.deltaTime;
-                animator.SetBool(isGroundedHash, false);
-            }
-            else
-                animator.SetBool(isGroundedHash, true);
-
-            //Debug.Log(moveDirection);
-        }
+        if (currentState != PlayerState.Climbing && currentState != PlayerState.PushingPulling)
+            TestGravity();
 
         //  Moving Horizontally
-        if (currentState == PlayerState.None || currentState == PlayerState.Climbing)
+        if (currentState == PlayerState.None)
         {
             //  Get input from x axis.
             float xAxis = Input.GetAxisRaw("Horizontal");
@@ -97,6 +89,24 @@ public class CharacterController2D : MonoBehaviour
 
         //Debug.Log(currentState);
     }
+
+    #region Test Gravity
+    private void TestGravity()
+    {
+        if (!charController.isGrounded && Mathf.Abs(moveDirection.y) < terminalVelocity)
+        {
+            // Y = y + -9.81
+            moveDirection += Physics.gravity * gravity * Time.deltaTime;
+            animator.SetBool(isGroundedHash, false);
+
+        }
+        else
+            animator.SetBool(isGroundedHash, true);
+
+        //Debug.Log(moveDirection.y);
+        //Debug.Log(moveDirection);
+    }
+    #endregion
 
     #region Check Push/Pull Object
     void CheckPushPull()
@@ -125,6 +135,7 @@ public class CharacterController2D : MonoBehaviour
                 //Debug.Log(hit.collider.name);
                 currentState = PlayerState.PushingPulling;
                 interactingBody = hit.collider.GetComponent<Rigidbody>();
+                hit.collider.transform.SetParent(transform);
                 //interactingBody.isKinematic = true;
                 //interactingBody.transform.SetParent(transform);
             }
@@ -136,7 +147,7 @@ public class CharacterController2D : MonoBehaviour
     void TestPushPull()
     {
         //  Check if object is within interacting distance
-        if (Vector3.Distance(interactingBody.transform.position, transform.position) < interactiveDistance * 2)
+        if (charController.isGrounded && Vector3.Distance(interactingBody.transform.position, transform.position) < interactiveDistance * 2)
         {
             //  Get input axis
             float xAxis = Input.GetAxisRaw("Horizontal");
@@ -147,7 +158,7 @@ public class CharacterController2D : MonoBehaviour
             //  Pushing - RIGHT
             if (moveDirection.x > 0 && facingDirection == FacingDirection.Right)
             {
-                interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 11.5f * Time.deltaTime);
+                //interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 11.5f * Time.deltaTime);
 
                 //  Animation
                 animator.SetBool(isPushingHash, true);
@@ -156,7 +167,7 @@ public class CharacterController2D : MonoBehaviour
             //  Pushing - LEFT
             else if (moveDirection.x < 0 && facingDirection == FacingDirection.Left)
             {
-                interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 11.5f * Time.deltaTime);
+                //interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 11.5f * Time.deltaTime);
 
                 //  Animation
                 animator.SetBool(isPushingHash, true);
@@ -165,7 +176,7 @@ public class CharacterController2D : MonoBehaviour
             //  Pulling - RIGHT
             else if (moveDirection.x > 0 && facingDirection == FacingDirection.Left)
             {
-                interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 12 * Time.deltaTime);
+                //interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 12 * Time.deltaTime);
 
                 //  Animation
                 animator.SetBool(isPushingHash, false);
@@ -174,7 +185,7 @@ public class CharacterController2D : MonoBehaviour
             //  Pulling - LEFT
             else if (moveDirection.x < 0 && facingDirection == FacingDirection.Right)
             {
-                interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 12 * Time.deltaTime);
+                //interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 12 * Time.deltaTime);
 
                 //  Animation
                 animator.SetBool(isPushingHash, false);
@@ -195,6 +206,7 @@ public class CharacterController2D : MonoBehaviour
         currentState = PlayerState.None;
         //interactingBody.isKinematic = false;
         //interactingBody.transform.SetParent(null);
+        interactingBody.transform.SetParent(null);
         interactingBody = null;
 
         //  Animation
@@ -244,7 +256,11 @@ public class CharacterController2D : MonoBehaviour
     {
         //  Get input from y axis.
         float yAxisInput = Input.GetAxisRaw("Vertical");
+        float xAxisInput = Input.GetAxisRaw("Horizontal");
+
+        //  Apply movement vectors
         moveDirection.y = yAxisInput * climbSpeed;
+        moveDirection.x = xAxisInput * climbSpeed / 2;
 
         //  Animation
         animator.speed = 1;     //  Remove when idle animation exist
@@ -270,6 +286,7 @@ public class CharacterController2D : MonoBehaviour
         animator.SetBool(isClimbingHash, false);
         animator.SetBool(isClimbingUpHash, false);
         animator.speed = 1; //  Remove when idle animation exist
+        transform.rotation = Quaternion.Euler(0, 90, 0);       // for 3d models
     }
     #endregion
 
