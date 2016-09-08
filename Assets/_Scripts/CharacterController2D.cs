@@ -25,11 +25,13 @@ public class CharacterController2D : MonoBehaviour
 
     //  Animation
     private Animator animator;
-    static int SpeedHash = Animator.StringToHash("Speed");
-    static int isClimbingHash = Animator.StringToHash("isClimbing");
-    static int isClimbingUpHash = Animator.StringToHash("isClimbingUp");
-    static int isPushingHash = Animator.StringToHash("isPushing");
-    static int isPullingHash = Animator.StringToHash("isPulling");
+    int SpeedHash = Animator.StringToHash("Speed");
+    int isGroundedHash = Animator.StringToHash("isGrounded");
+    int isClimbingHash = Animator.StringToHash("isClimbing");
+    int isClimbingUpHash = Animator.StringToHash("isClimbingUp");
+    int isPushingHash = Animator.StringToHash("isPushing");
+    int isPullingHash = Animator.StringToHash("isPulling");
+    int jumpTriggerHash = Animator.StringToHash("jumpTrigger");
 
     void Start ()
     {	
@@ -50,33 +52,23 @@ public class CharacterController2D : MonoBehaviour
             TestPushPull();
 
         //  Jumping
-        if (Input.GetButtonDown("Jump") && currentState == PlayerState.None)
+        if (Input.GetButtonDown("Jump") && canJump && currentState == PlayerState.None)
             Jump ();	
 
         //  Climbing
         if (currentState == PlayerState.Climbing)
-        {
-            //  Get input from y axis.
-            float yAxis = Input.GetAxisRaw("Vertical");
-            moveDirection.y = yAxis * climbSpeed;
-
-            //  Animation
-            animator.speed = 1;     //  Remove when idle animation exist
-            if (yAxis > 0)
-                animator.SetBool(isClimbingUpHash, true);
-            else if (yAxis < 0)
-                animator.SetBool(isClimbingUpHash, false);
-            else
-                animator.speed = 0; //  Replace with idle animation
-        }
+            TestClimbing();
 
         //  Apply gravity
         if (currentState != PlayerState.Climbing)
         {
-            if (charController.isGrounded)
-                moveDirection = new Vector3(moveDirection.x, 0, moveDirection.z);
-            else
+            if (!charController.isGrounded)
+            {
                 moveDirection += Physics.gravity * gravity * Time.deltaTime;
+                animator.SetBool(isGroundedHash, false);
+            }
+            else
+                animator.SetBool(isGroundedHash, true);
 
             //Debug.Log(moveDirection);
         }
@@ -95,7 +87,8 @@ public class CharacterController2D : MonoBehaviour
         //  Move
         charController.Move(moveDirection * 10 * Time.deltaTime);
 
-
+        //  Animation
+        //animator.SetBool(isGroundedHash, charController.isGrounded);
 
         /*if ((charController.collisionFlags & CollisionFlags.Above) != 0)
         {
@@ -214,8 +207,13 @@ public class CharacterController2D : MonoBehaviour
     #region Test Jump
     public void Jump()		
 	{
-        if (charController.isGrounded && canJump)
-            moveDirection.y = jumpForce;	 	
+        if (charController.isGrounded)
+        {
+            moveDirection.y = jumpForce;
+            
+            //  Animation
+            animator.SetTrigger(jumpTriggerHash);
+        }
     }
     #endregion
 
@@ -241,13 +239,47 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
+    #region Test climbing
+    private void TestClimbing()
+    {
+        //  Get input from y axis.
+        float yAxisInput = Input.GetAxisRaw("Vertical");
+        moveDirection.y = yAxisInput * climbSpeed;
+
+        //  Animation
+        animator.speed = 1;     //  Remove when idle animation exist
+        if (yAxisInput > 0)
+            animator.SetBool(isClimbingUpHash, true);
+        else if (yAxisInput < 0)
+            animator.SetBool(isClimbingUpHash, false);
+        else
+            animator.speed = 0; //  Replace with idle animation
+
+        //  Cancels climbing when touching the ground at the bottom of ladder
+        if (yAxisInput < 0 && charController.isGrounded)
+            CancelClimbing();
+    }
+    #endregion
+
+    #region Cancel climbing
+    private void CancelClimbing()
+    {
+        currentState = PlayerState.None;
+
+        // Animation
+        animator.SetBool(isClimbingHash, false);
+        animator.SetBool(isClimbingUpHash, false);
+        animator.speed = 1; //  Remove when idle animation exist
+    }
+    #endregion
+
     void OnTriggerStay(Collider other)
     {
         #region Ladders
         if (currentState == PlayerState.None && other.CompareTag(Tags.Ladder))
         {
-            float moveDirInput = Input.GetAxis("Vertical");
-            if (moveDirInput > 0 || moveDirInput < 0)
+            float yAxisInput = Input.GetAxis("Vertical");
+            if (yAxisInput > 0 || yAxisInput < 0)
             {
                 currentState = PlayerState.Climbing;
                 
@@ -262,13 +294,7 @@ public class CharacterController2D : MonoBehaviour
     void OnTriggerExit(Collider other)
     {
         if (currentState == PlayerState.Climbing && other.CompareTag(Tags.Ladder))
-        {
-            currentState = PlayerState.None;
-            
-            // Animation
-            animator.SetBool(isClimbingHash, false);
-            animator.speed = 1; //  Remove when idle animation exist
-        }
+            CancelClimbing();
     }
 }
 
