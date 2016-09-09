@@ -3,12 +3,7 @@ using System.Collections;
 
 public class CharacterController2D : MonoBehaviour
 {
-    PlayerState currentState;
-    enum PlayerState { None, Climbing, PushingPulling}
-
-    FacingDirection facingDirection;
-    enum FacingDirection {  Right, Left    }
-
+    //  User Parameters variables
     public float runSpeed;
     public float climbSpeed;
     public float pushPullSpeed;
@@ -22,11 +17,17 @@ public class CharacterController2D : MonoBehaviour
     public float interactiveDistance;
     public LayerMask interactiveLayer;	
 
+    //  Private variables
+    PlayerState currentState;
+    enum PlayerState { None, Climbing, PushingPulling   }
+    FacingDirection facingDirection;
+    enum FacingDirection {  Right, Left    }
     private Rigidbody interactingBody;
     private Vector3 moveDirection = Vector3.zero;
     private CharacterController charController;
+    private GameManager gameManager;
 
-    //  Animation
+    //  Animation variables
     private Animator animator;
     int SpeedHash = Animator.StringToHash("Speed");
     int isGroundedHash = Animator.StringToHash("isGrounded");
@@ -40,10 +41,12 @@ public class CharacterController2D : MonoBehaviour
     {
         //  Find and assign references
         charController = GetComponent<CharacterController> ();
+        gameManager = FindObjectOfType<GameManager>();
         animator = GetComponent<Animator>();
 	}
 
-	void Update ()
+    #region Update(): check and evaluate input/states every frame
+    void Update ()
     {
         //  Check and update the facing direction of the player
         if (currentState == PlayerState.None)
@@ -91,8 +94,9 @@ public class CharacterController2D : MonoBehaviour
 		} */
 
         //Debug.Log(currentState);
-        Debug.Log(moveDirection);
+        //Debug.Log(moveDirection);
     }
+    #endregion
 
     #region Gravity
     private void ApplyGravity()
@@ -102,17 +106,42 @@ public class CharacterController2D : MonoBehaviour
             //  If the falling velocity has not reached the terminal velocity cap... 
             if (Mathf.Abs(moveDirection.y) < terminalVelocity)
                 moveDirection += Physics.gravity * gravity * Time.deltaTime;
+        }
+    }
+    #endregion
+
+    #region Direction facing
+    private void UpdateFacingDirection()
+    {
+		Vector3 theScale = transform.localScale;	
+        theScale.x *= -1;	
+        if (moveDirection.x > 0)
+        {
+            facingDirection = FacingDirection.Right;
+            transform.rotation = Quaternion.Euler(0, 90, 0);        //  for 3d models
+            if (transform.localScale.x < 0)
+		        transform.localScale = theScale;	
+        }
+        else if (moveDirection.x < 0)
+        {
+            facingDirection = FacingDirection.Left;
+            transform.rotation = Quaternion.Euler(0, -90, 0);       // for 3d models
+            if (transform.localScale.x > 0)
+		        transform.localScale = theScale;	
+        }
+    }
+    #endregion
+
+    #region Jump
+    public void Jump()		
+	{
+        if (charController.isGrounded)
+        {
+            moveDirection.y = jumpForce;
             
             //  Animation
-            //animator.SetBool(isGroundedHash, false);
+            animator.SetTrigger(jumpTriggerHash);
         }
-        else
-        {            
-            // Animation
-            //animator.SetBool(isGroundedHash, true);
-        }
-
-        //Debug.Log(moveDirection);
     }
     #endregion
 
@@ -157,7 +186,7 @@ public class CharacterController2D : MonoBehaviour
         //  Check if object is within interacting distance
         if (charController.isGrounded && Vector3.Distance(interactingBody.transform.position, transform.position) < interactiveDistance * 2)
         {
-            //  Get input axis
+            //  Get input axis with smoothing
             float xAxis = Input.GetAxisRaw("Horizontal");
             moveDirection.x = xAxis * pushPullSpeed;
 
@@ -224,41 +253,6 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
-    #region Jump
-    public void Jump()		
-	{
-        if (charController.isGrounded)
-        {
-            moveDirection.y = jumpForce;
-            
-            //  Animation
-            animator.SetTrigger(jumpTriggerHash);
-        }
-    }
-    #endregion
-
-    #region Direction facing
-    private void UpdateFacingDirection()
-    {
-		Vector3 theScale = transform.localScale;	
-        theScale.x *= -1;	
-        if (moveDirection.x > 0)
-        {
-            facingDirection = FacingDirection.Right;
-            transform.rotation = Quaternion.Euler(0, 90, 0);        //  for 3d models
-            if (transform.localScale.x < 0)
-		        transform.localScale = theScale;	
-        }
-        else if (moveDirection.x < 0)
-        {
-            facingDirection = FacingDirection.Left;
-            transform.rotation = Quaternion.Euler(0, -90, 0);       // for 3d models
-            if (transform.localScale.x > 0)
-		        transform.localScale = theScale;	
-        }
-    }
-    #endregion
-
     #region Climb
     private void Climb()
     {
@@ -297,6 +291,23 @@ public class CharacterController2D : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, 90, 0);       // for 3d models
     }
     #endregion
+
+    #region Die
+    private void Die()
+    {
+        //  Respawn player at GameManager's respawn node
+        transform.position = gameManager.RespawnNode.position;
+    }
+    #endregion
+
+    void OnTriggerEnter(Collider other)
+    {
+        //  If player collides with a trap, perform death function
+        if (other.CompareTag(Tags.Trap))
+        {
+            Die();   
+        }
+    }
 
     void OnTriggerStay(Collider other)
     {
