@@ -4,7 +4,7 @@ using System.Collections;
 public class CharacterController2D : MonoBehaviour
 {
     PlayerState currentState;
-    enum PlayerState { None, Climbing, Jumping, PushingPulling}
+    enum PlayerState { None, Climbing, PushingPulling}
 
     FacingDirection facingDirection;
     enum FacingDirection {  Right, Left    }
@@ -57,18 +57,18 @@ public class CharacterController2D : MonoBehaviour
 
         //  Jumping
         if (Input.GetButtonDown("Jump") && canJump && currentState == PlayerState.None)
-            Jump();
+            Jump();	
 
         //  Climbing
         if (currentState == PlayerState.Climbing)
             Climb();
 
         //  Apply gravity
-        if (currentState == PlayerState.None || currentState == PlayerState.Jumping)
+        if (currentState != PlayerState.Climbing && currentState != PlayerState.PushingPulling)
             ApplyGravity();
 
         //  Moving Horizontally
-        if (currentState == PlayerState.None || currentState == PlayerState.Jumping)
+        if (currentState == PlayerState.None)
         {
             //  Get input from x axis.
             float xAxis = Input.GetAxis("Horizontal");
@@ -83,7 +83,7 @@ public class CharacterController2D : MonoBehaviour
             charController.Move(moveDirection * 10 * Time.deltaTime);
 
         //  Animation
-        //animator.SetBool(isGroundedHash, charController.isGrounded);
+        animator.SetBool(isGroundedHash, charController.isGrounded);
 
         /*if ((charController.collisionFlags & CollisionFlags.Above) != 0)
         {
@@ -91,27 +91,27 @@ public class CharacterController2D : MonoBehaviour
 		} */
 
         //Debug.Log(currentState);
+        Debug.Log(moveDirection);
     }
 
     #region Gravity
     private void ApplyGravity()
     {
-        if (!charController.isGrounded && Mathf.Abs(moveDirection.y) < terminalVelocity)
+        if (!charController.isGrounded)
         {
-            // Y = y + -9.81
-            moveDirection += Physics.gravity * gravity * Time.deltaTime;
-            animator.SetBool(isGroundedHash, false);
-
+            //  If the falling velocity has not reached the terminal velocity cap... 
+            if (Mathf.Abs(moveDirection.y) < terminalVelocity)
+                moveDirection += Physics.gravity * gravity * Time.deltaTime;
+            
+            //  Animation
+            //animator.SetBool(isGroundedHash, false);
         }
         else
-        {
-            currentState = PlayerState.None;
-            
+        {            
             // Animation
-            animator.SetBool(isGroundedHash, true);
+            //animator.SetBool(isGroundedHash, true);
         }
 
-        //Debug.Log(moveDirection.y);
         //Debug.Log(moveDirection);
     }
     #endregion
@@ -229,8 +229,6 @@ public class CharacterController2D : MonoBehaviour
 	{
         if (charController.isGrounded)
         {
-            currentState = PlayerState.Jumping;
-
             moveDirection.y = jumpForce;
             
             //  Animation
