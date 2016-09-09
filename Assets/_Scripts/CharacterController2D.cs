@@ -4,7 +4,7 @@ using System.Collections;
 public class CharacterController2D : MonoBehaviour
 {
     PlayerState currentState;
-    enum PlayerState { None, Climbing, PushingPulling}
+    enum PlayerState { None, Climbing, Jumping, PushingPulling}
 
     FacingDirection facingDirection;
     enum FacingDirection {  Right, Left    }
@@ -14,9 +14,11 @@ public class CharacterController2D : MonoBehaviour
     public float pushPullSpeed;
 	public float gravity;
     public float terminalVelocity; 	
-	public float jumpForce;	 
+	public float jumpForce;
+    public bool canMove = true;	 
 	public bool canJump = true; 	
-    public bool laddersEnabled = true;
+    public bool canClimb = true;
+    public bool canInteract = true;
     public float interactiveDistance;
     public LayerMask interactiveLayer;	
 
@@ -51,25 +53,25 @@ public class CharacterController2D : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E) && charController.isGrounded)
             CheckPushPull();
         else if (currentState == PlayerState.PushingPulling)
-            TestPushPull();
+            PushPull();
 
         //  Jumping
         if (Input.GetButtonDown("Jump") && canJump && currentState == PlayerState.None)
-            Jump ();	
+            Jump();
 
         //  Climbing
         if (currentState == PlayerState.Climbing)
-            TestClimbing();
+            Climb();
 
         //  Apply gravity
-        if (currentState != PlayerState.Climbing && currentState != PlayerState.PushingPulling)
-            TestGravity();
+        if (currentState == PlayerState.None || currentState == PlayerState.Jumping)
+            ApplyGravity();
 
         //  Moving Horizontally
-        if (currentState == PlayerState.None)
+        if (currentState == PlayerState.None || currentState == PlayerState.Jumping)
         {
             //  Get input from x axis.
-            float xAxis = Input.GetAxisRaw("Horizontal");
+            float xAxis = Input.GetAxis("Horizontal");
             moveDirection.x = xAxis * runSpeed;
 
             //  Animation
@@ -77,7 +79,8 @@ public class CharacterController2D : MonoBehaviour
         }
 
         //  Move
-        charController.Move(moveDirection * 10 * Time.deltaTime);
+        if (canMove)
+            charController.Move(moveDirection * 10 * Time.deltaTime);
 
         //  Animation
         //animator.SetBool(isGroundedHash, charController.isGrounded);
@@ -90,8 +93,8 @@ public class CharacterController2D : MonoBehaviour
         //Debug.Log(currentState);
     }
 
-    #region Test Gravity
-    private void TestGravity()
+    #region Gravity
+    private void ApplyGravity()
     {
         if (!charController.isGrounded && Mathf.Abs(moveDirection.y) < terminalVelocity)
         {
@@ -101,7 +104,12 @@ public class CharacterController2D : MonoBehaviour
 
         }
         else
+        {
+            currentState = PlayerState.None;
+            
+            // Animation
             animator.SetBool(isGroundedHash, true);
+        }
 
         //Debug.Log(moveDirection.y);
         //Debug.Log(moveDirection);
@@ -143,8 +151,8 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
-    #region Test Pushing/Pulling
-    void TestPushPull()
+    #region Push/Pull
+    void PushPull()
     {
         //  Check if object is within interacting distance
         if (charController.isGrounded && Vector3.Distance(interactingBody.transform.position, transform.position) < interactiveDistance * 2)
@@ -216,11 +224,13 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
-    #region Test Jump
+    #region Jump
     public void Jump()		
 	{
         if (charController.isGrounded)
         {
+            currentState = PlayerState.Jumping;
+
             moveDirection.y = jumpForce;
             
             //  Animation
@@ -251,8 +261,8 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
-    #region Test climbing
-    private void TestClimbing()
+    #region Climb
+    private void Climb()
     {
         //  Get input from y axis.
         float yAxisInput = Input.GetAxisRaw("Vertical");
@@ -292,8 +302,8 @@ public class CharacterController2D : MonoBehaviour
 
     void OnTriggerStay(Collider other)
     {
-        #region Ladders
-        if (currentState == PlayerState.None && other.CompareTag(Tags.Ladder))
+        #region Check Climb
+        if (canClimb && currentState == PlayerState.None && other.CompareTag(Tags.Ladder))
         {
             float yAxisInput = Input.GetAxis("Vertical");
             if (yAxisInput > 0 || yAxisInput < 0)
