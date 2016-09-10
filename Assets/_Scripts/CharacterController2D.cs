@@ -31,7 +31,8 @@ public class CharacterController2D : MonoBehaviour
 
     //  Animation variables
     private Animator animator;
-    int SpeedHash = Animator.StringToHash("Speed");
+    int xVelocityHash = Animator.StringToHash("xVelocity");
+    int yVelocityHash = Animator.StringToHash("yVelocity");
     int isGroundedHash = Animator.StringToHash("isGrounded");
     int isClimbingHash = Animator.StringToHash("isClimbing");
     int isClimbingUpHash = Animator.StringToHash("isClimbingUp");
@@ -83,7 +84,7 @@ public class CharacterController2D : MonoBehaviour
                 velocity.x = xAxis * horizontalJumpForce;
 
             //  Animation
-            animator.SetFloat(SpeedHash, Mathf.Abs(xAxis));
+            animator.SetFloat(xVelocityHash, Mathf.Abs(xAxis));
         }
 
         //  Jumping
@@ -110,6 +111,9 @@ public class CharacterController2D : MonoBehaviour
             //  If the falling velocity has not reached the terminal velocity cap... 
             if (velocity.y >= terminalVelocity)
                 velocity += Physics.gravity * gravity * Time.deltaTime;
+
+            //  Animation
+            animator.SetFloat(yVelocityHash, velocity.y);
         }
     }
     #endregion
