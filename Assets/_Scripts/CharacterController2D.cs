@@ -92,7 +92,7 @@ public class CharacterController2D : MonoBehaviour
 
         //  Move
         if (canMove)
-            charController.Move(velocity * 10 * Time.deltaTime);
+            charController.Move(velocity * Time.deltaTime);
 
         //  Animation
         animator.SetBool(isGroundedHash, charController.isGrounded);
@@ -108,7 +108,7 @@ public class CharacterController2D : MonoBehaviour
         if (!charController.isGrounded)
         {
             //  If the falling velocity has not reached the terminal velocity cap... 
-            if (Mathf.Abs(velocity.y) < terminalVelocity)
+            if (velocity.y >= terminalVelocity)
                 velocity += Physics.gravity * gravity * Time.deltaTime;
         }
     }
