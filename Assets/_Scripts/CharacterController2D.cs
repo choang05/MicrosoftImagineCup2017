@@ -8,8 +8,9 @@ public class CharacterController2D : MonoBehaviour
     public float climbSpeed;
     public float pushPullSpeed;
 	public float gravity;
-    public float terminalVelocity; 	
-	public float jumpForce;
+    public float terminalVelocity;
+	public float verticalJumpForce;
+    public float horizontalJumpForce; 	
     public bool canMove = true;	 
 	public bool canJump = true; 	
     public bool canClimb = true;
@@ -19,11 +20,12 @@ public class CharacterController2D : MonoBehaviour
 
     //  Private variables
     PlayerState currentState;
-    enum PlayerState { None, Climbing, PushingPulling   }
+    enum PlayerState { None, Climbing, PushingPulling }
     FacingDirection facingDirection;
-    enum FacingDirection {  Right, Left    }
+    enum FacingDirection { Right, Left }
+    private Vector3 velocity = Vector3.zero;
     private Rigidbody interactingBody;
-    private Vector3 moveDirection = Vector3.zero;
+    private float interactingBreakDistance;
     private CharacterController charController;
     private GameManager gameManager;
 
@@ -58,9 +60,6 @@ public class CharacterController2D : MonoBehaviour
         else if (currentState == PlayerState.PushingPulling)
             PushPull();
 
-        //  Jumping
-        if (Input.GetButtonDown("Jump") && canJump && currentState == PlayerState.None)
-            Jump();	
 
         //  Climbing
         if (currentState == PlayerState.Climbing)
@@ -73,17 +72,25 @@ public class CharacterController2D : MonoBehaviour
         //  Moving Horizontally
         if (currentState == PlayerState.None)
         {
-            //  Get input from x axis.
+            //  Get input from x axis and add runspeed multiplier
             float xAxis = Input.GetAxis("Horizontal");
-            moveDirection.x = xAxis * runSpeed;
+            velocity.x = xAxis * runSpeed;
+
+            //  add horizontal jump multiplier
+            if (!charController.isGrounded)
+                velocity.x *= horizontalJumpForce;
 
             //  Animation
             animator.SetFloat(SpeedHash, Mathf.Abs(xAxis));
         }
 
+        //  Jumping
+        if (Input.GetButtonDown("Jump") && canJump && currentState == PlayerState.None)
+            Jump();	
+
         //  Move
         if (canMove)
-            charController.Move(moveDirection * 10 * Time.deltaTime);
+            charController.Move(velocity * 10 * Time.deltaTime);
 
         //  Animation
         animator.SetBool(isGroundedHash, charController.isGrounded);
@@ -94,7 +101,7 @@ public class CharacterController2D : MonoBehaviour
 		} */
 
         //Debug.Log(currentState);
-        //Debug.Log(moveDirection);
+        //Debug.Log(velocity);
     }
     #endregion
 
@@ -104,8 +111,8 @@ public class CharacterController2D : MonoBehaviour
         if (!charController.isGrounded)
         {
             //  If the falling velocity has not reached the terminal velocity cap... 
-            if (Mathf.Abs(moveDirection.y) < terminalVelocity)
-                moveDirection += Physics.gravity * gravity * Time.deltaTime;
+            if (Mathf.Abs(velocity.y) < terminalVelocity)
+                velocity += Physics.gravity * gravity * Time.deltaTime;
         }
     }
     #endregion
@@ -115,14 +122,14 @@ public class CharacterController2D : MonoBehaviour
     {
 		Vector3 theScale = transform.localScale;	
         theScale.x *= -1;	
-        if (moveDirection.x > 0)
+        if (velocity.x > 0)
         {
             facingDirection = FacingDirection.Right;
             transform.rotation = Quaternion.Euler(0, 90, 0);        //  for 3d models
             if (transform.localScale.x < 0)
 		        transform.localScale = theScale;	
         }
-        else if (moveDirection.x < 0)
+        else if (velocity.x < 0)
         {
             facingDirection = FacingDirection.Left;
             transform.rotation = Quaternion.Euler(0, -90, 0);       // for 3d models
@@ -137,7 +144,10 @@ public class CharacterController2D : MonoBehaviour
 	{
         if (charController.isGrounded)
         {
-            moveDirection.y = jumpForce;
+            //  Set vertical velocity
+            velocity.y = verticalJumpForce;
+            //  horizontal jump velocity multiplier
+            //velocity.x += horizontalJumpForce;
             
             //  Animation
             animator.SetTrigger(jumpTriggerHash);
@@ -155,16 +165,16 @@ public class CharacterController2D : MonoBehaviour
         else
         {
             //  Determine direction to cast ray
-            Vector2 dir;
+            Vector3 dir;
             if (facingDirection == FacingDirection.Right)
-                dir = Vector2.right;
+                dir = Vector3.right;
             else
-                dir = Vector2.left;
+                dir = Vector3.left;
 
             //  Shoot ray
             RaycastHit hit;
-            Physics.Raycast(transform.position, dir, out hit, interactiveDistance, interactiveLayer);
-            //Debug.DrawLine(transform.position, dir * interactiveDistance);
+            Physics.Raycast(transform.position + Vector3.up, dir, out hit, interactiveDistance, interactiveLayer);
+            //Debug.DrawLine(transform.position + Vector3.up, dir * 1, Color.red, 0.05f);
 
             //  Evaluate hit
             if (hit.collider)
@@ -173,6 +183,7 @@ public class CharacterController2D : MonoBehaviour
                 currentState = PlayerState.PushingPulling;
                 interactingBody = hit.collider.GetComponent<Rigidbody>();
                 hit.collider.transform.SetParent(transform);
+                interactingBreakDistance = Vector3.Distance(hit.collider.transform.position, transform.position);
                 //interactingBody.isKinematic = true;
                 //interactingBody.transform.SetParent(transform);
             }
@@ -184,16 +195,18 @@ public class CharacterController2D : MonoBehaviour
     void PushPull()
     {
         //  Check if object is within interacting distance
-        if (charController.isGrounded && Vector3.Distance(interactingBody.transform.position, transform.position) < interactiveDistance * 2)
+        if (charController.isGrounded && Vector3.Distance(transform.position, interactingBody.transform.position) <= interactingBreakDistance + 0.2f)
         {
+            Debug.DrawLine(transform.position + Vector3.up, interactingBody.transform.position, Color.yellow, 0.05f);
+
             //  Get input axis with smoothing
             float xAxis = Input.GetAxisRaw("Horizontal");
-            moveDirection.x = xAxis * pushPullSpeed;
+            velocity.x = xAxis * pushPullSpeed;
 
             animator.speed = 1; //  Remove when idle animation exist
 
             //  Pushing - RIGHT
-            if (moveDirection.x > 0 && facingDirection == FacingDirection.Right)
+            if (velocity.x > 0 && facingDirection == FacingDirection.Right)
             {
                 //interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 11.5f * Time.deltaTime);
 
@@ -202,7 +215,7 @@ public class CharacterController2D : MonoBehaviour
                 animator.SetBool(isPullingHash, false);
             }
             //  Pushing - LEFT
-            else if (moveDirection.x < 0 && facingDirection == FacingDirection.Left)
+            else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
             {
                 //interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 11.5f * Time.deltaTime);
 
@@ -211,7 +224,7 @@ public class CharacterController2D : MonoBehaviour
                 animator.SetBool(isPullingHash, false);
             }
             //  Pulling - RIGHT
-            else if (moveDirection.x > 0 && facingDirection == FacingDirection.Left)
+            else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
             {
                 //interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 12 * Time.deltaTime);
 
@@ -220,7 +233,7 @@ public class CharacterController2D : MonoBehaviour
                 animator.SetBool(isPullingHash, true);
             }
             //  Pulling - LEFT
-            else if (moveDirection.x < 0 && facingDirection == FacingDirection.Right)
+            else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
             {
                 //interactingBody.MovePosition(interactingBody.transform.position + new Vector3(xAxis, 0, 0) * pushPullSpeed * 12 * Time.deltaTime);
 
@@ -261,8 +274,8 @@ public class CharacterController2D : MonoBehaviour
         float xAxisInput = Input.GetAxisRaw("Horizontal");
 
         //  Apply movement vectors
-        moveDirection.y = yAxisInput * climbSpeed;
-        moveDirection.x = xAxisInput * climbSpeed / 2;
+        velocity.y = yAxisInput * climbSpeed;
+        velocity.x = xAxisInput * climbSpeed / 2;
 
         //  Animation
         animator.speed = 1;     //  Remove when idle animation exist
@@ -300,6 +313,7 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
+    //  Called when a collider enters another collider with isTrigger enabled
     void OnTriggerEnter(Collider other)
     {
         //  If player collides with a trap, perform death function
@@ -309,6 +323,7 @@ public class CharacterController2D : MonoBehaviour
         }
     }
 
+    //  Called when a collider stay within another collider with isTrigger enabled
     void OnTriggerStay(Collider other)
     {
         #region Check Climb
@@ -327,6 +342,7 @@ public class CharacterController2D : MonoBehaviour
         #endregion
     }
 
+    //  Called when a collider exits another collider with isTrigger enabled
     void OnTriggerExit(Collider other)
     {
         if (currentState == PlayerState.Climbing && other.CompareTag(Tags.Ladder))
