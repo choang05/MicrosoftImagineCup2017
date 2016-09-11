@@ -10,7 +10,8 @@ public class CharacterController2D : MonoBehaviour
 	public float gravity;
     public float terminalVelocity;
 	public float verticalJumpForce;
-    public float horizontalJumpForce; 	
+    public float horizontalJumpForce;
+    public int impactForceThreshold;                //  The threshold reached to to kill player caused by colliding object's collision.impulse magnitude          	
     public bool canMove = true;	 
 	public bool canJump = true; 	
     public bool canClimb = true;
@@ -294,10 +295,12 @@ public class CharacterController2D : MonoBehaviour
     #endregion
 
     #region Die
-    private void Die()
+    public void Die()
     {
         //  Respawn player at GameManager's respawn node
         transform.position = gameManager.RespawnNode.position;
+
+        Debug.Log("Player died!");
     }
     #endregion
 
