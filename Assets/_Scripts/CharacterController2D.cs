@@ -304,6 +304,20 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
+    #region Collision impacts
+    //  called when player impacted by colliding object
+    public void ProcessImpact(Vector3 collisionForce)
+    {
+        //Debug.Log(collisionForce.magnitude);
+
+        //  Evaluate force and see if its enough to kill the player
+        if (collisionForce.magnitude >= impactForceThreshold)
+        {
+            Die();
+        }
+    }
+    #endregion
+
     //  Called when a collider enters another collider with isTrigger enabled
     void OnTriggerEnter(Collider other)
     {
