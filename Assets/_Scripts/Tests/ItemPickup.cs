@@ -61,7 +61,7 @@ public class ItemPickup : MonoBehaviour
         heldItem.GetComponent<Rigidbody2D>().isKinematic = true;
 
         //  Set material
-        heldItem.GetComponentInChildren<Renderer>().material.shader = FindObjectOfType<WorldChanger>().ObjectOneShader;
+        //heldItem.GetComponentInChildren<Renderer>().material.shader = FindObjectOfType<WorldChanger>().ObjectOneShader;
 
         hasItem = false;
 
