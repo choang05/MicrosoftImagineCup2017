@@ -7,11 +7,6 @@ using CameraTransitions;
 public class WorldChanger : MonoBehaviour
 {
     [Space(10)]
-    //public GameObject PresentObjects;
-    //public GameObject PastObjects;
-    //public GameObject FutureObjects;
-
-    [Space(10)]
     public ProCamera2D PresentProCamera2D;
     public ProCamera2D PastProCamera2D;
     public ProCamera2D FutureProCamera2D;
@@ -46,6 +41,9 @@ public class WorldChanger : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+        //  Determine which world player can be teleported too if there is open space
+        CheckWorldCollision();
+        
         //  If player is allowed to switch & a transition is currently not running...
         if (!cameraTransition.IsRunning)
         {
@@ -62,6 +60,16 @@ public class WorldChanger : MonoBehaviour
             {
                 SwitchWorld(3); //  Future
             }
+        }
+        //  Transition is done
+        else
+        {
+            /*PresentProCamera2D.HorizontalFollowSmoothness = .15f;
+            PresentProCamera2D.VerticalFollowSmoothness = .15f;
+            PastProCamera2D.HorizontalFollowSmoothness = .15f;
+            PastProCamera2D.VerticalFollowSmoothness = .15f;
+            FutureProCamera2D.HorizontalFollowSmoothness = .15f;
+            FutureProCamera2D.VerticalFollowSmoothness = .15f;*/
         }
     }
 
@@ -81,8 +89,10 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Present;
             //  Perform transition
             //PresentProCamera2D.gameObject.SetActive(true);
-            PresentProCamera2D.MoveCameraInstantlyToPosition(playerPos);
+            PresentProCamera2D.HorizontalFollowSmoothness = 0;
+            PresentProCamera2D.VerticalFollowSmoothness = 0;
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            //PresentProCamera2D.MoveCameraInstantlyToPosition(playerPos);
             transform.position = new Vector3(transform.position.x, transform.position.y, 0);
             //PresentCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, -10);
             //PresentCamera. 
@@ -94,8 +104,10 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Past;
             //  Perform transition
             //PastProCamera2D.gameObject.SetActive(true);
-            PastProCamera2D.MoveCameraInstantlyToPosition(playerPos);
+            PastProCamera2D.HorizontalFollowSmoothness = 0;
+            PastProCamera2D.VerticalFollowSmoothness = 0;
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            //PastProCamera2D.MoveCameraInstantlyToPosition(playerPos);
             transform.position = new Vector3(transform.position.x, transform.position.y, 25);
             //PastCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, 10);
             //Debug.Log("Switched to Past");
@@ -106,7 +118,9 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Future;
             //  Perform transition
             //FutureProCamera2D.gameObject.SetActive(true);
-            FutureProCamera2D.MoveCameraInstantlyToPosition(playerPos);
+            FutureProCamera2D.HorizontalFollowSmoothness = 0;
+            FutureProCamera2D.VerticalFollowSmoothness = 0;
+            //FutureProCamera2D.MoveCameraInstantlyToPosition(playerPos);
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
             transform.position = new Vector3(transform.position.x, transform.position.y, 50);
             //FutureCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, 35);
@@ -137,6 +151,53 @@ public class WorldChanger : MonoBehaviour
             currentCamera = FutureProCamera2D.GameCamera;
         }
         return currentCamera;
+    }
+    #endregion
+
+    #region Determine which world player can be teleported too if there is open space
+    private void CheckWorldCollision()
+    {
+        Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
+        RaycastHit hit;
+        Vector3 rayDir;
+
+        //  cast present ray
+        rayDir = new Vector3(playerPos.x, playerPos.y, -5);
+        Physics.Raycast(rayDir, rayDir + Vector3.forward, out hit, 10);
+        if (Application.isEditor) Debug.DrawLine(rayDir, rayDir + Vector3.forward * 10, Color.red, 0.05f);
+
+        if (hit.collider)
+        {
+            canSwitchPresent = false;
+            Debug.Log("Present disabled");
+        }
+        else
+        {
+            canSwitchPresent = true;
+        }
+
+        //  cast past ray
+        /*rayDir = new Vector3(playerPos.x, playerPos.y, 15);
+        if (Physics.Raycast(rayDir, transform.position + Vector3.up, out hit, 6))
+        {
+            canSwitchPast = false;
+        }
+        else
+        {
+            canSwitchPast = true;
+        } */
+
+        //  cast present ray
+        /*rayDir = new Vector3(playerPos.x, playerPos.y, -5);
+        if (Physics.Raycast(rayDir, transform.position + Vector3.up, out hit, 6))
+        {
+            canSwitchPresent = false;
+        }
+        else
+        {
+            canSwitchPresent = true;
+        }*/
+
     }
     #endregion
 }

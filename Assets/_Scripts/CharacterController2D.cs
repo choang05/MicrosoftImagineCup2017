@@ -177,8 +177,9 @@ public class CharacterController2D : MonoBehaviour
             //  Evaluate hit
             if (hit.collider)
             {
-                //Debug.Log(hit.collider.name);
+                //  Update player state
                 currentState = PlayerState.PushingPulling;
+                //  Cache interacting body
                 interactingBody = hit.collider.GetComponent<Rigidbody>();
                 hit.collider.transform.SetParent(transform);
                 //  Set the interaction break distance
