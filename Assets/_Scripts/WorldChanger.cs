@@ -15,12 +15,15 @@ public class WorldChanger : MonoBehaviour
     public Camera PastCamera;
     public Camera FutureCamera;
 
-    public WorldState CurrentWorldState;
+    public WorldState currentWorldState;
     public enum WorldState { Present, Past, Future };
 
     [Space(10)]
-    public bool canSwitch = true;
-    public float transitionDuration = 1;
+    public bool canSwitchPresent = true;
+    public bool canSwitchPast = true;
+    public bool canSwitchFuture = true;
+    public float transitionDuration;
+    [Range(0, 1)] public float transitionEdgeSmoothness;
 
     private CameraTransition cameraTransition;
 
@@ -33,80 +36,86 @@ public class WorldChanger : MonoBehaviour
     void Start()
     {
         //  Initial setups
-        CurrentWorldState = WorldState.Present;
+        currentWorldState = WorldState.Present;
 
-        //PastObjects.SetActive(false);
-        //FutureObjects.SetActive(false);
+        PastCamera.gameObject.SetActive(false);
+        FutureCamera.gameObject.SetActive(false);
     }
 
 	// Update is called once per frame
 	void Update ()
     {
-        //  Evaluate input from player. 1-3 selects which world to transition to
-        if (Input.GetKeyUp(KeyCode.Alpha1))
+        //  If player is allowed to switch & a transition is currently not running...
+        if (!cameraTransition.IsRunning)
         {
-            SwitchWorld(1);
-        }
-        else if (Input.GetKeyUp(KeyCode.Alpha2))
-        {
-            SwitchWorld(2);
-        }
-        else if (Input.GetKeyUp(KeyCode.Alpha3))
-        {
-            SwitchWorld(3);
+            //  Evaluate input from player. 1-3 selects which world to transition to
+            if (Input.GetKeyUp(KeyCode.Alpha1) && canSwitchPresent)
+            {
+                SwitchWorld(1); //  Present
+            }
+            else if (Input.GetKeyUp(KeyCode.Alpha2) && canSwitchPast)
+            {
+                SwitchWorld(2); //  Past
+            }
+            else if (Input.GetKeyUp(KeyCode.Alpha3) && canSwitchFuture) 
+            {
+                SwitchWorld(3); //  Future
+            }
         }
     }
     
     public void SwitchWorld(int worldID)
     {
-        //  Calculate which world and mask we need to unload
+        //  Get the current world and camera
         GameObject UnloadingWorld;
-        Camera currentWorld;
-        if (CurrentWorldState == WorldState.Present)
+        Camera currentCamera;
+        if (currentWorldState == WorldState.Present)
         {
             UnloadingWorld = PresentObjects;
-            currentWorld = PresentCamera;
+            currentCamera = PresentCamera;
         }
-        else if (CurrentWorldState == WorldState.Past)
+        else if (currentWorldState == WorldState.Past)
         {
             UnloadingWorld = PastObjects;
-            currentWorld = PastCamera;
+            currentCamera = PastCamera;
         }
         else 
         {
             UnloadingWorld = FutureObjects;
-            currentWorld = FutureCamera;
+            currentCamera = FutureCamera;
         }
 
-        //  If player is allowed to switch...
-        if (canSwitch)
+        //  Determine which world ID to switch to and check if world is already active.
+        if (worldID == 1 && currentWorldState != WorldState.Present)
         {
-            //  Determine which world ID to switch to and check if world is already active.
-            if (worldID == 1 && CurrentWorldState != WorldState.Present)
-            {
-                CurrentWorldState = WorldState.Present;
-                cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentWorld, PresentCamera, transitionDuration, new object[] { 0.05f, true });
-                transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-                PresentCamera.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
-                //PresentCamera. 
-                //Debug.Log("Switched to Present");
-            }
-            else if (worldID == 2 && CurrentWorldState != WorldState.Past)
-            {
-                CurrentWorldState = WorldState.Past;
-                cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentWorld, PastCamera, transitionDuration, new object[] { 0.05f, true });
-                transform.position = new Vector3(transform.position.x, transform.position.y, 25);
-                PastCamera.transform.position = new Vector3(transform.position.x, transform.position.y, 10);
-                //Debug.Log("Switched to Past");
-            }
-            else if (worldID == 3 && CurrentWorldState != WorldState.Future)
-            {
-                CurrentWorldState = WorldState.Future;
-                cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentWorld, FutureCamera, transitionDuration, new object[] { 0.05f, true });
-                transform.position = new Vector3(transform.position.x, transform.position.y, 50);
-                FutureCamera.transform.position = new Vector3(transform.position.x, transform.position.y, 35);
-                //Debug.Log("Switched to Future");
-            }
+            //  Update world state
+            currentWorldState = WorldState.Present;
+            //  Perform transition
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentCamera, transitionDuration, new object[] { transitionEdgeSmoothness, true });
+            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+            PresentCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, -10);
+            //PresentCamera. 
+            //Debug.Log("Switched to Present");
+        }
+        else if (worldID == 2 && currentWorldState != WorldState.Past)
+        {
+            //  Update world state
+            currentWorldState = WorldState.Past;
+            //  Perform transition
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastCamera, transitionDuration, new object[] { transitionEdgeSmoothness, true });
+            transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+            PastCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, 10);
+            //Debug.Log("Switched to Past");
+        }
+        else if (worldID == 3 && currentWorldState != WorldState.Future)
+        {
+            //  Update world state
+            currentWorldState = WorldState.Future;
+            //  Perform transition
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureCamera, transitionDuration, new object[] { transitionEdgeSmoothness, true });
+            transform.position = new Vector3(transform.position.x, transform.position.y, 50);
+            FutureCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, 35);
+            //Debug.Log("Switched to Future");
         }
     }
 }
