@@ -1,19 +1,20 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using Com.LuisPedroFonseca.ProCamera2D;
 using CameraTransitions;
 
 public class WorldChanger : MonoBehaviour
 {
     [Space(10)]
-    public GameObject PresentObjects;
-    public GameObject PastObjects;
-    public GameObject FutureObjects;
+    //public GameObject PresentObjects;
+    //public GameObject PastObjects;
+    //public GameObject FutureObjects;
 
     [Space(10)]
-    public Camera PresentCamera;
-    public Camera PastCamera;
-    public Camera FutureCamera;
+    public ProCamera2D PresentProCamera2D;
+    public ProCamera2D PastProCamera2D;
+    public ProCamera2D FutureProCamera2D;
 
     public WorldState currentWorldState;
     public enum WorldState { Present, Past, Future };
@@ -38,8 +39,8 @@ public class WorldChanger : MonoBehaviour
         //  Initial setups
         currentWorldState = WorldState.Present;
 
-        PastCamera.gameObject.SetActive(false);
-        FutureCamera.gameObject.SetActive(false);
+        PastProCamera2D.gameObject.SetActive(false);
+        FutureProCamera2D.gameObject.SetActive(false);
     }
 
 	// Update is called once per frame
@@ -63,27 +64,15 @@ public class WorldChanger : MonoBehaviour
             }
         }
     }
-    
+
+    #region Switch World
     public void SwitchWorld(int worldID)
     {
-        //  Get the current world and camera
-        GameObject UnloadingWorld;
-        Camera currentCamera;
-        if (currentWorldState == WorldState.Present)
-        {
-            UnloadingWorld = PresentObjects;
-            currentCamera = PresentCamera;
-        }
-        else if (currentWorldState == WorldState.Past)
-        {
-            UnloadingWorld = PastObjects;
-            currentCamera = PastCamera;
-        }
-        else 
-        {
-            UnloadingWorld = FutureObjects;
-            currentCamera = FutureCamera;
-        }
+        //  Get the current world camera
+        Camera currentCamera = GetCurrentWorldCamera();
+
+        //  Cache player's X,Y position
+        Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
 
         //  Determine which world ID to switch to and check if world is already active.
         if (worldID == 1 && currentWorldState != WorldState.Present)
@@ -91,9 +80,11 @@ public class WorldChanger : MonoBehaviour
             //  Update world state
             currentWorldState = WorldState.Present;
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentCamera, transitionDuration, new object[] { transitionEdgeSmoothness, true });
+            //PresentProCamera2D.gameObject.SetActive(true);
+            PresentProCamera2D.MoveCameraInstantlyToPosition(playerPos);
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
             transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-            PresentCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, -10);
+            //PresentCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, -10);
             //PresentCamera. 
             //Debug.Log("Switched to Present");
         }
@@ -102,9 +93,11 @@ public class WorldChanger : MonoBehaviour
             //  Update world state
             currentWorldState = WorldState.Past;
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastCamera, transitionDuration, new object[] { transitionEdgeSmoothness, true });
+            //PastProCamera2D.gameObject.SetActive(true);
+            PastProCamera2D.MoveCameraInstantlyToPosition(playerPos);
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
             transform.position = new Vector3(transform.position.x, transform.position.y, 25);
-            PastCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, 10);
+            //PastCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, 10);
             //Debug.Log("Switched to Past");
         }
         else if (worldID == 3 && currentWorldState != WorldState.Future)
@@ -112,10 +105,38 @@ public class WorldChanger : MonoBehaviour
             //  Update world state
             currentWorldState = WorldState.Future;
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureCamera, transitionDuration, new object[] { transitionEdgeSmoothness, true });
+            //FutureProCamera2D.gameObject.SetActive(true);
+            FutureProCamera2D.MoveCameraInstantlyToPosition(playerPos);
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
             transform.position = new Vector3(transform.position.x, transform.position.y, 50);
-            FutureCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, 35);
+            //FutureCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, 35);
             //Debug.Log("Switched to Future");
         }
     }
+    #endregion
+
+    #region Get current world camera
+    private Camera GetCurrentWorldCamera()
+    {
+        //  Get the current world and camera
+        //GameObject UnloadingWorld;
+        Camera currentCamera;
+        if (currentWorldState == WorldState.Present)
+        {
+            //UnloadingWorld = PresentObjects;
+            currentCamera = PresentProCamera2D.GameCamera;
+        }
+        else if (currentWorldState == WorldState.Past)
+        {
+            //UnloadingWorld = PastObjects;
+            currentCamera = PastProCamera2D.GameCamera;
+        }
+        else
+        {
+            //UnloadingWorld = FutureObjects;
+            currentCamera = FutureProCamera2D.GameCamera;
+        }
+        return currentCamera;
+    }
+    #endregion
 }
