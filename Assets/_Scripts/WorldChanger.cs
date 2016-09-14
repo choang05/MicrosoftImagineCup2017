@@ -42,7 +42,7 @@ public class WorldChanger : MonoBehaviour
 	void Update ()
     {
         //  Determine which world player can be teleported too if there is open space
-        CheckWorldCollision();
+        CheckWorldCollisions();
         
         //  If player is allowed to switch & a transition is currently not running...
         if (!cameraTransition.IsRunning)
@@ -80,7 +80,7 @@ public class WorldChanger : MonoBehaviour
         Camera currentCamera = GetCurrentWorldCamera();
 
         //  Cache player's X,Y position
-        Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
+        //Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
 
         //  Determine which world ID to switch to and check if world is already active.
         if (worldID == 1 && currentWorldState != WorldState.Present)
@@ -155,49 +155,59 @@ public class WorldChanger : MonoBehaviour
     #endregion
 
     #region Determine which world player can be teleported too if there is open space
-    private void CheckWorldCollision()
+    private void CheckWorldCollisions()
     {
         Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
         RaycastHit hit;
         Vector3 rayDir;
 
-        //  cast present ray
-        rayDir = new Vector3(playerPos.x, playerPos.y, -5);
-        Physics.Raycast(rayDir, rayDir + Vector3.forward, out hit, 10);
-        if (Application.isEditor) Debug.DrawLine(rayDir, rayDir + Vector3.forward * 10, Color.red, 0.05f);
-
-        if (hit.collider)
+        if (currentWorldState != WorldState.Present)
         {
-            canSwitchPresent = false;
-            Debug.Log("Present disabled");
+            //  cast present ray & evaluate
+            rayDir = new Vector3(playerPos.x, playerPos.y, -5);
+            if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
+            {
+                canSwitchPresent = false;
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.1f);
+            }
+            else
+            {
+                canSwitchPresent = true;
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
+            }
         }
-        else
+
+        if (currentWorldState != WorldState.Past)
         {
-            canSwitchPresent = true;
+            //  cast past ray & evaluate
+            rayDir = new Vector3(playerPos.x, playerPos.y, 20);
+            if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
+            {
+                canSwitchPast = false;
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.1f);
+            }
+            else
+            {
+                canSwitchPast = true;
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
+            }
         }
 
-        //  cast past ray
-        /*rayDir = new Vector3(playerPos.x, playerPos.y, 15);
-        if (Physics.Raycast(rayDir, transform.position + Vector3.up, out hit, 6))
+        if (currentWorldState != WorldState.Future)
         {
-            canSwitchPast = false;
+            //  cast future ray & evaluate
+            rayDir = new Vector3(playerPos.x, playerPos.y, 45);
+            if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
+            {
+                canSwitchFuture = false;
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.1f);
+            }
+            else
+            {
+                canSwitchFuture = true;
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
+            }
         }
-        else
-        {
-            canSwitchPast = true;
-        } */
-
-        //  cast present ray
-        /*rayDir = new Vector3(playerPos.x, playerPos.y, -5);
-        if (Physics.Raycast(rayDir, transform.position + Vector3.up, out hit, 6))
-        {
-            canSwitchPresent = false;
-        }
-        else
-        {
-            canSwitchPresent = true;
-        }*/
-
     }
     #endregion
 }
