@@ -1,167 +1,213 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using Com.LuisPedroFonseca.ProCamera2D;
+using CameraTransitions;
 
 public class WorldChanger : MonoBehaviour
 {
-    public Transform player;
-
     [Space(10)]
-    public Transform PresentMask;
-    public GameObject PresentObjects;
-    public Transform PastMask;
-    public GameObject PastObjects;
-    public Transform FutureMask;
-    public GameObject FutureObjects;
+    public ProCamera2D PresentProCamera2D;
+    public ProCamera2D PastProCamera2D;
+    public ProCamera2D FutureProCamera2D;
 
-    [Space(10)]
-    public Shader MaskOneShader;
-    public Shader ObjectOneShader;
-    public Shader MaskTwoShader;
-    public Shader ObjectTwoShader;
-
-    public WorldState CurrentWorldState;
+    public WorldState currentWorldState;
     public enum WorldState { Present, Past, Future };
 
     [Space(10)]
-    public bool canSwitch = true;
-    public float transitionSpeed = 3;
-	
+    public bool canSwitchPresent = true;
+    public bool canSwitchPast = true;
+    public bool canSwitchFuture = true;
+    public float transitionDuration;
+    [Range(0, 1)] public float transitionEdgeSmoothness;
+
+    private CameraTransition cameraTransition;
+
+    void Awake()
+    {
+        //  Find and assign references
+        cameraTransition = FindObjectOfType<CameraTransition>();
+    }
+
     void Start()
     {
         //  Initial setups
-        CurrentWorldState = WorldState.Present;
+        currentWorldState = WorldState.Present;
 
-        PresentMask.localScale = new Vector3((Camera.main.orthographicSize * 2 / Screen.height * Screen.width) * 3, Camera.main.orthographicSize * 5, 1);
-        PastMask.localScale = new Vector3(0, 0, 1);
-        PastObjects.SetActive(false);
-        FutureObjects.SetActive(false);
+        PastProCamera2D.gameObject.SetActive(false);
+        FutureProCamera2D.gameObject.SetActive(false);
     }
 
 	// Update is called once per frame
 	void Update ()
     {
-        //  Evaluate input from player. 1-3 selects which world to transition to
-        if (Input.GetKeyUp(KeyCode.Alpha1))
+        //  Determine which world player can be teleported too if there is open space
+        CheckWorldCollisions();
+        
+        //  If player is allowed to switch & a transition is currently not running...
+        if (!cameraTransition.IsRunning)
         {
-            SwitchWorld(1);
+            //  Evaluate input from player. 1-3 selects which world to transition to
+            if (Input.GetKeyUp(KeyCode.Alpha1) && canSwitchPresent)
+            {
+                SwitchWorld(1); //  Present
+            }
+            else if (Input.GetKeyUp(KeyCode.Alpha2) && canSwitchPast)
+            {
+                SwitchWorld(2); //  Past
+            }
+            else if (Input.GetKeyUp(KeyCode.Alpha3) && canSwitchFuture) 
+            {
+                SwitchWorld(3); //  Future
+            }
         }
-        else if (Input.GetKeyUp(KeyCode.Alpha2))
+        //  Transition is done
+        else
         {
-            SwitchWorld(2);
-        }
-        else if (Input.GetKeyUp(KeyCode.Alpha3))
-        {
-            SwitchWorld(3);
+            /*PresentProCamera2D.HorizontalFollowSmoothness = .15f;
+            PresentProCamera2D.VerticalFollowSmoothness = .15f;
+            PastProCamera2D.HorizontalFollowSmoothness = .15f;
+            PastProCamera2D.VerticalFollowSmoothness = .15f;
+            FutureProCamera2D.HorizontalFollowSmoothness = .15f;
+            FutureProCamera2D.VerticalFollowSmoothness = .15f;*/
         }
     }
-    
+
+    #region Switch World
     public void SwitchWorld(int worldID)
     {
-        //  Calculate which world and mask we need to unload
-        Transform UnloadingWorldMask;
-        GameObject UnloadingWorld;
-        if (CurrentWorldState == WorldState.Present)
-        {
-            UnloadingWorldMask = PresentMask;
-            UnloadingWorld = PresentObjects;
-        }
-        else if (CurrentWorldState == WorldState.Past)
-        {
-            UnloadingWorldMask = PastMask;
-            UnloadingWorld = PastObjects;
-        }
-        else 
-        {
-            UnloadingWorldMask = FutureMask;
-            UnloadingWorld = FutureObjects;
-        }
+        //  Get the current world camera
+        Camera currentCamera = GetCurrentWorldCamera();
 
-        //  If player is allowed to switch...
-        if (canSwitch)
+        //  Cache player's X,Y position
+        //Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
+
+        //  Determine which world ID to switch to and check if world is already active.
+        if (worldID == 1 && currentWorldState != WorldState.Present)
         {
-            //  Determine which world ID to switch to and check if world is already active.
-            if (worldID == 1 && CurrentWorldState != WorldState.Present)
-            {
-                CurrentWorldState = WorldState.Present;
-                StartCoroutine(MaskTransition(PresentObjects, PresentMask, UnloadingWorld, UnloadingWorldMask));
-                player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, 0);
-                //Debug.Log("Present");
-            }
-            else if (worldID == 2 && CurrentWorldState != WorldState.Past)
-            {
-                StartCoroutine(MaskTransition(PastObjects, PastMask, UnloadingWorld, UnloadingWorldMask));
-                CurrentWorldState = WorldState.Past;
-                player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, 15);
-                //Debug.Log("Past");
-            }
-            else if (worldID == 3 && CurrentWorldState != WorldState.Future)
-            {
-                StartCoroutine(MaskTransition(FutureObjects, FutureMask, UnloadingWorld, UnloadingWorldMask));
-                CurrentWorldState = WorldState.Future;
-                player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, 30);
-                //Debug.Log("Future");
-            }
+            //  Update world state
+            currentWorldState = WorldState.Present;
+            //  Perform transition
+            //PresentProCamera2D.gameObject.SetActive(true);
+            PresentProCamera2D.HorizontalFollowSmoothness = 0;
+            PresentProCamera2D.VerticalFollowSmoothness = 0;
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            //PresentProCamera2D.MoveCameraInstantlyToPosition(playerPos);
+            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+            //PresentCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, -10);
+            //PresentCamera. 
+            //Debug.Log("Switched to Present");
+        }
+        else if (worldID == 2 && currentWorldState != WorldState.Past)
+        {
+            //  Update world state
+            currentWorldState = WorldState.Past;
+            //  Perform transition
+            //PastProCamera2D.gameObject.SetActive(true);
+            PastProCamera2D.HorizontalFollowSmoothness = 0;
+            PastProCamera2D.VerticalFollowSmoothness = 0;
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            //PastProCamera2D.MoveCameraInstantlyToPosition(playerPos);
+            transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+            //PastCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, 10);
+            //Debug.Log("Switched to Past");
+        }
+        else if (worldID == 3 && currentWorldState != WorldState.Future)
+        {
+            //  Update world state
+            currentWorldState = WorldState.Future;
+            //  Perform transition
+            //FutureProCamera2D.gameObject.SetActive(true);
+            FutureProCamera2D.HorizontalFollowSmoothness = 0;
+            FutureProCamera2D.VerticalFollowSmoothness = 0;
+            //FutureProCamera2D.MoveCameraInstantlyToPosition(playerPos);
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            transform.position = new Vector3(transform.position.x, transform.position.y, 50);
+            //FutureCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, 35);
+            //Debug.Log("Switched to Future");
         }
     }
+    #endregion
 
-    //  Ienumerator that creates the transition effect
-    IEnumerator MaskTransition(GameObject LoadingWorld, Transform LoadingWorldMask, GameObject UnloadingWorld, Transform UnloadingWorldMask)
+    #region Get current world camera
+    private Camera GetCurrentWorldCamera()
     {
-        //  Disable ability to switch world until transition completes.
-        canSwitch = false;
-
-        //  Set active scene to load
-        LoadingWorld.SetActive(true);
-        
-        //  Calculate size to scale the mask to entire screen
-        float height = Camera.main.orthographicSize * 2.0f;
-        float width = height / Screen.height * Screen.width;
-        Vector3 destinationScale = new Vector3(width * 3, height * 3, 1);
-
-        //  set mask position to translate at the player position
-        LoadingWorldMask.position = new Vector3(player.position.x, player.position.y, LoadingWorldMask.position.z);
-
-        //  scaling function
-        float progress = 0;
-        while (progress <= 1)
+        //  Get the current world and camera
+        //GameObject UnloadingWorld;
+        Camera currentCamera;
+        if (currentWorldState == WorldState.Present)
         {
-            LoadingWorldMask.localScale = Vector3.Lerp(new Vector3(0, 0, 1), destinationScale, progress);
-            progress += Time.deltaTime * transitionSpeed;
-            yield return null;
-        }        
-
-        //  Reassign shaders
-        AssignNewShaders(LoadingWorld, UnloadingWorld);
-
-        //  set the previous world to inactive
-        UnloadingWorldMask.localScale = new Vector3(0, 0, 1);
-        UnloadingWorld.SetActive(false);
-        
-        //  Enable ability to switch worlds
-        canSwitch = true;
+            //UnloadingWorld = PresentObjects;
+            currentCamera = PresentProCamera2D.GameCamera;
+        }
+        else if (currentWorldState == WorldState.Past)
+        {
+            //UnloadingWorld = PastObjects;
+            currentCamera = PastProCamera2D.GameCamera;
+        }
+        else
+        {
+            //UnloadingWorld = FutureObjects;
+            currentCamera = FutureProCamera2D.GameCamera;
+        }
+        return currentCamera;
     }
+    #endregion
 
-    void AssignNewShaders(GameObject LoadingWorld, GameObject UnloadingWorld)
+    #region Determine which world player can be teleported too if there is open space
+    private void CheckWorldCollisions()
     {
-        //  Change the loaded's shaders to mask & object one
-        Renderer[] loadRenders = LoadingWorld.GetComponentsInChildren<Renderer>();
-        foreach (Renderer rend in loadRenders)
+        Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
+        RaycastHit hit;
+        Vector3 rayDir;
+
+        if (currentWorldState != WorldState.Present)
         {
-            if (rend.CompareTag(Tags.WorldMask))
-                rend.material.shader = MaskOneShader;
+            //  cast present ray & evaluate
+            rayDir = new Vector3(playerPos.x, playerPos.y, -5);
+            if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
+            {
+                canSwitchPresent = false;
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.1f);
+            }
             else
-                rend.material.shader = ObjectOneShader;
+            {
+                canSwitchPresent = true;
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
+            }
         }
 
-        //  Change the unloaded world's shaders to mask & object two
-        Renderer[] unloadRenders = UnloadingWorld.GetComponentsInChildren<Renderer>();
-        foreach (Renderer rend in unloadRenders)
+        if (currentWorldState != WorldState.Past)
         {
-            if (rend.CompareTag(Tags.WorldMask))
-                rend.material.shader = MaskTwoShader;
+            //  cast past ray & evaluate
+            rayDir = new Vector3(playerPos.x, playerPos.y, 20);
+            if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
+            {
+                canSwitchPast = false;
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.1f);
+            }
             else
-                rend.material.shader = ObjectTwoShader;
+            {
+                canSwitchPast = true;
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
+            }
+        }
+
+        if (currentWorldState != WorldState.Future)
+        {
+            //  cast future ray & evaluate
+            rayDir = new Vector3(playerPos.x, playerPos.y, 45);
+            if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
+            {
+                canSwitchFuture = false;
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.1f);
+            }
+            else
+            {
+                canSwitchFuture = true;
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
+            }
         }
     }
+    #endregion
 }
