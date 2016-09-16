@@ -21,7 +21,8 @@ public class WorldChanger : MonoBehaviour
     public float transitionDuration;
     [Range(0, 1)] public float transitionEdgeSmoothness;
 
-    private CameraTransition cameraTransition;
+    public CameraTransition cameraTransition;
+    private CharacterController charController;
 
     void Awake()
     {

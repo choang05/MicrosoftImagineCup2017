@@ -27,8 +27,10 @@ public class CharacterController2D : MonoBehaviour
     private Vector3 velocity = Vector3.zero;
     private Rigidbody interactingBody;
     private float interactingBreakDistance;
+
     private CharacterController charController;
     private GameManager gameManager;
+    private WorldChanger worldChanger;
 
     //  Animation variables
     private Animator animator;
@@ -46,6 +48,7 @@ public class CharacterController2D : MonoBehaviour
         //  Find and assign references
         charController = GetComponent<CharacterController> ();
         gameManager = FindObjectOfType<GameManager>();
+        worldChanger = GetComponent<WorldChanger>();
         animator = GetComponent<Animator>();
 	}
 
@@ -53,7 +56,7 @@ public class CharacterController2D : MonoBehaviour
     void Update ()
     {
         //  Check and update the facing direction of the player
-        if (currentState == PlayerState.None)
+        if (currentState == PlayerState.None && !worldChanger.cameraTransition.IsRunning)
             UpdateFacingDirection();
 
         //  Check Push/Pull, else perform push/pull
@@ -93,7 +96,7 @@ public class CharacterController2D : MonoBehaviour
             Jump();	
 
         //  Move
-        if (canMove)
+        if (canMove && !worldChanger.cameraTransition.IsRunning)
             charController.Move(velocity * Time.deltaTime);
 
         //  Animation
