@@ -56,7 +56,7 @@ public class CharacterController2D : MonoBehaviour
     void Update ()
     {
         //  Check and update the facing direction of the player
-        if (currentState == PlayerState.None && !worldChanger.cameraTransition.IsRunning)
+        if (currentState == PlayerState.None || (worldChanger && !worldChanger.cameraTransition.IsRunning))
             UpdateFacingDirection();
 
         //  Check Push/Pull, else perform push/pull
@@ -96,7 +96,7 @@ public class CharacterController2D : MonoBehaviour
             Jump();	
 
         //  Move
-        if (canMove && !worldChanger.cameraTransition.IsRunning)
+        if (canMove || (worldChanger && !worldChanger.cameraTransition.IsRunning))
             charController.Move(velocity * Time.deltaTime);
 
         //  Animation
