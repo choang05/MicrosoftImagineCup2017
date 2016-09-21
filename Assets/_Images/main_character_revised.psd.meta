@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 236ef98199ba0784c810a5342b743f88
-timeCreated: 1474397148
+timeCreated: 1474481492
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -18,6 +18,7 @@ TextureImporter:
     21300022: main_character_revised_12
     21300024: main_character_revised_13
     21300026: main_character_revised_14
+    21300028: main_character_revised_4
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -70,10 +71,10 @@ TextureImporter:
       name: main_character_revised_0
       rect:
         serializedVersion: 2
-        x: 123
-        y: 957
-        width: 241
-        height: 324
+        x: 80
+        y: 952
+        width: 284
+        height: 329
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -85,8 +86,8 @@ TextureImporter:
         serializedVersion: 2
         x: 507
         y: 1105
-        width: 87
-        height: 128
+        width: 88
+        height: 131
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -99,7 +100,7 @@ TextureImporter:
         x: 781
         y: 1081
         width: 81
-        height: 145
+        height: 146
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -109,10 +110,10 @@ TextureImporter:
       name: main_character_revised_3
       rect:
         serializedVersion: 2
-        x: 1042
-        y: 1018
+        x: 983
+        y: 848
         width: 287
-        height: 198
+        height: 345
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -161,32 +162,6 @@ TextureImporter:
       name: main_character_revised_8
       rect:
         serializedVersion: 2
-        x: 80
-        y: 714
-        width: 223
-        height: 167
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: main_character_revised_9
-      rect:
-        serializedVersion: 2
-        x: 294
-        y: 728
-        width: 10
-        height: 4
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: main_character_revised_10
-      rect:
-        serializedVersion: 2
         x: 420
         y: 584
         width: 80
@@ -197,20 +172,20 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: main_character_revised_11
+      name: main_character_revised_9
       rect:
         serializedVersion: 2
         x: 638
-        y: 405
+        y: 398
         width: 233
-        height: 462
+        height: 469
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: main_character_revised_12
+      name: main_character_revised_10
       rect:
         serializedVersion: 2
         x: 1103
@@ -223,7 +198,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: main_character_revised_13
+      name: main_character_revised_11
       rect:
         serializedVersion: 2
         x: 420
@@ -236,7 +211,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: main_character_revised_14
+      name: main_character_revised_12
       rect:
         serializedVersion: 2
         x: 1127
