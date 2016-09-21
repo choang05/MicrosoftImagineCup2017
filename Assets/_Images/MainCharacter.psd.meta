@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 236ef98199ba0784c810a5342b743f88
-timeCreated: 1474481492
+timeCreated: 1474484347
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -71,25 +71,12 @@ TextureImporter:
       name: main_character_revised_0
       rect:
         serializedVersion: 2
-        x: 80
-        y: 952
-        width: 284
-        height: 329
+        x: 123
+        y: 957
+        width: 241
+        height: 324
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: main_character_revised_1
-      rect:
-        serializedVersion: 2
-        x: 507
-        y: 1105
-        width: 88
-        height: 131
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -97,12 +84,12 @@ TextureImporter:
       name: main_character_revised_2
       rect:
         serializedVersion: 2
-        x: 781
-        y: 1081
-        width: 81
-        height: 146
+        x: 492
+        y: 896
+        width: 134
+        height: 280
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -110,10 +97,23 @@ TextureImporter:
       name: main_character_revised_3
       rect:
         serializedVersion: 2
-        x: 983
-        y: 848
-        width: 287
-        height: 345
+        x: 794
+        y: 899
+        width: 150
+        height: 283
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: main_character_revised_4
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 826
+        width: 323
+        height: 381
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -123,12 +123,12 @@ TextureImporter:
       name: main_character_revised_5
       rect:
         serializedVersion: 2
-        x: 440
-        y: 909
-        width: 104
-        height: 177
+        x: 163
+        y: 964
+        width: 7
+        height: 7
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -136,10 +136,10 @@ TextureImporter:
       name: main_character_revised_6
       rect:
         serializedVersion: 2
-        x: 820
-        y: 899
-        width: 124
-        height: 180
+        x: 640
+        y: 416
+        width: 242
+        height: 462
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -149,12 +149,12 @@ TextureImporter:
       name: main_character_revised_7
       rect:
         serializedVersion: 2
-        x: 163
-        y: 964
-        width: 7
-        height: 7
+        x: 985
+        y: 483
+        width: 75
+        height: 278
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -162,64 +162,12 @@ TextureImporter:
       name: main_character_revised_8
       rect:
         serializedVersion: 2
-        x: 420
-        y: 584
-        width: 80
-        height: 164
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: main_character_revised_9
-      rect:
-        serializedVersion: 2
-        x: 638
-        y: 398
-        width: 233
-        height: 469
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: main_character_revised_10
-      rect:
-        serializedVersion: 2
         x: 1103
-        y: 600
+        y: 487
         width: 74
-        height: 153
+        height: 266
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: main_character_revised_11
-      rect:
-        serializedVersion: 2
-        x: 420
-        y: 409
-        width: 55
-        height: 156
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: main_character_revised_12
-      rect:
-        serializedVersion: 2
-        x: 1127
-        y: 418
-        width: 57
-        height: 151
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
