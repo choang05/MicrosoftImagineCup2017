@@ -8,7 +8,7 @@ public class WeightTrap : MonoBehaviour
     public float collideIdleTime;
     public float returnIdleTime;
 
-    private Vector2 initialPos;
+    private Vector2 initialPos;                 //  initial position that the trap returns to
     private bool isCollided = false;
     private bool isFalling;
 
@@ -40,7 +40,8 @@ public class WeightTrap : MonoBehaviour
             {
                 yield return new WaitForSeconds(collideIdleTime);
 
-                while (Vector2.Distance(transform.position, initialPos) > 0.1f)
+                //  While the trap is not near the initial position... translate towards the initial position
+                while (Vector2.Distance(transform.position, initialPos) > 0.01f)
                 {
                     transform.position = Vector2.MoveTowards(transform.position, initialPos, Time.deltaTime * returnSpeed);
                     yield return null;
