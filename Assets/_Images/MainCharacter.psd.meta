@@ -1,0 +1,178 @@
+fileFormatVersion: 2
+guid: 236ef98199ba0784c810a5342b743f88
+timeCreated: 1474484347
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: main_character_revised_0
+    21300002: main_character_revised_1
+    21300004: main_character_revised_2
+    21300006: main_character_revised_3
+    21300008: main_character_revised_5
+    21300010: main_character_revised_6
+    21300012: main_character_revised_7
+    21300014: main_character_revised_8
+    21300016: main_character_revised_9
+    21300018: main_character_revised_10
+    21300020: main_character_revised_11
+    21300022: main_character_revised_12
+    21300024: main_character_revised_13
+    21300026: main_character_revised_14
+    21300028: main_character_revised_4
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: main_character_revised_0
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 957
+        width: 241
+        height: 324
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: main_character_revised_2
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 896
+        width: 134
+        height: 280
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: main_character_revised_3
+      rect:
+        serializedVersion: 2
+        x: 794
+        y: 899
+        width: 150
+        height: 283
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: main_character_revised_4
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 826
+        width: 323
+        height: 381
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: main_character_revised_5
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 964
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: main_character_revised_6
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 416
+        width: 242
+        height: 462
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: main_character_revised_7
+      rect:
+        serializedVersion: 2
+        x: 985
+        y: 483
+        width: 75
+        height: 278
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: main_character_revised_8
+      rect:
+        serializedVersion: 2
+        x: 1103
+        y: 487
+        width: 74
+        height: 266
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -3,7 +3,6 @@ using System.Collections;
 
 public class MovingPlatform : MonoBehaviour
 {
-
     public Transform[] wayPoints;
     public float transitionSpeed;
     public float idleDuration;
@@ -27,7 +26,7 @@ public class MovingPlatform : MonoBehaviour
         while (true)
         {
             //  scaling function
-            while (Mathf.Abs(transform.position.magnitude - currentWaypoint.position.magnitude) > 0.1f)
+            while (Vector2.Distance(transform.position, currentWaypoint.position) > 0.1f)
             {
                 if (transitionType == TransitionTypes.None)
                     transform.position = Vector3.MoveTowards(transform.position, currentWaypoint.position, Time.deltaTime * transitionSpeed);
