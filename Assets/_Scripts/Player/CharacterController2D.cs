@@ -40,6 +40,8 @@ public class CharacterController2D : MonoBehaviour
     int isGroundedHash = Animator.StringToHash("isGrounded");
     int isClimbingHash = Animator.StringToHash("isClimbing");
     int isClimbingUpHash = Animator.StringToHash("isClimbingUp");
+    int isClimbingDownHash = Animator.StringToHash("isClimbingDown");
+    int isPushPullingHash = Animator.StringToHash("isPushingPulling");
     int isPushingHash = Animator.StringToHash("isPushing");
     int isPullingHash = Animator.StringToHash("isPulling");
     int jumpTriggerHash = Animator.StringToHash("jumpTrigger");
@@ -95,7 +97,11 @@ public class CharacterController2D : MonoBehaviour
 
         //  Jumping
         if (Input.GetButtonDown("Jump") && canJump && charController.isGrounded && currentState == PlayerState.None)
-            Jump();	
+        {
+            //  Animation
+            animator.SetTrigger(jumpTriggerHash);
+            //Jump();	
+        }
 
         //  Move
         if (canMove || (worldChanger && !worldChanger.cameraTransition.IsRunning))
@@ -154,7 +160,7 @@ public class CharacterController2D : MonoBehaviour
         velocity.y = verticalJumpForce;
             
         //  Animation
-        animator.SetTrigger(jumpTriggerHash);
+        //animator.SetTrigger(jumpTriggerHash);
     }
     #endregion
 
@@ -177,7 +183,7 @@ public class CharacterController2D : MonoBehaviour
             //  cast ray
             RaycastHit hit;
             Physics.Raycast(transform.position, dir, out hit, interactiveDistance, interactiveLayer);
-            if (Application.isEditor) Debug.DrawRay(transform.position, dir * interactiveDistance, Color.red, 1f);
+            if (Application.isEditor) Debug.DrawRay(transform.position, dir * interactiveDistance, Color.red, 5f);
 
             //  Evaluate hit
             if (hit.collider)
@@ -185,11 +191,16 @@ public class CharacterController2D : MonoBehaviour
                 //Debug.Log("Holding objecT: " + hit.collider.name);
                 //  Update player state
                 currentState = PlayerState.PushingPulling;
+
                 //  Cache interacting body
                 interactingBody = hit.collider.GetComponent<Rigidbody>();
                 hit.collider.transform.SetParent(transform);
+
                 //  Set the interaction break distance
                 interactingBreakDistance = Vector3.Distance(hit.collider.transform.position, transform.position);
+
+                //  Animation
+                animator.SetBool(isPushPullingHash, true);
             }
         }
     }
@@ -201,7 +212,7 @@ public class CharacterController2D : MonoBehaviour
         //  Check if object is within the interaction break distance
         if (charController.isGrounded && Vector3.Distance(transform.position, interactingBody.transform.position) <= interactingBreakDistance + 0.15f)
         {
-            if (Application.isEditor) Debug.DrawLine(transform.position + Vector3.up, interactingBody.transform.position, Color.yellow, 0.05f);
+            if (Application.isEditor) Debug.DrawLine(transform.position, interactingBody.transform.position, Color.yellow, 0.05f);
 
             //  Get input axis with smoothing
             float xAxis = Input.GetAxisRaw("Horizontal");
@@ -212,33 +223,37 @@ public class CharacterController2D : MonoBehaviour
             //  Pushing - RIGHT
             if (velocity.x > 0 && facingDirection == FacingDirection.Right)
             {
-                //  Animation
+                //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
             }
             //  Pushing - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
             {
-                //  Animation
+                //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
             }
             //  Pulling - RIGHT
             else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
             {
-                //  Animation
+                //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
             }
             //  Pulling - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
             {
-                //  Animation
+                //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
             }
             else
-                animator.speed = 0;     //  Replace later with idle animation
+            {
+                //  Animation - Idling
+                animator.SetBool(isPushingHash, false);
+                animator.SetBool(isPullingHash, false);
+            }
         }
         else
             CancelPushPullInteraction();
@@ -258,6 +273,7 @@ public class CharacterController2D : MonoBehaviour
         //  Animation
         animator.SetBool(isPushingHash, false);
         animator.SetBool(isPullingHash, false);
+        animator.SetBool(isPushPullingHash, false);
         animator.speed = 1;     //  Remove when idle animation exist
     }
     #endregion
@@ -273,14 +289,25 @@ public class CharacterController2D : MonoBehaviour
         velocity.y = yAxisInput * climbSpeed;
         velocity.x = xAxisInput * climbSpeed / 2;
 
-        //  Animation
-        animator.speed = 1;     //  Remove when idle animation exist
+        //  if player inputs up or down...
         if (yAxisInput > 0)
+        {
+            //  Animation - Climb up
             animator.SetBool(isClimbingUpHash, true);
+            animator.SetBool(isClimbingDownHash, false);
+        }
         else if (yAxisInput < 0)
+        {
+            //  Animation - Climb down
             animator.SetBool(isClimbingUpHash, false);
+            animator.SetBool(isClimbingDownHash, true);
+        }
         else
-            animator.speed = 0; //  Replace with idle animation
+        {
+            //  Animation - Climb Idle
+            animator.SetBool(isClimbingUpHash, false);
+            animator.SetBool(isClimbingDownHash, false);
+        }
 
         //  Cancels climbing when touching the ground at the bottom of ladder
         if (yAxisInput < 0 && charController.isGrounded)
@@ -294,8 +321,9 @@ public class CharacterController2D : MonoBehaviour
         currentState = PlayerState.None;
 
         // Animation
-        animator.SetBool(isClimbingHash, false);
         animator.SetBool(isClimbingUpHash, false);
+        animator.SetBool(isClimbingDownHash, false);
+        animator.SetBool(isClimbingHash, false);
         animator.speed = 1; //  Remove when idle animation exist
     }
     #endregion
@@ -340,9 +368,11 @@ public class CharacterController2D : MonoBehaviour
         #region Check Climb
         if (canClimb && currentState == PlayerState.None && other.CompareTag(Tags.Ladder))
         {
+            //  If the player inputs up or down... evaluate
             float yAxisInput = Input.GetAxis("Vertical");
             if (yAxisInput > 0 || yAxisInput < 0)
             {
+                //  Set state
                 currentState = PlayerState.Climbing;
                 
                 // Animation
