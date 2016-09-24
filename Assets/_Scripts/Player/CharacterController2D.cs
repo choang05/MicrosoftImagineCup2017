@@ -96,8 +96,11 @@ public class CharacterController2D : MonoBehaviour
         }
 
         //  Jumping
-        if (Input.GetButtonDown("Jump") && canJump && charController.isGrounded && currentState == PlayerState.None)
+        if (Input.GetButtonDown("Jump") && canJump && ((charController.isGrounded && currentState == PlayerState.None) || currentState == PlayerState.Climbing))
         {
+            if (currentState == PlayerState.Climbing)
+                CancelClimbing();
+
             //  Animation
             animator.SetTrigger(jumpTriggerHash);
             //Jump();	
@@ -324,7 +327,7 @@ public class CharacterController2D : MonoBehaviour
         animator.SetBool(isClimbingUpHash, false);
         animator.SetBool(isClimbingDownHash, false);
         animator.SetBool(isClimbingHash, false);
-        animator.speed = 1; //  Remove when idle animation exist
+        //animator.speed = 1; //  Remove when idle animation exist
     }
     #endregion
 
