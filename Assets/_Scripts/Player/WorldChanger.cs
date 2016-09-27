@@ -35,8 +35,8 @@ public class WorldChanger : MonoBehaviour
         //  Initial setups
         currentWorldState = WorldState.Present;
 
-        PastProCamera2D.gameObject.SetActive(false);
-        FutureProCamera2D.gameObject.SetActive(false);
+        //PastProCamera2D.gameObject.SetActive(false);
+        //FutureProCamera2D.gameObject.SetActive(false);
     }
 
 	// Update is called once per frame
@@ -93,8 +93,8 @@ public class WorldChanger : MonoBehaviour
             //  Update world state
             currentWorldState = WorldState.Present;
 
-            PresentProCamera2D.HorizontalFollowSmoothness = 0;
-            PresentProCamera2D.VerticalFollowSmoothness = 0;
+            //PresentProCamera2D.HorizontalFollowSmoothness = 0;
+            //PresentProCamera2D.VerticalFollowSmoothness = 0;
 
             //  Perform transition
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
@@ -109,8 +109,8 @@ public class WorldChanger : MonoBehaviour
             //  Update world state
             currentWorldState = WorldState.Past;
             //PastProCamera2D.gameObject.SetActive(true);
-            PastProCamera2D.HorizontalFollowSmoothness = 0;
-            PastProCamera2D.VerticalFollowSmoothness = 0;
+            //PastProCamera2D.HorizontalFollowSmoothness = 0;
+            //PastProCamera2D.VerticalFollowSmoothness = 0;
             
             //  Perform transition
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
@@ -126,8 +126,8 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Future;
             
             //FutureProCamera2D.gameObject.SetActive(true);
-            FutureProCamera2D.HorizontalFollowSmoothness = 0;
-            FutureProCamera2D.VerticalFollowSmoothness = 0;
+            //FutureProCamera2D.HorizontalFollowSmoothness = 0;
+            //FutureProCamera2D.VerticalFollowSmoothness = 0;
             //FutureProCamera2D.MoveCameraInstantlyToPosition(playerPos);
             
             //  Perform transition

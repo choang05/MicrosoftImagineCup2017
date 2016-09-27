@@ -414,9 +414,9 @@ namespace CameraTransitions
             transitionTime = time;
             transitionLife = 0.0f;
 
-            from.gameObject.SetActive(false);
-            to.gameObject.SetActive(true);
-            from.gameObject.SetActive(true);
+            //from.gameObject.SetActive(false);
+            //to.gameObject.SetActive(true);
+            //from.gameObject.SetActive(true);
 
             currentEffect.InvertRenderTexture = invertRenderTexture;
 
@@ -960,10 +960,14 @@ namespace CameraTransitions
 
       transitionLife = 0.0f;
 
-      fromCamera.gameObject.SetActive(false);
-      toCamera.gameObject.SetActive(true);
+        //fromCamera.gameObject.SetActive(false);
+        //toCamera.gameObject.SetActive(true);
+        fromCamera.GetComponent<AudioListener>().enabled = false;
+        fromCamera.enabled = false;
+        toCamera.enabled = true;
+        toCamera.GetComponent<AudioListener>().enabled = true;
 
-      FromCamera = null;
+        FromCamera = null;
       ToCamera = null;
       currentEffect.Progress = 0.0f;
       currentEffect = null;
