@@ -34,9 +34,6 @@ public class WorldChanger : MonoBehaviour
     {
         //  Initial setups
         currentWorldState = WorldState.Present;
-
-        //PastProCamera2D.gameObject.SetActive(false);
-        //FutureProCamera2D.gameObject.SetActive(false);
     }
 
 	// Update is called once per frame
@@ -62,80 +59,50 @@ public class WorldChanger : MonoBehaviour
                 SwitchWorld(3); //  Future
             }
         }
-        //  Transition is done
-        else
-        {
-            /*PresentProCamera2D.HorizontalFollowSmoothness = .15f;
-            PresentProCamera2D.VerticalFollowSmoothness = .15f;
-            PastProCamera2D.HorizontalFollowSmoothness = .15f;
-            PastProCamera2D.VerticalFollowSmoothness = .15f;
-            FutureProCamera2D.HorizontalFollowSmoothness = .15f;
-            FutureProCamera2D.VerticalFollowSmoothness = .15f;*/
-        }
     }
 
-    #region Switch World
+    #region SwitchWorld(): Switch world given an ID
     public void SwitchWorld(int worldID)
-    {
+    {    
         //  Get the current world camera
         Camera currentCamera = GetCurrentWorldCamera();
 
         //  Disable audio listener
         currentCamera.GetComponent<AudioListener>().enabled = false;
-
-        //  Cache player's X,Y position
-        //Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
-
-
+          
         //  Determine which world ID to switch to and check if world is already active.
         if (worldID == 1 && currentWorldState != WorldState.Present)
         {
             //  Update world state
             currentWorldState = WorldState.Present;
 
-            //PresentProCamera2D.HorizontalFollowSmoothness = 0;
-            //PresentProCamera2D.VerticalFollowSmoothness = 0;
-
             //  Perform transition
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
 
-            //PresentProCamera2D.MoveCameraInstantlyToPosition(playerPos);
+            //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-            //PresentCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, -10);
-            //Debug.Log("Switched to Present");
         }
         else if (worldID == 2 && currentWorldState != WorldState.Past)
         {
             //  Update world state
             currentWorldState = WorldState.Past;
-            //PastProCamera2D.gameObject.SetActive(true);
-            //PastProCamera2D.HorizontalFollowSmoothness = 0;
-            //PastProCamera2D.VerticalFollowSmoothness = 0;
             
             //  Perform transition
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
 
-            //PastProCamera2D.MoveCameraInstantlyToPosition(playerPos);
+            //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 25);
-            //PastCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, 10);
-            //Debug.Log("Switched to Past");
         }
         else if (worldID == 3 && currentWorldState != WorldState.Future)
         {
             //  Update world state
             currentWorldState = WorldState.Future;
             
-            //FutureProCamera2D.gameObject.SetActive(true);
-            //FutureProCamera2D.HorizontalFollowSmoothness = 0;
-            //FutureProCamera2D.VerticalFollowSmoothness = 0;
-            //FutureProCamera2D.MoveCameraInstantlyToPosition(playerPos);
-            
             //  Perform transition
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
 
+            //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 50);
-            //FutureCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentCamera.transform.position.y, 35);
-            //Debug.Log("Switched to Future");
         }
 
         //  Enable audio listener for new world
@@ -143,7 +110,7 @@ public class WorldChanger : MonoBehaviour
     }
     #endregion
 
-    #region Get current world camera
+    #region GetCurrentWorldCamera(): Get current world camera
     private Camera GetCurrentWorldCamera()
     {
         //  Get the current world and camera
@@ -165,13 +132,14 @@ public class WorldChanger : MonoBehaviour
     }
     #endregion
 
-    #region Determine which world player can be teleported too if there is open space
+    #region CheckWorldCollisions(): Determine which world player can be teleported too if there is open space
     private void CheckWorldCollisions()
     {
         Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
         RaycastHit hit;
         Vector3 rayDir;
 
+        //  If player is in Present, check collisions for Past and Future
         if (currentWorldState != WorldState.Present)
         {
             //  cast present ray & evaluate
@@ -187,7 +155,7 @@ public class WorldChanger : MonoBehaviour
                 if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
             }
         }
-
+        //  If player is in Past, check collisions for Present and Future
         if (currentWorldState != WorldState.Past)
         {
             //  cast past ray & evaluate
@@ -203,7 +171,7 @@ public class WorldChanger : MonoBehaviour
                 if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
             }
         }
-
+        //  If player is in Future, check collisions for Present and Past
         if (currentWorldState != WorldState.Future)
         {
             //  cast future ray & evaluate
