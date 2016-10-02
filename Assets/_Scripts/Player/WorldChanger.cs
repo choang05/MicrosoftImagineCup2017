@@ -15,9 +15,12 @@ public class WorldChanger : MonoBehaviour
     public enum WorldState { Present, Past, Future };
 
     [Space(10)]
-    public bool canSwitchPresent = true;
-    public bool canSwitchPast = true;
-    public bool canSwitchFuture = true;
+    public bool isPresentAvaliable;
+    public bool isPastAvaliable;
+    public bool isFutureAvaliable;
+    [HideInInspector] public bool canSwitchPresent = true;
+    [HideInInspector] public bool canSwitchPast = true;
+    [HideInInspector] public bool canSwitchFuture = true;
     public float transitionDuration;
     [Range(0, 1)] public float transitionEdgeSmoothness;
 
@@ -46,15 +49,15 @@ public class WorldChanger : MonoBehaviour
         if (!cameraTransition.IsRunning)
         {
             //  Evaluate input from player. 1-3 selects which world to transition to
-            if (Input.GetKeyUp(KeyCode.Alpha1) && canSwitchPresent)
+            if (Input.GetKeyUp(KeyCode.Alpha1) && isPresentAvaliable && canSwitchPresent)
             {
                 SwitchWorld(1); //  Present
             }
-            else if (Input.GetKeyUp(KeyCode.Alpha2) && canSwitchPast)
+            else if (Input.GetKeyUp(KeyCode.Alpha2) && isPastAvaliable && canSwitchPast)
             {
                 SwitchWorld(2); //  Past
             }
-            else if (Input.GetKeyUp(KeyCode.Alpha3) && canSwitchFuture) 
+            else if (Input.GetKeyUp(KeyCode.Alpha3) && isFutureAvaliable && canSwitchFuture) 
             {
                 SwitchWorld(3); //  Future
             }

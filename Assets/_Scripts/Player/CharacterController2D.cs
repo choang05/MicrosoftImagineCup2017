@@ -20,8 +20,8 @@ public class CharacterController2D : MonoBehaviour
     public bool canPushPull = true;                                 //  is the player allowed to push/pull
 
     //  Private variables
-    private PlayerState currentState;                               //  The current state of the player
-    private enum PlayerState { None, Climbing, PushingPulling }     //  The state the player can have
+    [HideInInspector] public PlayerState currentState;              //  The current state of the player
+    public enum PlayerState { None, Climbing, PushingPulling }      //  The state the player can have
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     private Vector3 velocity;                                       //  The velocity of x and y of the player
@@ -112,6 +112,7 @@ public class CharacterController2D : MonoBehaviour
 
         //  Animation
         animator.SetBool(isGroundedHash, charController.isGrounded);
+
 
         //Debug.Log(currentState);
         //Debug.Log(charController.isGrounded);
@@ -319,7 +320,9 @@ public class CharacterController2D : MonoBehaviour
     #region CancelClimbing()
     private void CancelClimbing()
     {
+        //  Set player state
         currentState = PlayerState.None;
+
 
         // Animation
         animator.SetBool(isClimbingUpHash, false);
