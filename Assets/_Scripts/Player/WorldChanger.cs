@@ -44,7 +44,21 @@ public class WorldChanger : MonoBehaviour
     {
         //  Determine which world player can be teleported too if there is open space
         CheckWorldCollisions();
-        
+
+        //  Ensure the player stays on the correct Z plane at all times
+        switch (currentWorldState)
+        {
+            case WorldState.Present:
+                transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+                break;
+            case WorldState.Past:
+                transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+                break;
+            case WorldState.Future:
+                transform.position = new Vector3(transform.position.x, transform.position.y, 50);
+                break;
+        }
+
         //  If player is allowed to switch & a transition is currently not running...
         if (!cameraTransition.IsRunning)
         {

@@ -25,7 +25,7 @@ public class CharacterController2D : MonoBehaviour
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     private Vector3 velocity;                                       //  The velocity of x and y of the player
-    private Transform pushpullObject;                               //  The transform of the pushing/pulling object
+    private PushPullObject pushpullObject;                               //  The transform of the pushing/pulling object
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
 
     //  References variables
@@ -121,15 +121,17 @@ public class CharacterController2D : MonoBehaviour
     #region ApplyGravity()
     private void ApplyGravity()
     {
+        //  If the character is not grounded...
         if (!charController.isGrounded)
         {
             //  If the falling velocity has not reached the terminal velocity cap... 
             if (velocity.y >= terminalVelocity)
                 velocity += Physics.gravity * gravity * Time.deltaTime;
-
-            //  Animation
-            animator.SetFloat(yVelocityHash, velocity.y);
         }
+
+        //  Animation
+        animator.SetFloat(yVelocityHash, velocity.y);
+
     }
     #endregion
 
@@ -195,11 +197,14 @@ public class CharacterController2D : MonoBehaviour
                 currentState = PlayerState.PushingPulling;
 
                 //  Cache pushing/pulling body
-                pushpullObject = hit.transform;
-                hit.collider.transform.SetParent(transform);
+                pushpullObject = hit.transform.GetComponent<PushPullObject>();
+                pushpullObject.transform.SetParent(transform);
 
                 //  Set the pushing/pulling break distance
-                pushpullBreakDistance = Vector3.Distance(hit.collider.transform.position, transform.position);
+                pushpullBreakDistance = Vector3.Distance(pushpullObject.transform.position, transform.position);
+
+                //  Process interaction event to the push/pull object
+                pushpullObject.OnPushPullStart(gameObject);
 
                 //  Animation
                 animator.SetBool(isPushPullingHash, true);
@@ -266,6 +271,9 @@ public class CharacterController2D : MonoBehaviour
     {
         //  Update state
         currentState = PlayerState.None;
+
+        //  Process push/pull end event
+        pushpullObject.GetComponent<PushPullObject>().OnPushPullEnd();
 
         //  Return parent of pushing/pulling body
         pushpullObject.transform.SetParent(null);
