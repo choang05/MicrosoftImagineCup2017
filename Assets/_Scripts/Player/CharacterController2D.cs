@@ -31,7 +31,6 @@ public class CharacterController2D : MonoBehaviour
     //  References variables
     private CharacterController charController;
     private GameManager gameManager;
-    private WorldChanger worldChanger;
     private Puppet2D_GlobalControl puppet2DGlobalControl;
 
     //  Animation variables
@@ -52,7 +51,6 @@ public class CharacterController2D : MonoBehaviour
         //  Find and assign references
         charController = GetComponent<CharacterController> ();
         gameManager = FindObjectOfType<GameManager>();
-        worldChanger = GetComponent<WorldChanger>();
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
 	}
@@ -61,7 +59,7 @@ public class CharacterController2D : MonoBehaviour
     void Update ()
     {
         //  Check and update the facing direction of the player
-        if (currentState == PlayerState.None || (worldChanger && !worldChanger.cameraTransition.IsRunning))
+        if (currentState == PlayerState.None)
             UpdateFacingDirection();
 
         //  Check Push/Pull, else perform push/pull
@@ -107,7 +105,7 @@ public class CharacterController2D : MonoBehaviour
         }
 
         //  Move
-        if (canMove || (worldChanger && !worldChanger.cameraTransition.IsRunning))
+        if (canMove)
             charController.Move(velocity * Time.deltaTime);
 
         //  Animation
