@@ -7,9 +7,9 @@ using CameraTransitions;
 public class WorldChanger : MonoBehaviour
 {
     [Space(10)]
-    public ProCamera2D PresentProCamera2D;
-    public ProCamera2D PastProCamera2D;
-    public ProCamera2D FutureProCamera2D;
+    public Camera PresentCamera;
+    public Camera PastCamera;
+    public Camera FutureCamera;
 
     public WorldState currentWorldState;
     public enum WorldState { Present, Past, Future };
@@ -26,7 +26,8 @@ public class WorldChanger : MonoBehaviour
 
     public CameraTransition cameraTransition;
     private CharacterController charController;
-
+    
+    //  Events
     public delegate void WorldChangeEvent(WorldState worldState);
     public static event WorldChangeEvent OnWorldChanged;
 
@@ -109,7 +110,7 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Present;
 
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
 
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 0);
@@ -120,7 +121,7 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Past;
             
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
 
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 25);
@@ -131,7 +132,7 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Future;
             
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
 
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 50);
@@ -148,18 +149,15 @@ public class WorldChanger : MonoBehaviour
         //  Get the current world and camera
         if (currentWorldState == WorldState.Present)
         {
-            //UnloadingWorld = PresentObjects;
-            return PresentProCamera2D.GameCamera;
+            return PresentCamera;
         }
         else if (currentWorldState == WorldState.Past)
         {
-            //UnloadingWorld = PastObjects;
-            return PastProCamera2D.GameCamera;
+            return PastCamera;
         }
         else
         {
-            //UnloadingWorld = FutureObjects;
-            return FutureProCamera2D.GameCamera;
+            return FutureCamera;
         }
     }
     #endregion
@@ -171,7 +169,7 @@ public class WorldChanger : MonoBehaviour
         RaycastHit hit;
         Vector3 rayDir;
 
-        //  If player is in Present, check collisions for Past and Future
+        //  If player is not in the Present, check collisions for the Present
         if (currentWorldState != WorldState.Present)
         {
             //  cast present ray & evaluate
@@ -179,15 +177,15 @@ public class WorldChanger : MonoBehaviour
             if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
             {
                 canSwitchPresent = false;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.1f);
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.01f);
             }
             else
             {
                 canSwitchPresent = true;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.01f);
             }
         }
-        //  If player is in Past, check collisions for Present and Future
+        //  If player is not in the past, check collisions for the past
         if (currentWorldState != WorldState.Past)
         {
             //  cast past ray & evaluate
@@ -195,15 +193,15 @@ public class WorldChanger : MonoBehaviour
             if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
             {
                 canSwitchPast = false;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.1f);
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.01f);
             }
             else
             {
                 canSwitchPast = true;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.01f);
             }
         }
-        //  If player is in Future, check collisions for Present and Past
+        //  If player is not in the Future, check collisions for the Future
         if (currentWorldState != WorldState.Future)
         {
             //  cast future ray & evaluate
@@ -211,12 +209,12 @@ public class WorldChanger : MonoBehaviour
             if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
             {
                 canSwitchFuture = false;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.1f);
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.01f);
             }
             else
             {
                 canSwitchFuture = true;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.01f);
             }
         }
     }
