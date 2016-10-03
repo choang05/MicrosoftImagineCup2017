@@ -27,6 +27,9 @@ public class WorldChanger : MonoBehaviour
     public CameraTransition cameraTransition;
     private CharacterController charController;
 
+    public delegate void WorldChangeEvent(WorldState worldState);
+    public static event WorldChangeEvent OnWorldChanged;
+
     void Awake()
     {
         //  Find and assign references
@@ -63,16 +66,28 @@ public class WorldChanger : MonoBehaviour
         if (!cameraTransition.IsRunning)
         {
             //  Evaluate input from player. 1-3 selects which world to transition to
-            if (Input.GetKeyUp(KeyCode.Alpha1) && isPresentAvaliable && canSwitchPresent)
+            if (Input.GetKeyUp(KeyCode.Alpha1) && currentWorldState != WorldState.Present && isPresentAvaliable && canSwitchPresent)
             {
+                //  Broadcast event delegate
+                if (OnWorldChanged != null)
+                    OnWorldChanged(WorldState.Present);
+
                 SwitchWorld(1); //  Present
             }
-            else if (Input.GetKeyUp(KeyCode.Alpha2) && isPastAvaliable && canSwitchPast)
+            else if (Input.GetKeyUp(KeyCode.Alpha2) && currentWorldState != WorldState.Past && isPastAvaliable && canSwitchPast)
             {
+                //  Broadcast event delegate
+                if (OnWorldChanged != null)
+                    OnWorldChanged(WorldState.Past);
+
                 SwitchWorld(2); //  Past
             }
-            else if (Input.GetKeyUp(KeyCode.Alpha3) && isFutureAvaliable && canSwitchFuture) 
+            else if (Input.GetKeyUp(KeyCode.Alpha3) && currentWorldState != WorldState.Future && isFutureAvaliable && canSwitchFuture) 
             {
+                //  Broadcast event delegate
+                if (OnWorldChanged != null)
+                    OnWorldChanged(WorldState.Future);
+
                 SwitchWorld(3); //  Future
             }
         }
@@ -88,7 +103,7 @@ public class WorldChanger : MonoBehaviour
         currentCamera.GetComponent<AudioListener>().enabled = false;
           
         //  Determine which world ID to switch to and check if world is already active.
-        if (worldID == 1 && currentWorldState != WorldState.Present)
+        if (worldID == 1)
         {
             //  Update world state
             currentWorldState = WorldState.Present;
@@ -99,7 +114,7 @@ public class WorldChanger : MonoBehaviour
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 0);
         }
-        else if (worldID == 2 && currentWorldState != WorldState.Past)
+        else if (worldID == 2)
         {
             //  Update world state
             currentWorldState = WorldState.Past;
@@ -110,7 +125,7 @@ public class WorldChanger : MonoBehaviour
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 25);
         }
-        else if (worldID == 3 && currentWorldState != WorldState.Future)
+        else if (worldID == 3)
         {
             //  Update world state
             currentWorldState = WorldState.Future;

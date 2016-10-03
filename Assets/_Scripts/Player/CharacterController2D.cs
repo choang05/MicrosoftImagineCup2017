@@ -267,7 +267,7 @@ public class CharacterController2D : MonoBehaviour
     #endregion
 
     #region CancelPushingPulling(): Cancels the push/pull interaction
-    private void CancelPushingPulling()
+    public void CancelPushingPulling()
     {
         //  Update state
         currentState = PlayerState.None;
