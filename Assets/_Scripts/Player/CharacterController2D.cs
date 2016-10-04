@@ -31,6 +31,7 @@ public class CharacterController2D : MonoBehaviour
     private CharacterController charController;
     private GameManager gameManager;
     private WorldChanger worldChanger;
+    private Puppet2D_GlobalControl puppet2DGlobalControl;
 
     //  Animation variables
     private Animator animator;
@@ -50,6 +51,7 @@ public class CharacterController2D : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         worldChanger = GetComponent<WorldChanger>();
         animator = GetComponent<Animator>();
+        puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
 	}
 
     #region Update(): check and evaluate input/states every frame
@@ -103,6 +105,7 @@ public class CharacterController2D : MonoBehaviour
         animator.SetBool(isGroundedHash, charController.isGrounded);
 
         //Debug.Log(currentState);
+        //Debug.Log(charController.isGrounded);
         //Debug.Log(velocity);
     }
     #endregion
@@ -125,23 +128,21 @@ public class CharacterController2D : MonoBehaviour
     #region Direction facing
     private void UpdateFacingDirection()
     {
-		Vector3 flippedScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+		//Vector3 flippedScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
         	
         //  if player's velocity is positive... flip character scale to positive
         if (velocity.x > 0)
         {
             facingDirection = FacingDirection.Right;
-            transform.rotation = Quaternion.Euler(0, 90, 0);        //  for 3d models, remove later
-            if (transform.localScale.x < 0)
-		        transform.localScale = flippedScale;	
+            //  Flip the global control rig
+            puppet2DGlobalControl.flip = false;
         }
         //  if player's velocity is negative... flip character scale to negative
         else if (velocity.x < 0)
         {
             facingDirection = FacingDirection.Left;
-            transform.rotation = Quaternion.Euler(0, -90, 0);       // for 3d models, remove later
-            if (transform.localScale.x > 0)
-		        transform.localScale = flippedScale;	
+            //  Flip the global control rig
+            puppet2DGlobalControl.flip = true;
         }
     }
     #endregion
@@ -175,11 +176,13 @@ public class CharacterController2D : MonoBehaviour
 
             //  cast ray
             RaycastHit hit;
-            Physics.Raycast(transform.position + Vector3.up, dir, out hit, interactiveDistance, interactiveLayer);
+            Physics.Raycast(transform.position, dir, out hit, interactiveDistance, interactiveLayer);
+            if (Application.isEditor) Debug.DrawRay(transform.position, dir * interactiveDistance, Color.red, 1f);
 
             //  Evaluate hit
             if (hit.collider)
             {
+                //Debug.Log("Holding objecT: " + hit.collider.name);
                 //  Update player state
                 currentState = PlayerState.PushingPulling;
                 //  Cache interacting body
@@ -294,7 +297,6 @@ public class CharacterController2D : MonoBehaviour
         animator.SetBool(isClimbingHash, false);
         animator.SetBool(isClimbingUpHash, false);
         animator.speed = 1; //  Remove when idle animation exist
-        transform.rotation = Quaternion.Euler(0, 90, 0);       // for 3d models
     }
     #endregion
 
