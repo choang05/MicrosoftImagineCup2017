@@ -25,7 +25,7 @@ public class CharacterController2D : MonoBehaviour
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     private Vector3 velocity;                                       //  The velocity of x and y of the player
-    private PushPullObject pushpullObject;                               //  The transform of the pushing/pulling object
+    [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
 
     //  References variables
@@ -204,7 +204,7 @@ public class CharacterController2D : MonoBehaviour
                 pushpullBreakDistance = Vector3.Distance(pushpullObject.transform.position, transform.position);
 
                 //  Process interaction event to the push/pull object
-                pushpullObject.OnPushPullStart(gameObject);
+                pushpullObject.OnPushPullStart();
 
                 //  Animation
                 animator.SetBool(isPushPullingHash, true);

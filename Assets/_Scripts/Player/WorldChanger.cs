@@ -26,10 +26,11 @@ public class WorldChanger : MonoBehaviour
 
     public CameraTransition cameraTransition;
     private CharacterController charController;
+    [HideInInspector] public bool isWorldTransitioning;
     
     //  Events
     public delegate void WorldChangeEvent(WorldState worldState);
-    public static event WorldChangeEvent OnWorldChanged;
+    public static event WorldChangeEvent OnWorldChangedState;
 
     void Awake()
     {
@@ -46,6 +47,12 @@ public class WorldChanger : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+        //  Determine if the world is currently transferring
+        if (cameraTransition.IsRunning)
+            isWorldTransitioning = true;
+        else
+            isWorldTransitioning = false;
+
         //  Determine which world player can be teleported too if there is open space
         CheckWorldCollisions();
 
@@ -64,30 +71,30 @@ public class WorldChanger : MonoBehaviour
         }
 
         //  If player is allowed to switch & a transition is currently not running...
-        if (!cameraTransition.IsRunning)
+        if (!isWorldTransitioning)
         {
             //  Evaluate input from player. 1-3 selects which world to transition to
             if (Input.GetKeyUp(KeyCode.Alpha1) && currentWorldState != WorldState.Present && isPresentAvaliable && canSwitchPresent)
             {
                 //  Broadcast event delegate
-                if (OnWorldChanged != null)
-                    OnWorldChanged(WorldState.Present);
+                if (OnWorldChangedState != null)
+                    OnWorldChangedState(WorldState.Present);
 
                 SwitchWorld(1); //  Present
             }
             else if (Input.GetKeyUp(KeyCode.Alpha2) && currentWorldState != WorldState.Past && isPastAvaliable && canSwitchPast)
             {
                 //  Broadcast event delegate
-                if (OnWorldChanged != null)
-                    OnWorldChanged(WorldState.Past);
+                if (OnWorldChangedState != null)
+                    OnWorldChangedState(WorldState.Past);
 
                 SwitchWorld(2); //  Past
             }
             else if (Input.GetKeyUp(KeyCode.Alpha3) && currentWorldState != WorldState.Future && isFutureAvaliable && canSwitchFuture) 
             {
                 //  Broadcast event delegate
-                if (OnWorldChanged != null)
-                    OnWorldChanged(WorldState.Future);
+                if (OnWorldChangedState != null)
+                    OnWorldChangedState(WorldState.Future);
 
                 SwitchWorld(3); //  Future
             }
