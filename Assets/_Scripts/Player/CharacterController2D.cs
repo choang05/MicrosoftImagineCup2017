@@ -18,14 +18,14 @@ public class CharacterController2D : MonoBehaviour
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
     public bool canPushPull = true;                                 //  is the player allowed to push/pull
-
-    //  Private variables
     [HideInInspector] public PlayerState currentState;              //  The current state of the player
     public enum PlayerState { None, Climbing, PushingPulling }      //  The state the player can have
+    [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
+    [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
+
+    //  Private variables
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
-    private Vector3 velocity;                                       //  The velocity of x and y of the player
-    [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
 
     //  References variables
