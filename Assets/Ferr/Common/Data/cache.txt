@@ -7,5 +7,6 @@ Assets/Ferr/2DTerrain/TerrainMaterials/PipeMaterial.prefab
 Assets/Ferr/2DTerrain/TerrainMaterials/CaveTerrainMaterial.prefab
 Assets/Ferr/2DTerrain/TerrainMaterials/ForegroundTerrainMaterial.prefab
 Assets/Ferr/2DTerrain/TerrainMaterials/SandTerrainMaterial.prefab
+Assets/_Prefabs/Ferr2D/Spike.prefab
 
 [Ferr2DT_PathTerrain]
