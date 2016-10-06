@@ -434,8 +434,9 @@ public class CharacterController2D : MonoBehaviour
     //play audio source for footsteps when player is walking
     void grassFootstepAudio()
     { 
-       randomizePitch(grassStepSource);
-       grassStepSource.Play();
+        randomizePitch(grassStepSource);
+        randomizeVolume(grassStepSource);
+        grassStepSource.Play();
             
     }
 
@@ -443,6 +444,11 @@ public class CharacterController2D : MonoBehaviour
     void randomizePitch(AudioSource audio)
     {
         audio.pitch = Random.Range(0.95f, 1.05f);
+    }
+
+    void randomizeVolume(AudioSource audio)
+    {
+        audio.volume = Random.Range(0.95f, 1.05f);
     }
 }
 
