@@ -27,10 +27,16 @@ namespace CameraTransitions
   [AddComponentMenu("Camera Transitions/Camera Transition")]
   public sealed class CameraTransition : MonoBehaviour
   {
-    /// <summary>
-    /// The current transition type.
-    /// </summary>
-    public CameraTransitionEffects Transition
+        //  CHAD's STUFF
+        //  Events
+        public delegate void TransitionEvent();
+        public static event TransitionEvent OnTransitionStart;
+        public static event TransitionEvent OnTransitionComplete;
+
+        /// <summary>
+        /// The current transition type.
+        /// </summary>
+        public CameraTransitionEffects Transition
     {
       get { return transition; }
       set
@@ -406,6 +412,10 @@ namespace CameraTransitions
           if (time > 0.0f)
           {
             isRunning = true;
+
+            //  CHAD's CODE
+            if (OnTransitionStart != null)
+                OnTransitionStart();
 
             Progress = 0.0f;
             Transition = transition;
@@ -973,6 +983,8 @@ namespace CameraTransitions
       currentEffect = null;
 
       isRunning = false;
+        if (OnTransitionComplete != null)
+            OnTransitionComplete();
     }
 
     private bool IsRenderTextureSizeObsolete()

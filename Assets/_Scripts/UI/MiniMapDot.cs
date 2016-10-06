@@ -15,12 +15,6 @@ public class MiniMapDot : MonoBehaviour
         worldChanger = FindObjectOfType<WorldChanger>();
         colorAssigner = GetComponent<ColorAssigner>();
     }
-
-	// Use this for initialization
-	void Start ()
-    {
-	
-	}
 	
 	// Update is called once per frame
 	void Update ()

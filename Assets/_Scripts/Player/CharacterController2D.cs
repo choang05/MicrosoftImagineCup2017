@@ -17,16 +17,17 @@ public class CharacterController2D : MonoBehaviour
     public bool canMove = true;	                                    //  is the player allowed to move?
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
-    public bool canPushPull = true;                                 //  is the player allowed to push/pull
-                                  
+    public bool canPushPull = true;                                 //  is the player allowed to push/pull                            
 
     //  Private variables
     [HideInInspector] public PlayerState currentState;              //  The current state of the player
     public enum PlayerState { None, Climbing, PushingPulling }      //  The state the player can have
+    [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
+    [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
+
+    //  Private variables
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
-    private Vector3 velocity;                                       //  The velocity of x and y of the player
-    private Transform pushpullObject;                               //  The transform of the pushing/pulling object
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
     private AudioSource grassStepSource;                            // The audio source for footsteps
     private AudioSource playerGroundImpactSource;                   // audio source for impact with ground for player
@@ -131,15 +132,17 @@ public class CharacterController2D : MonoBehaviour
     #region ApplyGravity()
     private void ApplyGravity()
     {
+        //  If the character is not grounded...
         if (!charController.isGrounded)
         {
             //  If the falling velocity has not reached the terminal velocity cap... 
             if (velocity.y >= terminalVelocity)
                 velocity += Physics.gravity * gravity * Time.deltaTime;
-
-            //  Animation
-            animator.SetFloat(yVelocityHash, velocity.y);
         }
+
+        //  Animation
+        animator.SetFloat(yVelocityHash, velocity.y);
+
     }
     #endregion
 
@@ -205,11 +208,14 @@ public class CharacterController2D : MonoBehaviour
                 currentState = PlayerState.PushingPulling;
 
                 //  Cache pushing/pulling body
-                pushpullObject = hit.transform;
-                hit.collider.transform.SetParent(transform);
+                pushpullObject = hit.transform.GetComponent<PushPullObject>();
+                pushpullObject.transform.SetParent(transform);
 
                 //  Set the pushing/pulling break distance
-                pushpullBreakDistance = Vector3.Distance(hit.collider.transform.position, transform.position);
+                pushpullBreakDistance = Vector3.Distance(pushpullObject.transform.position, transform.position);
+
+                //  Process interaction event to the push/pull object
+                pushpullObject.OnPushPullStart();
 
                 //  Animation
                 animator.SetBool(isPushPullingHash, true);
@@ -272,10 +278,13 @@ public class CharacterController2D : MonoBehaviour
     #endregion
 
     #region CancelPushingPulling(): Cancels the push/pull interaction
-    private void CancelPushingPulling()
+    public void CancelPushingPulling()
     {
         //  Update state
         currentState = PlayerState.None;
+
+        //  Process push/pull end event
+        pushpullObject.GetComponent<PushPullObject>().OnPushPullEnd();
 
         //  Return parent of pushing/pulling body
         pushpullObject.transform.SetParent(null);

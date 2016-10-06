@@ -7,9 +7,9 @@ using CameraTransitions;
 public class WorldChanger : MonoBehaviour
 {
     [Space(10)]
-    public ProCamera2D PresentProCamera2D;
-    public ProCamera2D PastProCamera2D;
-    public ProCamera2D FutureProCamera2D;
+    public Camera PresentCamera;
+    public Camera PastCamera;
+    public Camera FutureCamera;
 
     public WorldState currentWorldState;
     public enum WorldState { Present, Past, Future };
@@ -26,6 +26,11 @@ public class WorldChanger : MonoBehaviour
 
     public CameraTransition cameraTransition;
     private CharacterController charController;
+    [HideInInspector] public bool isWorldTransitioning;
+    
+    //  Events
+    public delegate void WorldChangeEvent(WorldState worldState);
+    public static event WorldChangeEvent OnWorldChangedState;
 
     void Awake()
     {
@@ -42,23 +47,55 @@ public class WorldChanger : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+        //  Determine if the world is currently transferring
+        if (cameraTransition.IsRunning)
+            isWorldTransitioning = true;
+        else
+            isWorldTransitioning = false;
+
         //  Determine which world player can be teleported too if there is open space
         CheckWorldCollisions();
-        
+
+        //  Ensure the player stays on the correct Z plane at all times
+        switch (currentWorldState)
+        {
+            case WorldState.Present:
+                transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+                break;
+            case WorldState.Past:
+                transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+                break;
+            case WorldState.Future:
+                transform.position = new Vector3(transform.position.x, transform.position.y, 50);
+                break;
+        }
+
         //  If player is allowed to switch & a transition is currently not running...
-        if (!cameraTransition.IsRunning)
+        if (!isWorldTransitioning)
         {
             //  Evaluate input from player. 1-3 selects which world to transition to
-            if (Input.GetKeyUp(KeyCode.Alpha1) && isPresentAvaliable && canSwitchPresent)
+            if (Input.GetKeyUp(KeyCode.Alpha1) && currentWorldState != WorldState.Present && isPresentAvaliable && canSwitchPresent)
             {
+                //  Broadcast event delegate
+                if (OnWorldChangedState != null)
+                    OnWorldChangedState(WorldState.Present);
+
                 SwitchWorld(1); //  Present
             }
-            else if (Input.GetKeyUp(KeyCode.Alpha2) && isPastAvaliable && canSwitchPast)
+            else if (Input.GetKeyUp(KeyCode.Alpha2) && currentWorldState != WorldState.Past && isPastAvaliable && canSwitchPast)
             {
+                //  Broadcast event delegate
+                if (OnWorldChangedState != null)
+                    OnWorldChangedState(WorldState.Past);
+
                 SwitchWorld(2); //  Past
             }
-            else if (Input.GetKeyUp(KeyCode.Alpha3) && isFutureAvaliable && canSwitchFuture) 
+            else if (Input.GetKeyUp(KeyCode.Alpha3) && currentWorldState != WorldState.Future && isFutureAvaliable && canSwitchFuture) 
             {
+                //  Broadcast event delegate
+                if (OnWorldChangedState != null)
+                    OnWorldChangedState(WorldState.Future);
+
                 SwitchWorld(3); //  Future
             }
         }
@@ -74,35 +111,35 @@ public class WorldChanger : MonoBehaviour
         currentCamera.GetComponent<AudioListener>().enabled = false;
           
         //  Determine which world ID to switch to and check if world is already active.
-        if (worldID == 1 && currentWorldState != WorldState.Present)
+        if (worldID == 1)
         {
             //  Update world state
             currentWorldState = WorldState.Present;
 
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
 
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 0);
         }
-        else if (worldID == 2 && currentWorldState != WorldState.Past)
+        else if (worldID == 2)
         {
             //  Update world state
             currentWorldState = WorldState.Past;
             
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
 
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 25);
         }
-        else if (worldID == 3 && currentWorldState != WorldState.Future)
+        else if (worldID == 3)
         {
             //  Update world state
             currentWorldState = WorldState.Future;
             
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureProCamera2D.GameCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
 
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 50);
@@ -119,18 +156,15 @@ public class WorldChanger : MonoBehaviour
         //  Get the current world and camera
         if (currentWorldState == WorldState.Present)
         {
-            //UnloadingWorld = PresentObjects;
-            return PresentProCamera2D.GameCamera;
+            return PresentCamera;
         }
         else if (currentWorldState == WorldState.Past)
         {
-            //UnloadingWorld = PastObjects;
-            return PastProCamera2D.GameCamera;
+            return PastCamera;
         }
         else
         {
-            //UnloadingWorld = FutureObjects;
-            return FutureProCamera2D.GameCamera;
+            return FutureCamera;
         }
     }
     #endregion
@@ -142,7 +176,7 @@ public class WorldChanger : MonoBehaviour
         RaycastHit hit;
         Vector3 rayDir;
 
-        //  If player is in Present, check collisions for Past and Future
+        //  If player is not in the Present, check collisions for the Present
         if (currentWorldState != WorldState.Present)
         {
             //  cast present ray & evaluate
@@ -150,15 +184,15 @@ public class WorldChanger : MonoBehaviour
             if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
             {
                 canSwitchPresent = false;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.1f);
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.01f);
             }
             else
             {
                 canSwitchPresent = true;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.01f);
             }
         }
-        //  If player is in Past, check collisions for Present and Future
+        //  If player is not in the past, check collisions for the past
         if (currentWorldState != WorldState.Past)
         {
             //  cast past ray & evaluate
@@ -166,15 +200,15 @@ public class WorldChanger : MonoBehaviour
             if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
             {
                 canSwitchPast = false;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.1f);
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.01f);
             }
             else
             {
                 canSwitchPast = true;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.01f);
             }
         }
-        //  If player is in Future, check collisions for Present and Past
+        //  If player is not in the Future, check collisions for the Future
         if (currentWorldState != WorldState.Future)
         {
             //  cast future ray & evaluate
@@ -182,12 +216,12 @@ public class WorldChanger : MonoBehaviour
             if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
             {
                 canSwitchFuture = false;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.1f);
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.01f);
             }
             else
             {
                 canSwitchFuture = true;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.1f);
+                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.01f);
             }
         }
     }
