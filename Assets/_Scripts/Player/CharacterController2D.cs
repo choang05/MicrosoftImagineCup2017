@@ -380,6 +380,22 @@ public class CharacterController2D : MonoBehaviour
         {
             Die();   
         }
+
+        //  Perform Ledge climbs if within ledge colliders
+        if (other.CompareTag(Tags.Ledge))
+        {
+            if (true)
+            {
+                //  If the player inputs up and forward... evaluate
+                float yAxisInput = Input.GetAxisRaw("Vertical");
+                float xAxisInput = Input.GetAxisRaw("Horizontal");
+
+                if (true)
+                {
+
+                }
+            }
+        }
     }
 
     //  Called when a collider stay within another collider with isTrigger enabled
