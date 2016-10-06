@@ -21,7 +21,13 @@ public class CharacterController2D : MonoBehaviour
 
     //  Private variables
     [HideInInspector] public PlayerState currentState;              //  The current state of the player
-    public enum PlayerState { None, Climbing, PushingPulling }      //  The state the player can have
+    public enum PlayerState                                         //  The states the player can have
+    {
+        None,
+        Climbing,
+        ClimbingLedge,
+        PushingPulling
+    }      
     [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
     [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
 
@@ -45,6 +51,8 @@ public class CharacterController2D : MonoBehaviour
     int isClimbingHash = Animator.StringToHash("isClimbing");
     int isClimbingUpHash = Animator.StringToHash("isClimbingUp");
     int isClimbingDownHash = Animator.StringToHash("isClimbingDown");
+    int ledgeClimbUpRightTriggerHash = Animator.StringToHash("ledgeClimbUpRightTrigger");
+    int ledgeClimbUpLeftTriggerHash = Animator.StringToHash("ledgeClimbUpLeftTrigger");
     int isPushPullingHash = Animator.StringToHash("isPushingPulling");
     int isPushingHash = Animator.StringToHash("isPushing");
     int isPullingHash = Animator.StringToHash("isPulling");
@@ -372,6 +380,38 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
+    #region LedgeClimbUp(): Called when player climbs up a ledge
+    void ClimbUpLedge()
+    {
+        currentState = PlayerState.ClimbingLedge;
+
+        velocity = Vector2.zero;
+
+        //  Determine the direction of the ledge climb clip
+        if (facingDirection == FacingDirection.Right)
+            animator.SetTrigger(ledgeClimbUpRightTriggerHash);
+        else
+            animator.SetTrigger(ledgeClimbUpLeftTriggerHash);
+
+        Debug.Log("Climb Ledge");
+    }
+    #endregion
+
+    #region OnLedgeClimbUpComplete(): Called when player completes ledge climbing animation. Animation Event
+    public void OnLedgeClimbUpComplete()
+    {
+        currentState = PlayerState.None;
+
+        //  Determine the direction of the ledge climb clip
+        if (facingDirection == FacingDirection.Right)
+            transform.position = new Vector2(transform.position.x + 1, transform.position.y + 1.5f);
+        else
+            transform.position = new Vector2(transform.position.x - 1, transform.position.y + 1.5f);
+
+        Debug.Log("Ledge climb up complete");
+    }
+    #endregion
+
     //  Called when a collider enters another collider with isTrigger enabled
     void OnTriggerEnter(Collider other)
     {
@@ -390,9 +430,9 @@ public class CharacterController2D : MonoBehaviour
                 float yAxisInput = Input.GetAxisRaw("Vertical");
                 float xAxisInput = Input.GetAxisRaw("Horizontal");
 
-                if (true)
+                if (yAxisInput > 0 && (xAxisInput > 0 || xAxisInput < 0))
                 {
-
+                    ClimbUpLedge();
                 }
             }
         }
