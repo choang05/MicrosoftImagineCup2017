@@ -444,6 +444,14 @@ public class CharacterController2D : MonoBehaviour
                 //  Set position to match ladder
                 transform.position = new Vector3(other.transform.position.x, transform.position.y, transform.position.z);
 
+                //  correct facing direction
+                if (facingDirection == FacingDirection.Right)
+                {
+                    facingDirection = FacingDirection.Left;
+                    //  Flip the global control rig
+                    puppet2DGlobalControl.flip = true;
+                }
+
                 //  Reset horizontal speed so player does not slide horizontally during ladder use
                 velocity.x = 0;
                 
