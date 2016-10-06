@@ -18,6 +18,7 @@ public class CharacterController2D : MonoBehaviour
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
     public bool canPushPull = true;                                 //  is the player allowed to push/pull
+                                  
 
     //  Private variables
     [HideInInspector] public PlayerState currentState;              //  The current state of the player
@@ -27,6 +28,8 @@ public class CharacterController2D : MonoBehaviour
     private Vector3 velocity;                                       //  The velocity of x and y of the player
     private Transform pushpullObject;                               //  The transform of the pushing/pulling object
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
+    private AudioSource grassStepSource;                            // The audio source for footsteps
+    private AudioSource playerGroundImpactSource;                   // audio source for impact with ground for player
 
     //  References variables
     private CharacterController charController;
@@ -53,11 +56,15 @@ public class CharacterController2D : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
+        grassStepSource = GetComponentInChildren<AudioSource>();
 	}
 
     #region Update(): check and evaluate input and states every frame
     void Update ()
     {
+
+       
+
         //  Check and update the facing direction of the player
         if (currentState == PlayerState.None)
             UpdateFacingDirection();
@@ -85,9 +92,12 @@ public class CharacterController2D : MonoBehaviour
             //  if player is on the ground... add run speed multiplier
             if (charController.isGrounded)
                 velocity.x = xAxis * runSpeed;
+                
+                
             //  else... add horizontal jump multiplier when player is in air
             else
                 velocity.x = xAxis * horizontalJumpForce;
+            
 
             //  Animation
             animator.SetFloat(xVelocityHash, Mathf.Abs(xAxis));
@@ -394,6 +404,20 @@ public class CharacterController2D : MonoBehaviour
     {
         if (currentState == PlayerState.Climbing && other.CompareTag(Tags.Ladder))
             CancelClimbing();
+    }
+
+    //play audio source for footsteps when player is walking
+    void grassFootstepAudio()
+    { 
+       randomizePitch(grassStepSource);
+       grassStepSource.Play();
+            
+    }
+
+    // Called to randomize the pitch of certain audio sources so they don't get dull to hear
+    void randomizePitch(AudioSource audio)
+    {
+        audio.pitch = Random.Range(0.95f, 1.05f);
     }
 }
 
