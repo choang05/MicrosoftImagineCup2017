@@ -27,10 +27,16 @@ namespace CameraTransitions
   [AddComponentMenu("Camera Transitions/Camera Transition")]
   public sealed class CameraTransition : MonoBehaviour
   {
-    /// <summary>
-    /// The current transition type.
-    /// </summary>
-    public CameraTransitionEffects Transition
+        //  CHAD's STUFF
+        //  Events
+        public delegate void TransitionEvent();
+        public static event TransitionEvent OnTransitionStart;
+        public static event TransitionEvent OnTransitionComplete;
+
+        /// <summary>
+        /// The current transition type.
+        /// </summary>
+        public CameraTransitionEffects Transition
     {
       get { return transition; }
       set
@@ -407,6 +413,10 @@ namespace CameraTransitions
           {
             isRunning = true;
 
+            //  CHAD's CODE
+            if (OnTransitionStart != null)
+                OnTransitionStart();
+
             Progress = 0.0f;
             Transition = transition;
             FromCamera = from;
@@ -414,9 +424,9 @@ namespace CameraTransitions
             transitionTime = time;
             transitionLife = 0.0f;
 
-            from.gameObject.SetActive(false);
-            to.gameObject.SetActive(true);
-            from.gameObject.SetActive(true);
+            //from.gameObject.SetActive(false);
+            //to.gameObject.SetActive(true);
+            //from.gameObject.SetActive(true);
 
             currentEffect.InvertRenderTexture = invertRenderTexture;
 
@@ -960,15 +970,21 @@ namespace CameraTransitions
 
       transitionLife = 0.0f;
 
-      fromCamera.gameObject.SetActive(false);
-      toCamera.gameObject.SetActive(true);
+        //fromCamera.gameObject.SetActive(false);
+        //toCamera.gameObject.SetActive(true);
+        fromCamera.GetComponent<AudioListener>().enabled = false;
+        fromCamera.enabled = false;
+        toCamera.enabled = true;
+        toCamera.GetComponent<AudioListener>().enabled = true;
 
-      FromCamera = null;
+        FromCamera = null;
       ToCamera = null;
       currentEffect.Progress = 0.0f;
       currentEffect = null;
 
       isRunning = false;
+        if (OnTransitionComplete != null)
+            OnTransitionComplete();
     }
 
     private bool IsRenderTextureSizeObsolete()

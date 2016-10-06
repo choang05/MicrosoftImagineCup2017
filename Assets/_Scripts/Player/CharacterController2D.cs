@@ -4,33 +4,39 @@ using System.Collections;
 public class CharacterController2D : MonoBehaviour
 {
     //  User Parameters variables
-    public float runSpeed;
-    public float climbSpeed;
-    public float pushPullSpeed;
-	public float gravity;
-    public float terminalVelocity;
-	public float verticalJumpForce;
-    public float horizontalJumpForce;
-    public int impactForceThreshold;                //  The threshold reached to to kill player caused by colliding object's collision.impulse magnitude          	
-    public bool canMove = true;	 
-	public bool canJump = true; 	
-    public bool canClimb = true;
-    public bool canInteract = true;
-    public float interactiveDistance;
-    public LayerMask interactiveLayer;	
+    public float runSpeed;                                          //  The speed at which the player's runs horizontally
+    public float climbSpeed;                                        //  The speed at which the player's climbs vertically
+    public float pushPullSpeed;                                     //  The speed at which the player pushes/pulls an object
+    public float pushpullDistance;                                  //  The farthest distance at which the player can push/pull objects
+    public LayerMask pushpullLayer;	                                //  The layer assigned to push/pull objects
+    public float gravity;                                           //  The incremental speed that is added to the player's y velocity
+    public float terminalVelocity;                                  //  The max speed that is added to the player's y velocity 
+    public float verticalJumpForce;                                 //  The amount of vertical force applied to jumps
+    public float horizontalJumpForce;                               //  The amount of horizontal force applied to jumps
+    public int impactForceThreshold;                                //  The threshold reached to to kill player caused by colliding object's collision.impulse magnitude          	
+    public bool canMove = true;	                                    //  is the player allowed to move?
+	public bool canJump = true; 	                                //  is the player allowed to jump?
+    public bool canClimb = true;                                    //  is the player allowed to climb?
+    public bool canPushPull = true;                                 //  is the player allowed to push/pull
+    [HideInInspector] public PlayerState currentState;              //  The current state of the player
+    public enum PlayerState                                         //  The states the player can have
+    {
+        None,
+        Climbing,
+        ClimbingLedge,
+        PushingPulling
+    }      
+    [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
+    [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
 
     //  Private variables
-    PlayerState currentState;
-    enum PlayerState { None, Climbing, PushingPulling }
-    FacingDirection facingDirection;
-    enum FacingDirection { Right, Left }
-    private Vector3 velocity = Vector3.zero;
-    private Rigidbody interactingBody;
-    private float interactingBreakDistance;
+    private FacingDirection facingDirection;                        //  The direction the player is facing
+    private enum FacingDirection { Right, Left }                    //  The directions the player can have
+    private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
 
+    //  References variables
     private CharacterController charController;
     private GameManager gameManager;
-    private WorldChanger worldChanger;
     private Puppet2D_GlobalControl puppet2DGlobalControl;
 
     //  Animation variables
@@ -40,6 +46,10 @@ public class CharacterController2D : MonoBehaviour
     int isGroundedHash = Animator.StringToHash("isGrounded");
     int isClimbingHash = Animator.StringToHash("isClimbing");
     int isClimbingUpHash = Animator.StringToHash("isClimbingUp");
+    int isClimbingDownHash = Animator.StringToHash("isClimbingDown");
+    int ledgeClimbUpRightTriggerHash = Animator.StringToHash("ledgeClimbUpRightTrigger");
+    int ledgeClimbUpLeftTriggerHash = Animator.StringToHash("ledgeClimbUpLeftTrigger");
+    int isPushPullingHash = Animator.StringToHash("isPushingPulling");
     int isPushingHash = Animator.StringToHash("isPushing");
     int isPullingHash = Animator.StringToHash("isPulling");
     int jumpTriggerHash = Animator.StringToHash("jumpTrigger");
@@ -49,31 +59,29 @@ public class CharacterController2D : MonoBehaviour
         //  Find and assign references
         charController = GetComponent<CharacterController> ();
         gameManager = FindObjectOfType<GameManager>();
-        worldChanger = GetComponent<WorldChanger>();
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
 	}
 
-    #region Update(): check and evaluate input/states every frame
+    #region Update(): check and evaluate input and states every frame
     void Update ()
     {
         //  Check and update the facing direction of the player
-        if (currentState == PlayerState.None || (worldChanger && !worldChanger.cameraTransition.IsRunning))
+        if (currentState == PlayerState.None)
             UpdateFacingDirection();
 
         //  Check Push/Pull, else perform push/pull
         if (Input.GetKeyDown(KeyCode.E) && charController.isGrounded)
             CheckPushPull();
         else if (currentState == PlayerState.PushingPulling)
-            PushPull();
-
+            PushingPulling();
 
         //  Climbing
         if (currentState == PlayerState.Climbing)
             Climb();
 
         //  Apply gravity
-        if (currentState != PlayerState.Climbing && currentState != PlayerState.PushingPulling)
+        if (currentState == PlayerState.None)
             ApplyGravity();
 
         //  Moving Horizontally
@@ -94,15 +102,23 @@ public class CharacterController2D : MonoBehaviour
         }
 
         //  Jumping
-        if (Input.GetButtonDown("Jump") && canJump && charController.isGrounded && currentState == PlayerState.None)
-            Jump();	
+        if (Input.GetButtonDown("Jump") && canJump && ((charController.isGrounded && currentState == PlayerState.None) || currentState == PlayerState.Climbing))
+        {
+            if (currentState == PlayerState.Climbing)
+                CancelClimbing();
+
+            //  Animation
+            animator.SetTrigger(jumpTriggerHash);
+            //Jump();	
+        }
 
         //  Move
-        if (canMove || (worldChanger && !worldChanger.cameraTransition.IsRunning))
+        if (canMove)
             charController.Move(velocity * Time.deltaTime);
 
         //  Animation
         animator.SetBool(isGroundedHash, charController.isGrounded);
+
 
         //Debug.Log(currentState);
         //Debug.Log(charController.isGrounded);
@@ -110,22 +126,24 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
-    #region Gravity
+    #region ApplyGravity()
     private void ApplyGravity()
     {
+        //  If the character is not grounded...
         if (!charController.isGrounded)
         {
             //  If the falling velocity has not reached the terminal velocity cap... 
             if (velocity.y >= terminalVelocity)
                 velocity += Physics.gravity * gravity * Time.deltaTime;
-
-            //  Animation
-            animator.SetFloat(yVelocityHash, velocity.y);
         }
+
+        //  Animation
+        animator.SetFloat(yVelocityHash, velocity.y);
+
     }
     #endregion
 
-    #region Direction facing
+    #region UpdateFacingDirection()
     private void UpdateFacingDirection()
     {
 		//Vector3 flippedScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
@@ -147,23 +165,23 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
-    #region Jump
+    #region Jump(): called from jump animation event
     public void Jump()		
 	{
         //  Set vertical velocity
         velocity.y = verticalJumpForce;
             
         //  Animation
-        animator.SetTrigger(jumpTriggerHash);
+        //animator.SetTrigger(jumpTriggerHash);
     }
     #endregion
 
-    #region Check Push/Pull Object
+    #region CheckPushPull(): Checks for push/pull Object
     void CheckPushPull()
     {
         //  if player currently already pushing/pull an object then cancel the push/pull interaction
         if (currentState == PlayerState.PushingPulling)
-            CancelPushPullInteraction();
+            CancelPushingPulling();
         //  else check for any objects within distance to push/pull
         else
         {
@@ -176,8 +194,8 @@ public class CharacterController2D : MonoBehaviour
 
             //  cast ray
             RaycastHit hit;
-            Physics.Raycast(transform.position, dir, out hit, interactiveDistance, interactiveLayer);
-            if (Application.isEditor) Debug.DrawRay(transform.position, dir * interactiveDistance, Color.red, 1f);
+            Physics.Raycast(transform.position, dir, out hit, pushpullDistance, pushpullLayer);
+            if (Application.isEditor) Debug.DrawRay(transform.position, dir * pushpullDistance, Color.red, 5f);
 
             //  Evaluate hit
             if (hit.collider)
@@ -185,122 +203,149 @@ public class CharacterController2D : MonoBehaviour
                 //Debug.Log("Holding objecT: " + hit.collider.name);
                 //  Update player state
                 currentState = PlayerState.PushingPulling;
-                //  Cache interacting body
-                interactingBody = hit.collider.GetComponent<Rigidbody>();
-                hit.collider.transform.SetParent(transform);
-                //  Set the interaction break distance
-                interactingBreakDistance = Vector3.Distance(hit.collider.transform.position, transform.position);
+
+                //  Cache pushing/pulling body
+                pushpullObject = hit.transform.GetComponent<PushPullObject>();
+                pushpullObject.transform.SetParent(transform);
+
+                //  Set the pushing/pulling break distance
+                pushpullBreakDistance = Vector3.Distance(pushpullObject.transform.position, transform.position);
+
+                //  Process interaction event to the push/pull object
+                pushpullObject.OnPushPullStart();
+
+                //  Animation
+                animator.SetBool(isPushPullingHash, true);
             }
         }
     }
     #endregion
 
-    #region Push/Pull
-    void PushPull()
+    #region PushingPulling()
+    void PushingPulling()
     {
-        //  Check if object is within the interaction break distance
-        if (charController.isGrounded && Vector3.Distance(transform.position, interactingBody.transform.position) <= interactingBreakDistance + 0.15f)
+        //  Check if object is within the PushPull break distance... if not, cancel the push/pull interaction
+        if (charController.isGrounded && Vector3.Distance(transform.position, pushpullObject.transform.position) <= pushpullBreakDistance + 0.15f)
         {
-            if (Application.isEditor) Debug.DrawLine(transform.position + Vector3.up, interactingBody.transform.position, Color.yellow, 0.05f);
+            if (Application.isEditor) Debug.DrawLine(transform.position, pushpullObject.transform.position, Color.yellow, 0.05f);
 
             //  Get input axis with smoothing
             float xAxis = Input.GetAxisRaw("Horizontal");
             velocity.x = xAxis * pushPullSpeed;
 
-            animator.speed = 1; //  Remove when idle animation exist
-
             //  Pushing - RIGHT
             if (velocity.x > 0 && facingDirection == FacingDirection.Right)
             {
-                //  Animation
+                //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
             }
             //  Pushing - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
             {
-                //  Animation
+                //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
             }
             //  Pulling - RIGHT
             else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
             {
-                //  Animation
+                //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
             }
             //  Pulling - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
             {
-                //  Animation
+                //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
             }
             else
-                animator.speed = 0;     //  Replace later with idle animation
+            {
+                //  Animation - Idling
+                animator.SetBool(isPushingHash, false);
+                animator.SetBool(isPullingHash, false);
+            }
         }
         else
-            CancelPushPullInteraction();
+            CancelPushingPulling();
 
     }
     #endregion
 
-    #region Cancels the push/pull interaction
-    private void CancelPushPullInteraction()
+    #region CancelPushingPulling(): Cancels the push/pull interaction
+    public void CancelPushingPulling()
     {
+        //  Update state
         currentState = PlayerState.None;
-        //interactingBody.isKinematic = false;
-        //interactingBody.transform.SetParent(null);
-        interactingBody.transform.SetParent(null);
-        interactingBody = null;
+
+        //  Process push/pull end event
+        pushpullObject.GetComponent<PushPullObject>().OnPushPullEnd();
+
+        //  Return parent of pushing/pulling body
+        pushpullObject.transform.SetParent(null);
+        pushpullObject = null;
 
         //  Animation
         animator.SetBool(isPushingHash, false);
         animator.SetBool(isPullingHash, false);
-        animator.speed = 1;     //  Remove when idle animation exist
+        animator.SetBool(isPushPullingHash, false);
     }
     #endregion
 
-    #region Climb
+    #region Climb()
     private void Climb()
     {
         //  Get input from y axis.
         float yAxisInput = Input.GetAxisRaw("Vertical");
-        float xAxisInput = Input.GetAxisRaw("Horizontal");
+        //float xAxisInput = Input.GetAxisRaw("Horizontal");
 
         //  Apply movement vectors
         velocity.y = yAxisInput * climbSpeed;
-        velocity.x = xAxisInput * climbSpeed / 2;
+        //velocity.x = xAxisInput * climbSpeed / 2;
 
-        //  Animation
-        animator.speed = 1;     //  Remove when idle animation exist
+        //  if player inputs up or down...
         if (yAxisInput > 0)
+        {
+            //  Animation - Climb up
             animator.SetBool(isClimbingUpHash, true);
+            animator.SetBool(isClimbingDownHash, false);
+        }
         else if (yAxisInput < 0)
+        {
+            //  Animation - Climb down
             animator.SetBool(isClimbingUpHash, false);
+            animator.SetBool(isClimbingDownHash, true);
+        }
         else
-            animator.speed = 0; //  Replace with idle animation
+        {
+            //  Animation - Climb Idle
+            animator.SetBool(isClimbingUpHash, false);
+            animator.SetBool(isClimbingDownHash, false);
+        }
 
         //  Cancels climbing when touching the ground at the bottom of ladder
-        if (yAxisInput < 0 && charController.isGrounded)
+        if (charController.isGrounded)
             CancelClimbing();
     }
     #endregion
 
-    #region Cancel climbing
+    #region CancelClimbing()
     private void CancelClimbing()
     {
+        //  Set player state
         currentState = PlayerState.None;
 
+
         // Animation
-        animator.SetBool(isClimbingHash, false);
         animator.SetBool(isClimbingUpHash, false);
-        animator.speed = 1; //  Remove when idle animation exist
+        animator.SetBool(isClimbingDownHash, false);
+        animator.SetBool(isClimbingHash, false);
     }
     #endregion
 
-    #region Die
+    #region Die()
     public void Die()
     {
         //  Respawn player at GameManager's respawn node
@@ -310,7 +355,7 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
-    #region Collision impacts
+    #region ProcessImpact(): Evaluate collision impacts
     //  called when player impacted by colliding object
     public void ProcessImpact(Vector3 collisionForce)
     {
@@ -324,6 +369,38 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
+    #region LedgeClimbUp(): Called when player climbs up a ledge
+    void ClimbUpLedge()
+    {
+        currentState = PlayerState.ClimbingLedge;
+
+        velocity = Vector2.zero;
+
+        //  Determine the direction of the ledge climb clip
+        if (facingDirection == FacingDirection.Right)
+            animator.SetTrigger(ledgeClimbUpRightTriggerHash);
+        else
+            animator.SetTrigger(ledgeClimbUpLeftTriggerHash);
+
+        Debug.Log("Climb Ledge");
+    }
+    #endregion
+
+    #region OnLedgeClimbUpComplete(): Called when player completes ledge climbing animation. Animation Event
+    public void OnLedgeClimbUpComplete()
+    {
+        currentState = PlayerState.None;
+
+        //  Determine the direction of the ledge climb clip
+        if (facingDirection == FacingDirection.Right)
+            transform.position = new Vector2(transform.position.x + 1, transform.position.y + 1.5f);
+        else
+            transform.position = new Vector2(transform.position.x - 1, transform.position.y + 1.5f);
+
+        Debug.Log("Ledge climb up complete");
+    }
+    #endregion
+
     //  Called when a collider enters another collider with isTrigger enabled
     void OnTriggerEnter(Collider other)
     {
@@ -331,6 +408,22 @@ public class CharacterController2D : MonoBehaviour
         if (other.CompareTag(Tags.Trap))
         {
             Die();   
+        }
+
+        //  Perform Ledge climbs if within ledge colliders
+        if (other.CompareTag(Tags.Ledge))
+        {
+            if (true)
+            {
+                //  If the player inputs up and forward... evaluate
+                float yAxisInput = Input.GetAxisRaw("Vertical");
+                float xAxisInput = Input.GetAxisRaw("Horizontal");
+
+                if (yAxisInput > 0 && (xAxisInput > 0 || xAxisInput < 0))
+                {
+                    ClimbUpLedge();
+                }
+            }
         }
     }
 
@@ -340,14 +433,21 @@ public class CharacterController2D : MonoBehaviour
         #region Check Climb
         if (canClimb && currentState == PlayerState.None && other.CompareTag(Tags.Ladder))
         {
-            float yAxisInput = Input.GetAxis("Vertical");
-            if (yAxisInput > 0 || yAxisInput < 0)
+            //  If the player inputs up or down... evaluate
+            float yAxisInput = Input.GetAxisRaw("Vertical");
+            if (yAxisInput > 0 || (yAxisInput < 0 && !charController.isGrounded))
             {
+                //  Set state
                 currentState = PlayerState.Climbing;
+
+                //  Set position to match ladder
+                transform.position = new Vector3(other.transform.position.x, transform.position.y, transform.position.z);
+
+                //  Reset horizontal speed so player does not slide horizontally during ladder use
+                velocity.x = 0;
                 
                 // Animation
                 animator.SetBool(isClimbingHash, true);
-                transform.rotation = Quaternion.Euler(0, 0, 0);       // for 3d models
             }
         }
         #endregion

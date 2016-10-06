@@ -6,4 +6,5 @@
     public const string Trap = "Trap";
     public const string Item = "Item";
     public const string Ladder = "Ladder";
+    public const string Ledge = "Ledge";
 }
