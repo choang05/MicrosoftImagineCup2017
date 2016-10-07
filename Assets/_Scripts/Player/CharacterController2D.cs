@@ -17,6 +17,7 @@ public class CharacterController2D : MonoBehaviour
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
     public bool canPushPull = true;                                 //  is the player allowed to push/pull 
+    public PlayerAudio pa;
     
 
     //  Private variables
@@ -499,15 +500,17 @@ public class CharacterController2D : MonoBehaviour
         {
             if (hit.collider.CompareTag(Tags.Ground) || hit.collider.CompareTag(Tags.Platform))
             {
-                randomizePitch(sounds[1]);
+                pa.randomizePitch(sounds[1]);
                 sounds[1].volume = hitVol;
-                sounds[1].Play();
+                if(!sounds[1].isPlaying)
+                    sounds[1].Play();
             }
             else if (hit.collider.CompareTag(Tags.Box))
             {
-                randomizePitch(sounds[2]);
+                pa.randomizePitch(sounds[2]);
                 sounds[2].volume = hitVol;
-                sounds[2].Play();
+                if (!sounds[2].isPlaying)
+                    sounds[2].Play();
             }
         }
 
@@ -516,12 +519,6 @@ public class CharacterController2D : MonoBehaviour
             isTouchingGround = true;
         else
             isTouchingGround = false;
-    }
-
-    // Called to randomize the pitch of certain audio sources so they don't get dull to hear
-    void randomizePitch(AudioSource audio)
-    {
-        audio.pitch = Random.Range(0.95f, 1.05f);
     }
 
 }

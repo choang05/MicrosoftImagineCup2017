@@ -30,7 +30,7 @@ public class PlayerAudio : MonoBehaviour {
     }
 
     // Called to randomize the pitch of certain audio sources so they don't get dull to hear
-    void randomizePitch(AudioSource audio)
+    public void randomizePitch(AudioSource audio)
     {
         audio.pitch = Random.Range(0.95f, 1.05f);
     }
