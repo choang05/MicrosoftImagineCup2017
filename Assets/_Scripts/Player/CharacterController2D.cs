@@ -44,6 +44,7 @@ public class CharacterController2D : MonoBehaviour
     private AudioSource grassImpact;
 
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
+    private BoxCollider currentLadder;                              //  The BoxCollider of the currently using ladder
 
 
     //  References variables
@@ -103,7 +104,6 @@ public class CharacterController2D : MonoBehaviour
         //  Climbing
         if (currentState == PlayerState.Climbing)
             Climb();
-
 
         //  Moving Horizontally
         if (currentState == PlayerState.None)
@@ -169,9 +169,7 @@ public class CharacterController2D : MonoBehaviour
 
     #region UpdateFacingDirection()
     private void UpdateFacingDirection()
-    {
-		//Vector3 flippedScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
-        	
+    {        	
         //  if player's velocity is positive... flip character scale to positive
         if (velocity.x > 0)
         {
@@ -362,6 +360,10 @@ public class CharacterController2D : MonoBehaviour
         //  Cancels climbing when touching the ground at the bottom of ladder
         if (isTouchingGround && charController.isGrounded)
             CancelClimbing();
+
+        //  Cancels climb when distance between ladder length and player is too far. Using this method over OnTriggerExit due to bugs
+        if (Vector2.Distance(currentLadder.center + currentLadder.transform.position, transform.position) >= currentLadder.size.y/2)
+            CancelClimbing();
     }
     #endregion
 
@@ -384,8 +386,10 @@ public class CharacterController2D : MonoBehaviour
     #region LedgeClimbUp(): Called when player climbs up a ledge
     void ClimbUpLedge()
     {
+        //  Update state
         currentState = PlayerState.ClimbingLedge;
 
+        //  Reset the velocity so player does not slide
         velocity = Vector2.zero;
 
         //  Determine the direction of the ledge climb clip
@@ -393,14 +397,13 @@ public class CharacterController2D : MonoBehaviour
             animator.SetTrigger(ledgeClimbUpRightTriggerHash);
         else
             animator.SetTrigger(ledgeClimbUpLeftTriggerHash);
-
-        //Debug.Log("Climb Ledge");
     }
     #endregion
 
     #region OnLedgeClimbUpComplete(): Called when player completes ledge climbing animation. Animation Event
     public void OnLedgeClimbUpComplete()
     {
+        //  Set state
         currentState = PlayerState.None;
 
         //  Determine the direction of the ledge climb clip
@@ -408,8 +411,6 @@ public class CharacterController2D : MonoBehaviour
             transform.position = new Vector2(transform.position.x + 1, transform.position.y + 1.5f);
         else
             transform.position = new Vector2(transform.position.x - 1, transform.position.y + 1.5f);
-
-        //Debug.Log("Ledge climb up complete");
     }
     #endregion
 
@@ -477,13 +478,16 @@ public class CharacterController2D : MonoBehaviour
                 //  Ignore collision agianst platforms when climbing upwards
                 Physics.IgnoreLayerCollision(gameObject.layer, Layers.Platforms, true);
 
+                //  Cache the ladder's BoxCollider
+                currentLadder = other.GetComponent<BoxCollider>();
+                
                 //  Set position to match ladder
                 transform.position = new Vector3(other.transform.position.x, transform.position.y, transform.position.z);
 
                 //  correct facing direction
-                if (facingDirection == FacingDirection.Right)
+                if (facingDirection == FacingDirection.Left)
                 {
-                    facingDirection = FacingDirection.Left;
+                    facingDirection = FacingDirection.Right;
                     //  Flip the global control rig
                     puppet2DGlobalControl.flip = true;
                 }
@@ -521,7 +525,7 @@ public class CharacterController2D : MonoBehaviour
             }
         }
 
-
+        //  Evaluate what if the object hit is the ground (lowest platform/terrain)
         if (hit.collider.CompareTag(Tags.Ground))
             isTouchingGround = true;
         else
