@@ -7,5 +7,6 @@ public class Layers
     //public static LayerMask Players = 1 << 9;
     //public static LayerMask Platform = 1 << 11;
     public const int Players = 9;
-    public const int Platforms = 11;    
+    public const int Platforms = 11;
+    public static LayerMask PushPullable = 1 << 8;    
 }

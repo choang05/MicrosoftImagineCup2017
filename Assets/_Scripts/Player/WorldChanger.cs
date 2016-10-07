@@ -48,7 +48,7 @@ public class WorldChanger : MonoBehaviour
 	void Update ()
     {
         //  Determine if the world is currently transferring
-        if (cameraTransition.IsRunning)
+        if (cameraTransition != null && cameraTransition.IsRunning)
             isWorldTransitioning = true;
         else
             isWorldTransitioning = false;

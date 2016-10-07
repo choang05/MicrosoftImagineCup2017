@@ -8,7 +8,6 @@ public class CharacterController2D : MonoBehaviour
     public float climbSpeed;                                        //  The speed at which the player's climbs vertically
     public float pushPullSpeed;                                     //  The speed at which the player pushes/pulls an object
     public float pushpullDistance;                                  //  The farthest distance at which the player can push/pull objects
-    public LayerMask pushpullLayer;	                                //  The layer assigned to push/pull objects
     public float gravity;                                           //  The incremental speed that is added to the player's y velocity
     public float terminalVelocity;                                  //  The max speed that is added to the player's y velocity 
     public float verticalJumpForce;                                 //  The amount of vertical force applied to jumps
@@ -194,7 +193,7 @@ public class CharacterController2D : MonoBehaviour
 
             //  cast ray
             RaycastHit hit;
-            Physics.Raycast(transform.position, dir, out hit, pushpullDistance, pushpullLayer);
+            Physics.Raycast(transform.position, dir, out hit, pushpullDistance, Layers.PushPullable);
             if (Application.isEditor) Debug.DrawRay(transform.position, dir * pushpullDistance, Color.red, 5f);
 
             //  Evaluate hit
@@ -337,6 +336,10 @@ public class CharacterController2D : MonoBehaviour
         //  Set player state
         currentState = PlayerState.None;
 
+        //  Revert collision agianst platforms when climbing downwards
+        Physics.IgnoreLayerCollision(gameObject.layer, Layers.Platforms, false);
+
+        Debug.Log("cancel climb");
 
         // Animation
         animator.SetBool(isClimbingUpHash, false);
@@ -441,6 +444,18 @@ public class CharacterController2D : MonoBehaviour
                 //  Set state
                 currentState = PlayerState.Climbing;
 
+                //  Determine platform ignore collision when climbing upwards and downwards
+                if (yAxisInput > 0)
+                {
+                    //  Ignore collision agianst platforms when climbing upwards
+                    Physics.IgnoreLayerCollision(gameObject.layer, Layers.Platforms, true);
+                }
+                else if (yAxisInput < 0)
+                {
+                    //  Revert collision agianst platforms when climbing downwards
+                    Physics.IgnoreLayerCollision(gameObject.layer, Layers.Platforms, false);
+                }
+
                 //  Set position to match ladder
                 transform.position = new Vector3(other.transform.position.x, transform.position.y, transform.position.z);
 
@@ -460,13 +475,6 @@ public class CharacterController2D : MonoBehaviour
             }
         }
         #endregion
-    }
-
-    //  Called when a collider exits another collider with isTrigger enabled
-    void OnTriggerExit(Collider other)
-    {
-        if (currentState == PlayerState.Climbing && other.CompareTag(Tags.Ladder))
-            CancelClimbing();
     }
 }
 
