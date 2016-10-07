@@ -6,27 +6,31 @@ public class PlayerAudio : MonoBehaviour {
     //variables
     private float velToVol = 0.2f;
     private AudioSource[] audioSrcs;                  //Audio components stored into array from the child objects of player
+    private AudioSource grassStep;
+    private AudioSource ladderSound;
 
     // Use this for initialization
     void Awake () {
         audioSrcs = GetComponentsInChildren<AudioSource>();
+        grassStep = audioSrcs[0];
+        ladderSound = audioSrcs[3];
     }
 
     //play audio source for footsteps when player is walking
     void grassFootstepAudio()
     {
-        randomizePitch(audioSrcs[0]);
-        randomizeVolume(audioSrcs[0], 0.95f, 1.05f);
-        audioSrcs[0].Play();
+        randomizePitch(grassStep);
+        randomizeVolume(grassStep, 0.95f, 1.05f);
+        grassStep.Play();
 
     }
 
     //Play audio source for climbing ladder
     void climbingLadderAudio()
     {
-        randomizePitch(audioSrcs[3]);
-        randomizeVolume(audioSrcs[3], 0.15f, 0.25f);
-        audioSrcs[3].Play();
+        randomizePitch(ladderSound);
+        randomizeVolume(ladderSound, 0.15f, 0.25f);
+        ladderSound.Play();
     }
 
     // Called to randomize the pitch of certain audio sources so they don't get dull to hear

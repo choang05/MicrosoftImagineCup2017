@@ -39,6 +39,9 @@ public class CharacterController2D : MonoBehaviour
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
 
     private AudioSource[] sounds;
+    private AudioSource pushpullsound;
+    private AudioSource woodImpact;
+    private AudioSource grassImpact;
 
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
 
@@ -71,6 +74,10 @@ public class CharacterController2D : MonoBehaviour
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
         sounds = GetComponentsInChildren<AudioSource>();
+        pushpullsound = sounds[4];
+        woodImpact = sounds[2];
+        grassImpact = sounds[1];
+
 	}
 
     #region Update(): check and evaluate input and states every frame
@@ -256,8 +263,8 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
-                if (!sounds[4].isPlaying) //check if audio not playing
-                    sounds[4].Play(); //if not then play sound
+                if (!pushpullsound.isPlaying) //check if audio not playing
+                    pushpullsound.Play(); //if not then play sound
             }
             //  Pushing - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
@@ -265,8 +272,8 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
-                if (!sounds[4].isPlaying) //check audio
-                    sounds[4].Play(); //play audio
+                if (!pushpullsound.isPlaying) //check audio
+                    pushpullsound.Play(); //play audio
             }
             //  Pulling - RIGHT
             else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
@@ -274,8 +281,8 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
-                if (!sounds[4].isPlaying) //check audio
-                    sounds[4].Play(); //play audio
+                if (!pushpullsound.isPlaying) //check audio
+                    pushpullsound.Play(); //play audio
             }
             //  Pulling - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
@@ -283,16 +290,16 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
-                if (!sounds[4].isPlaying) //check audio
-                    sounds[4].Play(); //play audio
+                if (!pushpullsound.isPlaying) //check audio
+                    pushpullsound.Play(); //play audio
             }
             else
             {
                 //  Animation - Idling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, false);
-                if (sounds[4].isPlaying) //check audio for true value
-                    sounds[4].loop = false; //stop audio loop if it is
+                if (pushpullsound.isPlaying) //check audio for true value
+                    pushpullsound.loop = false; //stop audio loop if it is
             }
         }
         else
@@ -500,17 +507,17 @@ public class CharacterController2D : MonoBehaviour
         {
             if (hit.collider.CompareTag(Tags.Ground) || hit.collider.CompareTag(Tags.Platform))
             {
-                pa.randomizePitch(sounds[1]);
-                sounds[1].volume = hitVol;
-                if(!sounds[1].isPlaying)
-                    sounds[1].Play();
+                pa.randomizePitch(grassImpact);
+                grassImpact.volume = hitVol;
+                if(!grassImpact.isPlaying)
+                    grassImpact.Play();
             }
             else if (hit.collider.CompareTag(Tags.Box))
             {
-                pa.randomizePitch(sounds[2]);
-                sounds[2].volume = hitVol;
-                if (!sounds[2].isPlaying)
-                    sounds[2].Play();
+                pa.randomizePitch(woodImpact);
+                woodImpact.volume = hitVol;
+                if (!woodImpact.isPlaying)
+                    woodImpact.Play();
             }
         }
 
