@@ -3,9 +3,9 @@ using System.Collections;
 
 public class PlayerAudio : MonoBehaviour {
 
-    //Public variables
-    public AudioSource[] audioSrcs;                  //Audio components stored into array from the child objects of player
-   
+    //variables
+    private float velToVol = 0.2f;
+    private AudioSource[] audioSrcs;                  //Audio components stored into array from the child objects of player
 
     // Use this for initialization
     void Awake () {
@@ -15,9 +15,9 @@ public class PlayerAudio : MonoBehaviour {
     //play audio source for footsteps when player is walking
     void grassFootstepAudio()
     {
-        randomizePitch(audioSrcs[1]);
-        randomizeVolume(audioSrcs[1], 0.95f, 1.05f);
-        audioSrcs[1].Play();
+        randomizePitch(audioSrcs[0]);
+        randomizeVolume(audioSrcs[0], 0.95f, 1.05f);
+        audioSrcs[0].Play();
 
     }
 

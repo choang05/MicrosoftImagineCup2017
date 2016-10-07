@@ -18,7 +18,7 @@ public class CharacterController2D : MonoBehaviour
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
     public bool canPushPull = true;                                 //  is the player allowed to push/pull 
-    public AudioSource blockSkidding;                               // audio for block sliding during push/pull
+    
 
     //  Private variables
     [HideInInspector] public PlayerState currentState;              //  The current state of the player
@@ -33,10 +33,12 @@ public class CharacterController2D : MonoBehaviour
     [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
 
     //  Private variables
+    private float velToVol = 0.2f;
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
-    
+    private AudioSource[] sounds;
+
     //  References variables
     private CharacterController charController;
     private GameManager gameManager;
@@ -64,7 +66,7 @@ public class CharacterController2D : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
-        blockSkidding = GetComponent<AudioSource>();
+        sounds = GetComponentsInChildren<AudioSource>();
 	}
 
     #region Update(): check and evaluate input and states every frame
@@ -249,8 +251,8 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
-                if (!blockSkidding.isPlaying) //check if audio not playing
-                    blockSkidding.Play(); //if not then play sound
+                if (!sounds[3].isPlaying) //check if audio not playing
+                    sounds[3].Play(); //if not then play sound
             }
             //  Pushing - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
@@ -258,8 +260,8 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
-                if (!blockSkidding.isPlaying) //check audio
-                    blockSkidding.Play(); //play audio
+                if (!sounds[3].isPlaying) //check audio
+                    sounds[3].Play(); //play audio
             }
             //  Pulling - RIGHT
             else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
@@ -267,8 +269,8 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
-                if (!blockSkidding.isPlaying) //check audio
-                    blockSkidding.Play(); //play audio
+                if (!sounds[3].isPlaying) //check audio
+                    sounds[3].Play(); //play audio
             }
             //  Pulling - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
@@ -276,16 +278,16 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
-                if (!blockSkidding.isPlaying) //check audio
-                    blockSkidding.Play(); //play audio
+                if (!sounds[3].isPlaying) //check audio
+                    sounds[3].Play(); //play audio
             }
             else
             {
                 //  Animation - Idling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, false);
-                if (blockSkidding.isPlaying) //check audio for true value
-                    blockSkidding.loop = false; //stop audio loop if it is
+                if (sounds[3].isPlaying) //check audio for true value
+                    sounds[3].loop = false; //stop audio loop if it is
             }
         }
         else
@@ -488,6 +490,24 @@ public class CharacterController2D : MonoBehaviour
         if (currentState == PlayerState.Climbing && other.CompareTag(Tags.Ladder))
             CancelClimbing();
     }
-    
+
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        float hitVol = hit.controller.velocity.magnitude * velToVol;
+        if (hitVol >= 1f)
+        {
+            randomizePitch(sounds[1]);
+            sounds[1].volume = hitVol;
+            sounds[1].Play();
+        } 
+                
+    }
+
+    // Called to randomize the pitch of certain audio sources so they don't get dull to hear
+    void randomizePitch(AudioSource audio)
+    {
+        audio.pitch = Random.Range(0.95f, 1.05f);
+    }
+
 }
 
