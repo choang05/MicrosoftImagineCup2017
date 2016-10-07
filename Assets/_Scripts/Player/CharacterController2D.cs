@@ -8,7 +8,6 @@ public class CharacterController2D : MonoBehaviour
     public float climbSpeed;                                        //  The speed at which the player's climbs vertically
     public float pushPullSpeed;                                     //  The speed at which the player pushes/pulls an object
     public float pushpullDistance;                                  //  The farthest distance at which the player can push/pull objects
-    public LayerMask pushpullLayer;	                                //  The layer assigned to push/pull objects
     public float gravity;                                           //  The incremental speed that is added to the player's y velocity
     public float terminalVelocity;                                  //  The max speed that is added to the player's y velocity 
     public float verticalJumpForce;                                 //  The amount of vertical force applied to jumps
@@ -37,7 +36,11 @@ public class CharacterController2D : MonoBehaviour
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
+<<<<<<< HEAD
     private AudioSource[] sounds;
+=======
+    private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
+>>>>>>> refs/remotes/origin/master
 
     //  References variables
     private CharacterController charController;
@@ -78,6 +81,10 @@ public class CharacterController2D : MonoBehaviour
         //  Check and update the facing direction of the player
         if (currentState == PlayerState.None)
             UpdateFacingDirection();
+        
+        //  Apply gravity
+        if (currentState == PlayerState.None)
+            ApplyGravity();
 
         //  Check Push/Pull, else perform push/pull
         if (Input.GetKeyDown(KeyCode.E) && charController.isGrounded)
@@ -89,9 +96,6 @@ public class CharacterController2D : MonoBehaviour
         if (currentState == PlayerState.Climbing)
             Climb();
 
-        //  Apply gravity
-        if (currentState == PlayerState.None)
-            ApplyGravity();
 
         //  Moving Horizontally
         if (currentState == PlayerState.None)
@@ -131,9 +135,9 @@ public class CharacterController2D : MonoBehaviour
         //  Animation
         animator.SetBool(isGroundedHash, charController.isGrounded);
 
-
         //Debug.Log(currentState);
         //Debug.Log(charController.isGrounded);
+        //Debug.Log(isTouchingGround);
         //Debug.Log(velocity);
     }
     #endregion
@@ -206,7 +210,7 @@ public class CharacterController2D : MonoBehaviour
 
             //  cast ray
             RaycastHit hit;
-            Physics.Raycast(transform.position, dir, out hit, pushpullDistance, pushpullLayer);
+            Physics.Raycast(transform.position, dir, out hit, pushpullDistance, Layers.PushPullable);
             if (Application.isEditor) Debug.DrawRay(transform.position, dir * pushpullDistance, Color.red, 5f);
 
             //  Evaluate hit
@@ -348,7 +352,7 @@ public class CharacterController2D : MonoBehaviour
         }
 
         //  Cancels climbing when touching the ground at the bottom of ladder
-        if (charController.isGrounded)
+        if (isTouchingGround && charController.isGrounded)
             CancelClimbing();
     }
     #endregion
@@ -359,6 +363,8 @@ public class CharacterController2D : MonoBehaviour
         //  Set player state
         currentState = PlayerState.None;
 
+        //  Revert collision agianst platforms when climbing downwards
+        Physics.IgnoreLayerCollision(gameObject.layer, Layers.Platforms, false);
 
         // Animation
         animator.SetBool(isClimbingUpHash, false);
@@ -423,15 +429,12 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
-
     //  Called when a collider enters another collider with isTrigger enabled
     void OnTriggerEnter(Collider other)
     {
         //  If player collides with a trap, perform death function
         if (other.CompareTag(Tags.Trap))
-        {
             Die();   
-        }
 
         //  Perform Ledge climbs if within ledge colliders
         if (other.CompareTag(Tags.Ledge))
@@ -458,10 +461,13 @@ public class CharacterController2D : MonoBehaviour
         {
             //  If the player inputs up or down... evaluate
             float yAxisInput = Input.GetAxisRaw("Vertical");
-            if (yAxisInput > 0 || (yAxisInput < 0 && !charController.isGrounded))
+            if (yAxisInput > 0 || (yAxisInput < 0 && !isTouchingGround))
             {
                 //  Set state
                 currentState = PlayerState.Climbing;
+
+                //  Ignore collision agianst platforms when climbing upwards
+                Physics.IgnoreLayerCollision(gameObject.layer, Layers.Platforms, true);
 
                 //  Set position to match ladder
                 transform.position = new Vector3(other.transform.position.x, transform.position.y, transform.position.z);
@@ -479,16 +485,19 @@ public class CharacterController2D : MonoBehaviour
                 
                 // Animation
                 animator.SetBool(isClimbingHash, true);
+                animator.SetFloat(yVelocityHash, 0);
             }
         }
         #endregion
     }
 
-    //  Called when a collider exits another collider with isTrigger enabled
-    void OnTriggerExit(Collider other)
+    //  Must use this because OnCollisionEnter/Exit does not work for character controller
+    void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (currentState == PlayerState.Climbing && other.CompareTag(Tags.Ladder))
-            CancelClimbing();
+        if (hit.collider.CompareTag(Tags.Ground))
+            isTouchingGround = true;
+        else
+            isTouchingGround = false;
     }
 
     void OnControllerColliderHit(ControllerColliderHit hit)

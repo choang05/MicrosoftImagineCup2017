@@ -7,4 +7,5 @@
     public const string Item = "Item";
     public const string Ladder = "Ladder";
     public const string Ledge = "Ledge";
+    public const string Ground = "Ground";
 }
