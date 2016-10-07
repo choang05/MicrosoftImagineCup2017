@@ -146,9 +146,7 @@ public class CharacterController2D : MonoBehaviour
 
     #region UpdateFacingDirection()
     private void UpdateFacingDirection()
-    {
-		//Vector3 flippedScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
-        	
+    {        	
         //  if player's velocity is positive... flip character scale to positive
         if (velocity.x > 0)
         {
@@ -351,8 +349,10 @@ public class CharacterController2D : MonoBehaviour
     #region LedgeClimbUp(): Called when player climbs up a ledge
     void ClimbUpLedge()
     {
+        //  Update state
         currentState = PlayerState.ClimbingLedge;
 
+        //  Reset the velocity so player does not slide
         velocity = Vector2.zero;
 
         //  Determine the direction of the ledge climb clip
@@ -360,14 +360,13 @@ public class CharacterController2D : MonoBehaviour
             animator.SetTrigger(ledgeClimbUpRightTriggerHash);
         else
             animator.SetTrigger(ledgeClimbUpLeftTriggerHash);
-
-        //Debug.Log("Climb Ledge");
     }
     #endregion
 
     #region OnLedgeClimbUpComplete(): Called when player completes ledge climbing animation. Animation Event
     public void OnLedgeClimbUpComplete()
     {
+        //  Set state
         currentState = PlayerState.None;
 
         //  Determine the direction of the ledge climb clip
@@ -375,8 +374,6 @@ public class CharacterController2D : MonoBehaviour
             transform.position = new Vector2(transform.position.x + 1, transform.position.y + 1.5f);
         else
             transform.position = new Vector2(transform.position.x - 1, transform.position.y + 1.5f);
-
-        //Debug.Log("Ledge climb up complete");
     }
     #endregion
 
@@ -448,9 +445,9 @@ public class CharacterController2D : MonoBehaviour
                 transform.position = new Vector3(other.transform.position.x, transform.position.y, transform.position.z);
 
                 //  correct facing direction
-                if (facingDirection == FacingDirection.Right)
+                if (facingDirection == FacingDirection.Left)
                 {
-                    facingDirection = FacingDirection.Left;
+                    facingDirection = FacingDirection.Right;
                     //  Flip the global control rig
                     puppet2DGlobalControl.flip = true;
                 }
@@ -469,6 +466,7 @@ public class CharacterController2D : MonoBehaviour
     //  Must use this because OnCollisionEnter/Exit does not work for character controller
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        //  Evaluate what if the object hit is the ground (lowest platform/terrain)
         if (hit.collider.CompareTag(Tags.Ground))
             isTouchingGround = true;
         else
