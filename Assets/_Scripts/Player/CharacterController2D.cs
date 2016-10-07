@@ -33,6 +33,7 @@ public class CharacterController2D : MonoBehaviour
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
+    private BoxCollider currentLadder;                              //  The BoxCollider of the currently using ladder
 
     //  References variables
     private CharacterController charController;
@@ -83,7 +84,6 @@ public class CharacterController2D : MonoBehaviour
         //  Climbing
         if (currentState == PlayerState.Climbing)
             Climb();
-
 
         //  Moving Horizontally
         if (currentState == PlayerState.None)
@@ -327,6 +327,10 @@ public class CharacterController2D : MonoBehaviour
         //  Cancels climbing when touching the ground at the bottom of ladder
         if (isTouchingGround && charController.isGrounded)
             CancelClimbing();
+
+        //  Cancels climb when distance between ladder length and player is too far. Using this method over OnTriggerExit due to bugs
+        if (Vector2.Distance(currentLadder.center + currentLadder.transform.position, transform.position) >= currentLadder.size.y/2)
+            CancelClimbing();
     }
     #endregion
 
@@ -441,6 +445,9 @@ public class CharacterController2D : MonoBehaviour
                 //  Ignore collision agianst platforms when climbing upwards
                 Physics.IgnoreLayerCollision(gameObject.layer, Layers.Platforms, true);
 
+                //  Cache the ladder's BoxCollider
+                currentLadder = other.GetComponent<BoxCollider>();
+                
                 //  Set position to match ladder
                 transform.position = new Vector3(other.transform.position.x, transform.position.y, transform.position.z);
 
