@@ -3,28 +3,29 @@ using System.Collections;
 
 public class PlayerAudio : MonoBehaviour {
 
-    //Private variables
-    private AudioSource grassStepSource;                            // The audio source for footsteps
-    private AudioSource playerGroundImpactSource;                   // audio source for impact with ground for player
-
+    //Public variables
+    public AudioSource[] audioSrcs;                  //Audio components stored into array from the child objects of player
 
     // Use this for initialization
-    void Start () {
-        grassStepSource = GetComponentInChildren<AudioSource>();
+    void Awake () {
+        audioSrcs = GetComponentsInChildren<AudioSource>();
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
     //play audio source for footsteps when player is walking
     void grassFootstepAudio()
     {
-        randomizePitch(grassStepSource);
-        randomizeVolume(grassStepSource);
-        grassStepSource.Play();
+        randomizePitch(audioSrcs[0]);
+        randomizeVolume(audioSrcs[0], 0.95f, 1.05f);
+        audioSrcs[0].Play();
 
+    }
+
+    //Play audio source for climbing ladder
+    void climbingLadderAudio()
+    {
+        randomizePitch(audioSrcs[2]);
+        randomizeVolume(audioSrcs[2], 0.15f, 0.25f);
+        audioSrcs[2].Play();
     }
 
     // Called to randomize the pitch of certain audio sources so they don't get dull to hear
@@ -34,8 +35,8 @@ public class PlayerAudio : MonoBehaviour {
     }
 
     //randomize volume
-    void randomizeVolume(AudioSource audio)
+    void randomizeVolume(AudioSource audio, float a, float b)
     {
-        audio.volume = Random.Range(0.95f, 1.05f);
+        audio.volume = Random.Range(a, b);
     }
 }
