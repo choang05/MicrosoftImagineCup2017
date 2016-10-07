@@ -8,5 +8,7 @@ Assets/Ferr/2DTerrain/TerrainMaterials/CaveTerrainMaterial.prefab
 Assets/Ferr/2DTerrain/TerrainMaterials/ForegroundTerrainMaterial.prefab
 Assets/Ferr/2DTerrain/TerrainMaterials/SandTerrainMaterial.prefab
 Assets/_Prefabs/Ferr2D/Spike.prefab
+Assets/_Prefabs/Ferr2D/Grass&Dirt.prefab
 
 [Ferr2DT_PathTerrain]
+Assets/_Prefabs/Template Objects/Template_MovingPlatform.prefab
