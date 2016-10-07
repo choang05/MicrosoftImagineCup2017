@@ -35,9 +35,7 @@ public class CharacterController2D : MonoBehaviour
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
-    private AudioSource grassStepSource;                            // The audio source for footsteps
-    private AudioSource playerGroundImpactSource;                   // audio source for impact with ground for player
-
+    
     //  References variables
     private CharacterController charController;
     private GameManager gameManager;
@@ -65,7 +63,6 @@ public class CharacterController2D : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
-        grassStepSource = GetComponentInChildren<AudioSource>();
 	}
 
     #region Update(): check and evaluate input and states every frame
@@ -480,24 +477,6 @@ public class CharacterController2D : MonoBehaviour
             CancelClimbing();
     }
 
-    //play audio source for footsteps when player is walking
-    void grassFootstepAudio()
-    { 
-        randomizePitch(grassStepSource);
-        randomizeVolume(grassStepSource);
-        grassStepSource.Play();
-            
-    }
-
-    // Called to randomize the pitch of certain audio sources so they don't get dull to hear
-    void randomizePitch(AudioSource audio)
-    {
-        audio.pitch = Random.Range(0.95f, 1.05f);
-    }
-
-    void randomizeVolume(AudioSource audio)
-    {
-        audio.volume = Random.Range(0.95f, 1.05f);
-    }
+    
 }
 
