@@ -24,9 +24,9 @@ public class PlayerAudio : MonoBehaviour {
     //Play audio source for climbing ladder
     void climbingLadderAudio()
     {
-        randomizePitch(audioSrcs[2]);
-        randomizeVolume(audioSrcs[2], 0.15f, 0.25f);
-        audioSrcs[2].Play();
+        randomizePitch(audioSrcs[3]);
+        randomizeVolume(audioSrcs[3], 0.15f, 0.25f);
+        audioSrcs[3].Play();
     }
 
     // Called to randomize the pitch of certain audio sources so they don't get dull to hear

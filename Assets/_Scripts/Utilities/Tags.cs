@@ -8,4 +8,6 @@
     public const string Ladder = "Ladder";
     public const string Ledge = "Ledge";
     public const string Ground = "Ground";
+    public const string Platform = "Platform";
+    public const string Box = "Box";
 }

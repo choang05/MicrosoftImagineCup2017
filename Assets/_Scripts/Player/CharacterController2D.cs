@@ -36,11 +36,11 @@ public class CharacterController2D : MonoBehaviour
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
-<<<<<<< HEAD
+
     private AudioSource[] sounds;
-=======
+
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
->>>>>>> refs/remotes/origin/master
+
 
     //  References variables
     private CharacterController charController;
@@ -255,8 +255,8 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
-                if (!sounds[3].isPlaying) //check if audio not playing
-                    sounds[3].Play(); //if not then play sound
+                if (!sounds[4].isPlaying) //check if audio not playing
+                    sounds[4].Play(); //if not then play sound
             }
             //  Pushing - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
@@ -264,8 +264,8 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
-                if (!sounds[3].isPlaying) //check audio
-                    sounds[3].Play(); //play audio
+                if (!sounds[4].isPlaying) //check audio
+                    sounds[4].Play(); //play audio
             }
             //  Pulling - RIGHT
             else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
@@ -273,8 +273,8 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
-                if (!sounds[3].isPlaying) //check audio
-                    sounds[3].Play(); //play audio
+                if (!sounds[4].isPlaying) //check audio
+                    sounds[4].Play(); //play audio
             }
             //  Pulling - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
@@ -282,16 +282,16 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
-                if (!sounds[3].isPlaying) //check audio
-                    sounds[3].Play(); //play audio
+                if (!sounds[4].isPlaying) //check audio
+                    sounds[4].Play(); //play audio
             }
             else
             {
                 //  Animation - Idling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, false);
-                if (sounds[3].isPlaying) //check audio for true value
-                    sounds[3].loop = false; //stop audio loop if it is
+                if (sounds[4].isPlaying) //check audio for true value
+                    sounds[4].loop = false; //stop audio loop if it is
             }
         }
         else
@@ -494,22 +494,28 @@ public class CharacterController2D : MonoBehaviour
     //  Must use this because OnCollisionEnter/Exit does not work for character controller
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        float hitVol = hit.controller.velocity.magnitude * velToVol;
+        if (hitVol >= 1f)
+        {
+            if (hit.collider.CompareTag(Tags.Ground) || hit.collider.CompareTag(Tags.Platform))
+            {
+                randomizePitch(sounds[1]);
+                sounds[1].volume = hitVol;
+                sounds[1].Play();
+            }
+            else if (hit.collider.CompareTag(Tags.Box))
+            {
+                randomizePitch(sounds[2]);
+                sounds[2].volume = hitVol;
+                sounds[2].Play();
+            }
+        }
+
+
         if (hit.collider.CompareTag(Tags.Ground))
             isTouchingGround = true;
         else
             isTouchingGround = false;
-    }
-
-    void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        float hitVol = hit.controller.velocity.magnitude * velToVol;
-        if (hitVol >= 1f)
-        {
-            randomizePitch(sounds[1]);
-            sounds[1].volume = hitVol;
-            sounds[1].Play();
-        } 
-                
     }
 
     // Called to randomize the pitch of certain audio sources so they don't get dull to hear
