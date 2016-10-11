@@ -490,7 +490,7 @@ public class CharacterController2D : MonoBehaviour
                 currentLadder = other.GetComponent<BoxCollider>();
                 
                 //  Set position to match ladder
-                transform.position = new Vector3(other.transform.position.x - .5f, transform.position.y, transform.position.z);
+                transform.position = new Vector3(other.transform.position.x, transform.position.y, transform.position.z);
 
                 //  correct facing direction
                 if (facingDirection == FacingDirection.Left)
