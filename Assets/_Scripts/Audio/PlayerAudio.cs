@@ -13,7 +13,7 @@ public class PlayerAudio : MonoBehaviour {
     void Awake () {
         audioSrcs = GetComponentsInChildren<AudioSource>();
         grassStep = audioSrcs[0];
-        ladderSound = audioSrcs[3];
+        ladderSound = audioSrcs[4];
     }
 
     //play audio source for footsteps when player is walking

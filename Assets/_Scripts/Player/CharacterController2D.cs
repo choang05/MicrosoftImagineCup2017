@@ -42,6 +42,7 @@ public class CharacterController2D : MonoBehaviour
     private AudioSource pushpullsound;
     private AudioSource woodImpact;
     private AudioSource grassImpact;
+    private AudioSource deathImpact;
 
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
     private BoxCollider currentLadder;                              //  The BoxCollider of the currently using ladder
@@ -75,9 +76,10 @@ public class CharacterController2D : MonoBehaviour
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
         sounds = GetComponentsInChildren<AudioSource>();
-        pushpullsound = sounds[4];
+        pushpullsound = sounds[5];
         woodImpact = sounds[2];
         grassImpact = sounds[1];
+        deathImpact = sounds[3];
 
 	}
 
@@ -433,6 +435,8 @@ public class CharacterController2D : MonoBehaviour
         //  Evaluate force and see if its enough to kill the player
         if (collisionForce.magnitude >= impactForceThreshold)
         {
+            pa.randomizePitch(deathImpact);
+            deathImpact.Play();
             Die();
         }
     }
@@ -443,7 +447,11 @@ public class CharacterController2D : MonoBehaviour
     {
         //  If player collides with a trap, perform death function
         if (other.CompareTag(Tags.Trap))
-            Die();   
+        {
+            pa.randomizePitch(deathImpact);
+            deathImpact.Play();
+            Die();
+        }
 
         //  Perform Ledge climbs if within ledge colliders
         if (other.CompareTag(Tags.Ledge))
@@ -524,6 +532,8 @@ public class CharacterController2D : MonoBehaviour
                     woodImpact.Play();
             }
         }
+
+        
 
         //  Evaluate what if the object hit is the ground (lowest platform/terrain)
         if (hit.collider.CompareTag(Tags.Ground))
