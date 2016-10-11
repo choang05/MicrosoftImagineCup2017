@@ -447,17 +447,20 @@ public class CharacterController2D : MonoBehaviour
 
                 //  Cache the ladder's BoxCollider
                 currentLadder = other.GetComponent<BoxCollider>();
-                
+
                 //  Set position to match ladder
-                transform.position = new Vector3(other.transform.position.x, transform.position.y, transform.position.z);
+                if (facingDirection == FacingDirection.Right)
+                    transform.position = new Vector3(other.transform.position.x - 0.5f, transform.position.y, transform.position.z);
+                else
+                    transform.position = new Vector3(other.transform.position.x + 0.5f, transform.position.y, transform.position.z);
 
                 //  correct facing direction
-                if (facingDirection == FacingDirection.Left)
+                /*if (facingDirection == FacingDirection.Left)
                 {
                     facingDirection = FacingDirection.Right;
                     //  Flip the global control rig
-                    puppet2DGlobalControl.flip = true;
-                }
+                    puppet2DGlobalControl.flip = false;
+                }*/
 
                 //  Reset horizontal speed so player does not slide horizontally during ladder use
                 velocity.x = 0;
