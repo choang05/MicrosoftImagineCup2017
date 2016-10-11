@@ -27,7 +27,10 @@ public class WorldChanger : MonoBehaviour
     public CameraTransition cameraTransition;
     private CharacterController charController;
     [HideInInspector] public bool isWorldTransitioning;
-    
+    private AudioSource[] timeSounds;
+    private AudioSource timeWarp;
+    public PlayerAudio pa;
+
     //  Events
     public delegate void WorldChangeEvent(WorldState worldState);
     public static event WorldChangeEvent OnWorldChangedState;
@@ -36,6 +39,7 @@ public class WorldChanger : MonoBehaviour
     {
         //  Find and assign references
         cameraTransition = FindObjectOfType<CameraTransition>();
+        timeSounds = GetComponentsInChildren<AudioSource>();
     }
 
     void Start()
@@ -79,7 +83,8 @@ public class WorldChanger : MonoBehaviour
                 //  Broadcast event delegate
                 if (OnWorldChangedState != null)
                     OnWorldChangedState(WorldState.Present);
-
+                timeWarp = pa.randomTimeWarp(timeSounds);
+                timeWarp.Play();
                 SwitchWorld(1); //  Present
             }
             else if (Input.GetKeyUp(KeyCode.Alpha2) && currentWorldState != WorldState.Past && isPastAvaliable && canSwitchPast)
@@ -87,7 +92,8 @@ public class WorldChanger : MonoBehaviour
                 //  Broadcast event delegate
                 if (OnWorldChangedState != null)
                     OnWorldChangedState(WorldState.Past);
-
+                timeWarp = pa.randomTimeWarp(timeSounds);
+                timeWarp.Play();
                 SwitchWorld(2); //  Past
             }
             else if (Input.GetKeyUp(KeyCode.Alpha3) && currentWorldState != WorldState.Future && isFutureAvaliable && canSwitchFuture) 
@@ -95,7 +101,7 @@ public class WorldChanger : MonoBehaviour
                 //  Broadcast event delegate
                 if (OnWorldChangedState != null)
                     OnWorldChangedState(WorldState.Future);
-
+               
                 SwitchWorld(3); //  Future
             }
         }
