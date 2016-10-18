@@ -52,6 +52,9 @@ public class CharacterController2D : MonoBehaviour
     int isClimbingLadderHash = Animator.StringToHash("isClimbingLadder");
     int isClimbingLadderUpHash = Animator.StringToHash("isClimbingLadderUp");
     int isClimbingLadderDownHash = Animator.StringToHash("isClimbingLadderDown");
+    int isClimbingRopeHash = Animator.StringToHash("isClimbingRope");
+    int isClimbingRopeUpHash = Animator.StringToHash("isClimbingRopeUp");
+    int isClimbingRopeDownHash = Animator.StringToHash("isClimbingRopeDown");
     int ledgeClimbUpRightTriggerHash = Animator.StringToHash("ledgeClimbUpRightTrigger");
     int ledgeClimbUpLeftTriggerHash = Animator.StringToHash("ledgeClimbUpLeftTrigger");
     int isPushPullingHash = Animator.StringToHash("isPushingPulling");
@@ -375,20 +378,20 @@ public class CharacterController2D : MonoBehaviour
             if (yAxisInput > 0)
             {
                 //  Animation - ClimbLadder up
-                animator.SetBool(isClimbingLadderUpHash, true);
-                animator.SetBool(isClimbingLadderDownHash, false);
+                animator.SetBool(isClimbingRopeUpHash, true);
+                animator.SetBool(isClimbingRopeDownHash, false);
             }
             else if (yAxisInput < 0)
             {
                 //  Animation - ClimbLadder down
-                animator.SetBool(isClimbingLadderUpHash, false);
-                animator.SetBool(isClimbingLadderDownHash, true);
+                animator.SetBool(isClimbingRopeUpHash, false);
+                animator.SetBool(isClimbingRopeDownHash, true);
             }
             else
             {
                 //  Animation - ClimbLadder Idle
-                animator.SetBool(isClimbingLadderUpHash, false);
-                animator.SetBool(isClimbingLadderDownHash, false);
+                animator.SetBool(isClimbingRopeUpHash, false);
+                animator.SetBool(isClimbingRopeDownHash, false);
             }
 
             //  Move vertically
@@ -418,6 +421,10 @@ public class CharacterController2D : MonoBehaviour
             //  Revert collision agianst platforms when climbing downwards
             Physics.IgnoreLayerCollision(gameObject.layer, Layers.Platforms, false);
             
+            // Animation
+            animator.SetBool(isClimbingLadderUpHash, false);
+            animator.SetBool(isClimbingLadderDownHash, false);
+            animator.SetBool(isClimbingLadderHash, false);
         }
         
         else if (currentState == PlayerState.ClimbingRope)
@@ -426,16 +433,15 @@ public class CharacterController2D : MonoBehaviour
             transform.SetParent(null);
             //  Reset rotation
             transform.rotation = Quaternion.identity;
+
+            // Animation
+            animator.SetBool(isClimbingRopeUpHash, false);
+            animator.SetBool(isClimbingRopeDownHash, false);
+            animator.SetBool(isClimbingRopeHash, false);
         }
         
         //  Set player state
         currentState = PlayerState.None;
-        
-        // Animation
-        animator.SetBool(isClimbingLadderUpHash, false);
-        animator.SetBool(isClimbingLadderDownHash, false);
-        animator.SetBool(isClimbingLadderHash, false);
-
     }
     #endregion
 
@@ -599,7 +605,7 @@ public class CharacterController2D : MonoBehaviour
                 velocity = Vector2.zero;
 
                 // Animation
-                animator.SetBool(isClimbingLadderHash, true);
+                animator.SetBool(isClimbingRopeHash, true);
                 animator.SetFloat(yVelocityHash, 0);
             }
         }
