@@ -84,7 +84,6 @@ public class CharacterController2D : MonoBehaviour
         woodImpact = sounds[2];
         grassImpact = sounds[1];
         deathImpact = sounds[3];
-
 	}
 
     #region Update(): check and evaluate input and states every frame
@@ -673,7 +672,7 @@ public class CharacterController2D : MonoBehaviour
             }
         }
 
-        
+
 
         //  Evaluate what if the object hit is the ground (lowest platform/terrain)
         if (hit.collider.CompareTag(Tags.Ground))

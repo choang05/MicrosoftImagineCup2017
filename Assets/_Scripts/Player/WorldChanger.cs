@@ -101,7 +101,8 @@ public class WorldChanger : MonoBehaviour
                 //  Broadcast event delegate
                 if (OnWorldChangedState != null)
                     OnWorldChangedState(WorldState.Future);
-               
+                timeWarp = pa.randomTimeWarp(timeSounds);
+                timeWarp.Play();
                 SwitchWorld(3); //  Future
             }
         }
