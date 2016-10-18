@@ -38,6 +38,8 @@ public class CharacterController2D : MonoBehaviour
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
     private BoxCollider currentLadderBoxCollider;                   //  The BoxCollider of the currently using ladder
     private Rigidbody currentRopeRigidBody;
+    private bool canSwingRight;
+    private bool canSwingLeft;
 
     //  References variables
     private CharacterController charController;
@@ -55,6 +57,8 @@ public class CharacterController2D : MonoBehaviour
     int isClimbingRopeHash = Animator.StringToHash("isClimbingRope");
     int isClimbingRopeUpHash = Animator.StringToHash("isClimbingRopeUp");
     int isClimbingRopeDownHash = Animator.StringToHash("isClimbingRopeDown");
+    int isSwingingForwardHash = Animator.StringToHash("isSwingingForward");
+    int isSwingingBackwardHash = Animator.StringToHash("isSwingingBackward");
     int ledgeClimbUpRightTriggerHash = Animator.StringToHash("ledgeClimbUpRightTrigger");
     int ledgeClimbUpLeftTriggerHash = Animator.StringToHash("ledgeClimbUpLeftTrigger");
     int isPushPullingHash = Animator.StringToHash("isPushingPulling");
@@ -357,23 +361,53 @@ public class CharacterController2D : MonoBehaviour
         //  if player insputs left or right... apply forces to rope
         if (xAxisInput != 0)
         {
-            if (xAxisInput > 0)
+            if (xAxisInput > 0 && canSwingRight)
             {
+                canSwingRight = false;
+                canSwingLeft = true;
+
                 //  Apply swing force in the right direction
-                currentRopeRigidBody.AddForce(Vector2.right * swingForce);
+                currentRopeRigidBody.AddForce(Vector2.right * swingForce, ForceMode.Force);
 
                 //  Animation
+                if (facingDirection == FacingDirection.Right)
+                {
+                    animator.SetBool(isSwingingForwardHash, true);
+                    animator.SetBool(isSwingingBackwardHash, false);
+                }
+                else
+                {
+                    animator.SetBool(isSwingingForwardHash, false);
+                    animator.SetBool(isSwingingBackwardHash, true);
+                }
             }
-            else if (xAxisInput < 0)
+            else if (xAxisInput < 0 && canSwingLeft)
             {
+                canSwingRight = true;
+                canSwingLeft = false;
+
                 //  Apply swing force to the left direction
-                currentRopeRigidBody.AddForce(Vector2.left * swingForce);
+                currentRopeRigidBody.AddForce(Vector2.left * swingForce, ForceMode.Force);
 
                 //  Animation
+                if (facingDirection == FacingDirection.Right)
+                {
+                    animator.SetBool(isSwingingForwardHash, false);
+                    animator.SetBool(isSwingingBackwardHash, true);
+                }
+                else
+                {
+                    animator.SetBool(isSwingingForwardHash, true);
+                    animator.SetBool(isSwingingBackwardHash, false);
+                }
             }
         }
         else
         {
+            //  Animation - not swinging
+            animator.SetBool(isSwingingForwardHash, false);
+            animator.SetBool(isSwingingBackwardHash, false);
+
             //  if player inputs up or down...
             if (yAxisInput > 0)
             {
@@ -591,6 +625,9 @@ public class CharacterController2D : MonoBehaviour
             {
                 //  Set state
                 currentState = PlayerState.ClimbingRope;
+
+                canSwingRight = true;
+                canSwingLeft = true;
 
                 //  Cache the rope
                 currentRopeRigidBody = other.GetComponent<Rigidbody>();
