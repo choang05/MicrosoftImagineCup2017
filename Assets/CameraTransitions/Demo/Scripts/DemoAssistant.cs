@@ -49,10 +49,6 @@ namespace CameraTransitions
 
     private void Update()
     {
-      // Any transition running?
-      if (cameraTransition.IsRunning == true)
-        return;
-
       for (int i = 0; i < assistants.Length; ++i)
       {
         if (Input.GetKeyUp(KeyCode.Alpha0 + i) == true && assistants[i] != null)

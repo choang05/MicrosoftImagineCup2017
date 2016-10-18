@@ -33,44 +33,31 @@ Shader "Hidden/Camera Transitions/Valentine"
   sampler2D _MainTex;
   sampler2D _SecondTex;
 
-  fixed _T;
-  fixed _ValentineBorder;
-  fixed3 _ValentineColor;
+  half _T;
+  half _ValentineBorder;
+  half3 _ValentineColor;
 
-  inline bool Heart(float2 p, float2 center, float size)
+  inline bool Heart(half2 p, half2 center, half size)
   {
     if (size == 0.0)
       return false;
 
-    float2 o = (p - center) / (1.6 * size);
+    half2 o = (FixUV(p) - center) / (1.6 * size);
 
     return pow(o.x * o.x + o.y * o.y - 0.3, 3.0) < o.x * o.x * pow(o.y, 3.0);
   }
 
-  float4 frag_gamma(v2f_img i) : COLOR
+  half4 frag(v2f_img i) : COLOR
   {
-    fixed3 from = tex2D(_MainTex, i.uv).rgb;
-    fixed3 to = tex2D(_SecondTex, RenderTextureUV(i.uv)).rgb;
+    half3 from = tex2D(_MainTex, i.uv).rgb;
+    half3 to = tex2D(_SecondTex, FixUV(i.uv)).rgb;
 
-    float h1 = Heart(i.uv, float2(0.5, 0.4), _T) ? 1.0 : 0.0;
-    float h2 = Heart(i.uv, float2(0.5, 0.4), _T + 0.001 * _ValentineBorder) ? 1.0 : 0.0;
+    half h1 = Heart(i.uv, half2(0.5, 0.4), _T) ? 1.0 : 0.0;
+    half h2 = Heart(i.uv, half2(0.5, 0.4), _T + 0.001 * _ValentineBorder) ? 1.0 : 0.0;
 
-    float border = max(h2 - h1, 0.0);
+    half border = max(h2 - h1, 0.0);
 
-    return float4(lerp(from, to, h1) * (1.0 - border) + _ValentineColor * border, 1.0);
-  }
-
-  float4 frag_linear(v2f_img i) : COLOR
-  {
-    fixed3 from = sRGB(tex2D(_MainTex, i.uv).rgb);
-    fixed3 to = sRGB(tex2D(_SecondTex, RenderTextureUV(i.uv)).rgb);
-
-    float h1 = Heart(i.uv, float2(0.5, 0.4), _T) ? 1.0 : 0.0;
-    float h2 = Heart(i.uv, float2(0.5, 0.4), _T + 0.001 * _ValentineBorder) ? 1.0 : 0.0;
-
-    float border = max(h2 - h1, 0.0);
-
-    return float4(Linear(lerp(from, to, h1) * (1.0 - border) + _ValentineColor * border), 1.0);
+    return half4(lerp(from, to, h1) * (1.0 - border) + _ValentineColor * border, 1.0);
   }
   ENDCG
 
@@ -83,7 +70,6 @@ Shader "Hidden/Camera Transitions/Valentine"
     ZWrite Off
     Fog { Mode off }
 
-    // Pass 0: Color Space Gamma.
     Pass
     {
       CGPROGRAM
@@ -91,19 +77,7 @@ Shader "Hidden/Camera Transitions/Valentine"
       #pragma target 3.0
       #pragma multi_compile ___ INVERT_RENDERTEXTURE
       #pragma vertex vert_img
-      #pragma fragment frag_gamma
-      ENDCG
-    }
-
-    // Pass 1: Color Space Linear.
-    Pass
-    {
-      CGPROGRAM
-      #pragma fragmentoption ARB_precision_hint_fastest
-      #pragma target 3.0
-      #pragma multi_compile ___ INVERT_RENDERTEXTURE
-      #pragma vertex vert_img
-      #pragma fragment frag_linear
+      #pragma fragment frag
       ENDCG
     }
   }

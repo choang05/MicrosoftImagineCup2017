@@ -33,42 +33,21 @@ Shader "Hidden/Camera Transitions/Flip"
   sampler2D _MainTex;
   sampler2D _SecondTex;
 
-  fixed _T;
+  half _T;
 
-  float4 frag_gamma(v2f_img i) : COLOR
+  half4 frag(v2f_img i) : COLOR
   {
-    float2 uv = i.uv;
+    half2 uv = i.uv;
 #ifdef MODE_HORIZONTAL
     uv.y = (uv.y - 0.5) / abs(_T - 0.5) * 0.5 + 0.5;
 #else
     uv.x = (uv.x - 0.5) / abs(_T - 0.5) * 0.5 + 0.5;
 #endif
 
-    float3 from = tex2D(_MainTex, uv);
-    float3 to = tex2D(_SecondTex, RenderTextureUV(uv));
+    half3 from = tex2D(_MainTex, uv);
+    half3 to = tex2D(_SecondTex, FixUV(uv));
 
-    return float4(lerp(from, to, step(0.5, _T)).rgb *
-#ifdef MODE_HORIZONTAL
-                  step(abs(uv.y - 0.5),
-#else
-                  step(abs(uv.x - 0.5),
-#endif
-                  abs(_T - 0.5)), 1.0);
-  }
-
-  float4 frag_linear(v2f_img i) : COLOR
-  {
-    float2 uv = i.uv;
-#ifdef MODE_HORIZONTAL
-    uv.y = (uv.y - 0.5) / abs(_T - 0.5) * 0.5 + 0.5;
-#else
-    uv.x = (uv.x - 0.5) / abs(_T - 0.5) * 0.5 + 0.5;
-#endif
-
-    float3 from = sRGB(tex2D(_MainTex, uv).rgb);
-    float3 to = sRGB(tex2D(_SecondTex, RenderTextureUV(uv)).rgb);
-
-    return float4(Linear(lerp(from, to, step(0.5, _T)).rgb) *
+    return half4(lerp(from, to, step(0.5, _T)).rgb *
 #ifdef MODE_HORIZONTAL
                   step(abs(uv.y - 0.5),
 #else
@@ -87,7 +66,6 @@ Shader "Hidden/Camera Transitions/Flip"
     ZWrite Off
     Fog { Mode off }
 
-    // Pass 0: Color Space Gamma.
     Pass
     {
       CGPROGRAM
@@ -96,20 +74,7 @@ Shader "Hidden/Camera Transitions/Flip"
       #pragma multi_compile ___ MODE_HORIZONTAL
       #pragma multi_compile ___ INVERT_RENDERTEXTURE
       #pragma vertex vert_img
-      #pragma fragment frag_gamma
-      ENDCG
-    }
-
-    // Pass 1: Color Space Linear.
-    Pass
-    {
-      CGPROGRAM
-      #pragma fragmentoption ARB_precision_hint_fastest
-      #pragma target 3.0
-      #pragma multi_compile ___ MODE_HORIZONTAL
-      #pragma multi_compile ___ INVERT_RENDERTEXTURE
-      #pragma vertex vert_img
-      #pragma fragment frag_linear
+      #pragma fragment frag
       ENDCG
     }
   }

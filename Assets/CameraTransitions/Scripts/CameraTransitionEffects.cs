@@ -20,6 +20,11 @@ namespace CameraTransitions
   public enum CameraTransitionEffects
   {
     /// <summary>
+    /// Cross zoom.
+    /// </summary>
+    CrossZoom,
+
+    /// <summary>
     /// 3D cube.
     /// </summary>
     Cube,

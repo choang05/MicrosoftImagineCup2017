@@ -15,6 +15,7 @@
 // Uncomment to activate logs.
 //#define ENABLE_LOGS
 
+using System;
 using System.Collections;
 
 using UnityEngine;
@@ -27,11 +28,10 @@ namespace CameraTransitions
   [AddComponentMenu("Camera Transitions/Camera Transition")]
   public sealed class CameraTransition : MonoBehaviour
   {
-        //  CHAD's STUFF
+        //  CHAD STUFF
         //  Events
-        public delegate void TransitionEvent();
-        public static event TransitionEvent OnTransitionStart;
-        public static event TransitionEvent OnTransitionComplete;
+        public delegate void CameraTransitionEvent();
+        public static event CameraTransitionEvent OnTransitionComplete;
 
         /// <summary>
         /// The current transition type.
@@ -230,6 +230,43 @@ namespace CameraTransitions
     }
 
     /// <summary>
+    /// The precision of the render texture's depth buffer in bits.
+    /// </summary>
+    public enum RenderTextureDepths
+    {
+      /// <summary>
+      /// 16 bits.
+      /// </summary>
+      _16Bits = 16,
+
+      /// <summary>
+      /// 24 bits (default).
+      /// </summary>
+      _24Bits = 24,
+    }
+
+    /// <summary>
+    /// HDR mode.
+    /// </summary>
+    public enum RenderTextureHDRModes
+    {
+      /// <summary>
+      /// Use HDR.
+      /// </summary>
+      Enable,
+
+      /// <summary>
+      /// Not use HDR.
+      /// </summary>
+      Disable,
+
+      /// <summary>
+      /// Disable on mobile platforms (default).
+      /// </summary>
+      Automatic,
+    }
+
+    /// <summary>
     /// How the effect progresses.
     /// </summary>
     public ProgressModes ProgressMode
@@ -293,6 +330,24 @@ namespace CameraTransitions
     }
 
     /// <summary>
+    /// RenderTexture depth.
+    /// </summary>
+    public RenderTextureDepths RenderTextureDepth
+    {
+      get { return renderTextureDepth; }
+      set { renderTextureDepth = value; }
+    }
+
+    /// <summary>
+    /// RenderTexture depth.
+    /// </summary>
+    public RenderTextureHDRModes RenderTextureHDR
+    {
+      get { return renderTextureHDR; }
+      set { renderTextureHDR = value; }
+    }
+
+    /// <summary>
     /// Changes the RenderTexture quality.
     /// </summary>
     public RenderTextureUpdateModes RenderTextureUpdateMode
@@ -319,18 +374,60 @@ namespace CameraTransitions
       set { invertRenderTexture = value; }
     }
 
+    public void ResetAdvancedOptions()
+    {
+      // Behaviors
+      progressMode = ProgressModes.Automatic;
+
+      // RenderTexture.
+      renderTextureMode = RenderTextureModes.Automatic;
+      renderTextureUpdateMode = RenderTextureUpdateModes.AllFrames;
+      renderTextureSize = RenderTextureSizes.SameAsScreen;
+      renderTextureDepth = RenderTextureDepths._24Bits;
+      renderTextureHDR = RenderTextureHDRModes.Automatic;
+      invertRenderTexture = false;
+    }
+
     [SerializeField]
     private ProgressModes progressMode = ProgressModes.Automatic;
 
     [SerializeField]
     private RenderTextureModes renderTextureMode = RenderTextureModes.Automatic;
-    
+
+    [SerializeField]
+    private RenderTextureUpdateModes renderTextureUpdateMode = RenderTextureUpdateModes.AllFrames;
+
     [SerializeField]
     private RenderTextureSizes renderTextureSize = RenderTextureSizes.SameAsScreen;
 
     [SerializeField]
-    private RenderTextureUpdateModes renderTextureUpdateMode = RenderTextureUpdateModes.AllFrames;
+    private RenderTextureDepths renderTextureDepth = RenderTextureDepths._24Bits;
+
+    [SerializeField]
+    private RenderTextureHDRModes renderTextureHDR = RenderTextureHDRModes.Automatic;
+
+    [SerializeField]
+    private bool invertRenderTexture = false;
     #endregion
+
+    /// <summary>
+    /// Transition start event.
+    /// <param name="CameraTransitionEffects">Transition effect.</param>
+    /// </summary>
+    public event Action<CameraTransitionEffects> transitionStartEvent;
+
+    /// <summary>
+    /// Transition progress event.
+    /// <param name="CameraTransitionEffects">Transition effect.</param>
+    /// <param name="float">Transition progress.</param>
+    /// </summary>
+    public event Action<CameraTransitionEffects, float> transitionProgressEvent;
+
+    /// <summary>
+    /// Transition end event.
+    /// <param name="CameraTransitionEffects">Transition effect.</param>
+    /// </summary>
+    public event Action<CameraTransitionEffects> transitionEndEvent;
 
     [SerializeField]
     private CameraTransitionEffects transition;
@@ -344,9 +441,6 @@ namespace CameraTransitions
     [SerializeField]
     private float transitionTime = 1.0f;
 
-    [SerializeField]
-    private bool invertRenderTexture = false;
-
     private float transitionLife = 0.0f;
 
     private RenderTexture renderTexture;
@@ -354,6 +448,8 @@ namespace CameraTransitions
     private CameraTransitionBase currentEffect;
 
     private bool isRunning = false;
+
+    private IEnumerator transitionCorutine = null;
 
     private bool createRenderTexture = true;
 
@@ -377,6 +473,7 @@ namespace CameraTransitions
     /// <remarks>
     /// Transitions parameters:
     /// <list type="bullet">
+    /// <item>CrossZoom: strength (float), quality (float).</item>
     /// <item>Cube: perspective (float), zoom (float), reflection (float), elevation (float).</item>
     /// <item>Doom: bar width (int), amplitude (float), noise (float), frequency (float).</item>
     /// <item>FadeToColor: strength (float), color (Color).</item>
@@ -393,7 +490,7 @@ namespace CameraTransitions
     /// <item>Pixelate: size (float).</item>
     /// <item>Radial: clockwise (bool).</item>
     /// <item>RandomGrid: rows (int), columns (int), smoothness (float).</item>
-    /// <item>SmoothCircle: invert (bool), smoothness (float).</item>
+    /// <item>SmoothCircle: invert (bool), smoothness (float), center (Vector2).</item>
     /// <item>SmoothLine: angle (float), smoothness (float).</item>
     /// <item>Swap: perspective (float), depth (float), reflection (float).</item>
     /// <item>Valentine: border (float), color (Color).</item>
@@ -413,11 +510,8 @@ namespace CameraTransitions
           {
             isRunning = true;
 
-            //  CHAD's CODE
-            if (OnTransitionStart != null)
-                OnTransitionStart();
+            CameraTransitionEffects oldTransition = Transition;
 
-            Progress = 0.0f;
             Transition = transition;
             FromCamera = from;
             ToCamera = to;
@@ -426,7 +520,7 @@ namespace CameraTransitions
 
             //from.gameObject.SetActive(false);
             //to.gameObject.SetActive(true);
-            //from.gameObject.SetActive(true);
+            //from.gameObject.SetActive(true);            
 
             currentEffect.InvertRenderTexture = invertRenderTexture;
 
@@ -436,7 +530,17 @@ namespace CameraTransitions
             if (parameters != null && parameters.Length > 0)
               SetParametersToCurrentEffect(parameters);
 
-            StartCoroutine(TransitionCoroutine());
+            if (IsRunning == true && transitionCorutine != null)
+            {
+              if (transitionEndEvent != null)
+                transitionEndEvent(oldTransition);
+
+              StopCoroutine(transitionCorutine);
+            }
+
+            transitionCorutine = TransitionCoroutine();
+
+            StartCoroutine(transitionCorutine);
           }
           else
             Debug.LogWarning(@"Duration must be greater than zero.");
@@ -603,6 +707,18 @@ namespace CameraTransitions
     {
       switch (Transition)
       {
+        case CameraTransitionEffects.CrossZoom:
+          if (parameters.Length == 2 && parameters[0].GetType() == typeof(float)
+                                     && parameters[0].GetType() == typeof(float))
+          {
+            CameraTransitionCrossZoom crossZoom = currentEffect as CameraTransitionCrossZoom;
+            crossZoom.Strength = (float)parameters[0];
+            crossZoom.Quality = (float)parameters[1];
+          }
+          else
+            Debug.LogWarningFormat("Effect '{0}' required parameters: strength (float), quality (float).", transition.ToString());
+          break;
+
         case CameraTransitionEffects.Cube:
           if (parameters.Length == 4 && parameters[0].GetType() == typeof(float) &&
                                         parameters[1].GetType() == typeof(float) &&
@@ -812,15 +928,17 @@ namespace CameraTransitions
           break;
 
         case CameraTransitionEffects.SmoothCircle:
-          if (parameters.Length == 2 && parameters[0].GetType() == typeof(bool) &&
-                                        parameters[1].GetType() == typeof(float))
+          if (parameters.Length == 3 && parameters[0].GetType() == typeof(bool) &&
+                                        parameters[1].GetType() == typeof(float) &&
+                                        parameters[2].GetType() == typeof(Vector2))
           {
             CameraTransitionSmoothCircle smoothCircle = currentEffect as CameraTransitionSmoothCircle;
             smoothCircle.Invert = (bool)parameters[0];
             smoothCircle.Smoothness = (float)parameters[1];
+            smoothCircle.Center = (Vector2)parameters[2];
           }
           else
-            Debug.LogWarningFormat("Effect '{0}' required parameters: invert (bool), smoothness (float).", transition.ToString());
+            Debug.LogWarningFormat("Effect '{0}' required parameters: invert (bool), smoothness (float), center (Vector2).", transition.ToString());
           break;
 
         case CameraTransitionEffects.SmoothLine:
@@ -884,6 +1002,7 @@ namespace CameraTransitions
 
       switch (transition)
       {
+        case CameraTransitionEffects.CrossZoom:         currentEffect = fromCamera.gameObject.AddComponent<CameraTransitionCrossZoom>(); break;
         case CameraTransitionEffects.Cube:              currentEffect = fromCamera.gameObject.AddComponent<CameraTransitionCube>(); break;
         case CameraTransitionEffects.Doom:              currentEffect = fromCamera.gameObject.AddComponent<CameraTransitionDoom>(); break;
         case CameraTransitionEffects.FadeToColor:       currentEffect = fromCamera.gameObject.AddComponent<CameraTransitionFadeToColor>(); break;
@@ -920,16 +1039,22 @@ namespace CameraTransitions
 #endif
       if (Screen.width > 0 && Screen.height > 0)
       {
+        RenderTextureFormat renderTextureFormat = (renderTextureHDR == RenderTextureHDRModes.Disable ? RenderTextureFormat.Default : RenderTextureFormat.DefaultHDR);
+        if (renderTextureHDR == RenderTextureHDRModes.Automatic)
+          renderTextureFormat = (Application.isMobilePlatform == true ? RenderTextureFormat.Default : RenderTextureFormat.DefaultHDR);
+
         renderTexture = new RenderTexture(Screen.width / (int)renderTextureSize,
                                           Screen.height / (int)renderTextureSize,
-                                          24,
-                                          Application.isMobilePlatform == true ? RenderTextureFormat.Default : RenderTextureFormat.DefaultHDR);
+                                          (int)renderTextureDepth,
+                                          renderTextureFormat);
 
         if (renderTexture != null)
         {
           renderTexture.isPowerOfTwo = false;
           renderTexture.antiAliasing = 1;
+          renderTexture.anisoLevel = 0;
           renderTexture.name = @"RenderTexture from CameraTransition";
+
           if (renderTexture.Create() != true)
           {
             Debug.LogErrorFormat("Hardware not support Render-To-Texture, '{0}' disabled.", this.GetType().ToString());
@@ -956,6 +1081,9 @@ namespace CameraTransitions
 
     private IEnumerator TransitionCoroutine()
     {
+      if (transitionStartEvent != null)
+        transitionStartEvent(transition);
+
       while (currentEffect.Progress < 1.0f)
       {
         if (progressMode == ProgressModes.Automatic)
@@ -965,26 +1093,35 @@ namespace CameraTransitions
           currentEffect.Progress = Easing.Ease(easeType, easeMode, 0.0f, 1.0f, (transitionLife / transitionTime));
         }
 
+        if (transitionProgressEvent != null)
+          transitionProgressEvent(transition, currentEffect.Progress);
+        
+        //  CHAD STUFF
+        if (OnTransitionComplete != null)
+            OnTransitionComplete();
+
         yield return null;
       }
 
       transitionLife = 0.0f;
 
-        //fromCamera.gameObject.SetActive(false);
-        //toCamera.gameObject.SetActive(true);
+      //fromCamera.gameObject.SetActive(false);
+      //toCamera.gameObject.SetActive(true);
+
         fromCamera.GetComponent<AudioListener>().enabled = false;
         fromCamera.enabled = false;
         toCamera.enabled = true;
         toCamera.GetComponent<AudioListener>().enabled = true;
 
-        FromCamera = null;
+      FromCamera = null;
       ToCamera = null;
       currentEffect.Progress = 0.0f;
       currentEffect = null;
 
       isRunning = false;
-        if (OnTransitionComplete != null)
-            OnTransitionComplete();
+
+      if (transitionEndEvent != null)
+        transitionEndEvent(transition);
     }
 
     private bool IsRenderTextureSizeObsolete()
