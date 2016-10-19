@@ -16,7 +16,7 @@ public class impactAudio : MonoBehaviour {
     void OnCollisionEnter(Collision hit)
     {
         pa.randomizePitch(impact);
-        float hitVol = hit.relativeVelocity.magnitude * velToVol;
+        float hitVol = hit.impulse.magnitude * velToVol;
         impact.volume = hitVol;
         impact.Play();
     }

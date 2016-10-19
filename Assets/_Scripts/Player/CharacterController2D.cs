@@ -341,6 +341,9 @@ public class CharacterController2D : MonoBehaviour
         animator.SetBool(isPushingHash, false);
         animator.SetBool(isPullingHash, false);
         animator.SetBool(isPushPullingHash, false);
+
+        if (pushpullsound.isPlaying) //check audio for true value
+            pushpullsound.loop = false; //stop audio loop if it is
     }
     #endregion
 
@@ -575,15 +578,12 @@ public class CharacterController2D : MonoBehaviour
     {
         //  If player collides with a trap, perform death function
         if (other.CompareTag(Tags.Trap))
-<<<<<<< HEAD
         {
             pa.randomizePitch(deathImpact);
             deathImpact.Play();
             Die();
         }
-=======
             Die();
->>>>>>> refs/remotes/origin/master
 
         #region Perform Ledge climbs if within ledge colliders
         if (other.CompareTag(Tags.Ledge))
