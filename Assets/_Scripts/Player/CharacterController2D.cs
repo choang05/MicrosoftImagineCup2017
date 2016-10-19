@@ -350,6 +350,10 @@ public class CharacterController2D : MonoBehaviour
         animator.SetBool(isPullingHash, false);
         animator.SetBool(isPushPullingHash, false);
 
+        // Stop Audio Playback
+        if (charSound.isPlaying)
+            charSound.loop = false;
+
     }
     #endregion
 
