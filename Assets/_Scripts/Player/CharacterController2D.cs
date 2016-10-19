@@ -36,7 +36,7 @@ public class CharacterController2D : MonoBehaviour
     [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
 
     //  Private variables
-    private float velToVol = 0.2f;
+    private float velToVol = 0.2f;                                  //  velocity to volume, for calculation collision volume
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
@@ -45,7 +45,6 @@ public class CharacterController2D : MonoBehaviour
     private AudioSource pushpullsound;
     private AudioSource woodImpact;
     private AudioSource grassImpact;
-    private AudioSource deathImpact;
 
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
     private BoxCollider currentLadderBoxCollider;                   //  The BoxCollider of the currently using ladder
@@ -90,7 +89,6 @@ public class CharacterController2D : MonoBehaviour
         pushpullsound = sounds[5];
         woodImpact = sounds[2];
         grassImpact = sounds[1];
-        deathImpact = sounds[3];
 	}
 
     #region Update(): check and evaluate input and states every frame
@@ -566,8 +564,6 @@ public class CharacterController2D : MonoBehaviour
         //  Evaluate force and see if its enough to kill the player
         if (collisionForce.magnitude >= impactForceThreshold)
         {
-            pa.randomizePitch(deathImpact);
-            deathImpact.Play();
             Die();
         }
     }
@@ -576,13 +572,6 @@ public class CharacterController2D : MonoBehaviour
     //  Called when a collider enters another collider with isTrigger enabled
     void OnTriggerEnter(Collider other)
     {
-        //  If player collides with a trap, perform death function
-        if (other.CompareTag(Tags.Trap))
-        {
-            pa.randomizePitch(deathImpact);
-            deathImpact.Play();
-            Die();
-        }
             Die();
 
         #region Perform Ledge climbs if within ledge colliders

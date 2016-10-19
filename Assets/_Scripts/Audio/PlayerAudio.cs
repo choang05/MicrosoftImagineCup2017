@@ -5,32 +5,26 @@ public class PlayerAudio : MonoBehaviour {
 
     //variables
     private float velToVol = 0.2f;
-    private AudioSource[] audioSrcs;                  //Audio components stored into array from the child objects of player
-    private AudioSource grassStep;
-    private AudioSource ladderSound;
+    public AudioClip[] playerClips;                  //Audio components stored into array from the child objects of player
+    private AudioSource playerSound;
 
     // Use this for initialization
     void Awake () {
-        audioSrcs = GetComponentsInChildren<AudioSource>();
-        grassStep = audioSrcs[0];
-        ladderSound = audioSrcs[4];
+        playerSound = GetComponent<AudioSource>();
     }
 
     //play audio source for footsteps when player is walking
     void grassFootstepAudio()
     {
-        randomizePitch(grassStep);
-        randomizeVolume(grassStep, 0.95f, 1.05f);
-        grassStep.Play();
-
+        randomizePitch(playerSound);
+        playerSound.PlayOneShot(playerClips[0], randomVolume());
     }
 
     //Play audio source for climbing ladder
     void climbingLadderAudio()
     {
-        randomizePitch(ladderSound);
-        randomizeVolume(ladderSound, 0.15f, 0.25f);
-        ladderSound.Play();
+        randomizePitch(playerSound);
+        playerSound.PlayOneShot(playerClips[1], randomVolume());
     }
 
     // Called to randomize the pitch of certain audio sources so they don't get dull to hear
@@ -39,10 +33,10 @@ public class PlayerAudio : MonoBehaviour {
         audio.pitch = Random.Range(0.95f, 1.05f);
     }
 
-    //randomize volume
-    void randomizeVolume(AudioSource audio, float a, float b)
+    //OneShot random Volume value
+    float randomVolume()
     {
-        audio.volume = Random.Range(a, b);
+        return Random.Range(0.95f, 1.05f);
     }
 
     //randomize which audio clip plays during time warps
