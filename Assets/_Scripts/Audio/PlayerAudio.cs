@@ -34,7 +34,7 @@ public class PlayerAudio : MonoBehaviour {
     }
 
     //OneShot random Volume value
-    float randomVolume()
+    public float randomVolume()
     {
         return Random.Range(0.95f, 1.05f);
     }
