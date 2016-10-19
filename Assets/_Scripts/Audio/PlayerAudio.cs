@@ -46,10 +46,9 @@ public class PlayerAudio : MonoBehaviour {
     }
 
     //randomize which audio clip plays during time warps
-    public AudioSource randomTimeWarp(AudioSource[] clips)
+    public AudioClip randomTimeWarp(AudioClip[] clips)
     {
-        int randomIndex = Random.Range(6, clips.Length);
-        randomizePitch(clips[randomIndex]);
+        int randomIndex = Random.Range(0, clips.Length);
         return clips[randomIndex];
     }
 }
