@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Only for promotional material.
-//#define ENABLE_VIDEO_MODE
+//#define ENABLE_DEMO
 
 using System;
 using System.Collections.Generic;
@@ -66,6 +66,7 @@ namespace CameraTransitions
 
     private GUIStyle effectNameStyle;
     private GUIStyle menuStyle;
+    private GUIStyle boxStyle;
 
     private const float guiMargen = 10.0f;
     private const float guiWidth = 200.0f;
@@ -94,7 +95,12 @@ namespace CameraTransitions
           {
             CameraTransitionEffects testedEffect = (CameraTransitionEffects)untestedTransitions.GetValue(i);
 
-            if (cameraTransition.CheckTransition(testedEffect) == true)
+            if (cameraTransition.CheckTransition(testedEffect) == true
+#if UNITY_WEBGL
+                // Not supported in WebGL yet.
+                && testedEffect != CameraTransitionEffects.LinearBlur && testedEffect != CameraTransitionEffects.CrossZoom
+#endif
+                )
               transitionEnum.Add(testedEffect);
             else
               Debug.LogWarningFormat("Transition '{0}' is not supported.", testedEffect.ToString());
@@ -111,7 +117,7 @@ namespace CameraTransitions
 
       this.enabled = (cameras.Count > 1 && cameraTransition != null);
 
-#if ENABLE_VIDEO_MODE
+#if ENABLE_DEMO
       guiShow = false;
       changeCameraTime = 0.5f;
       randomTransition = false;
@@ -145,7 +151,7 @@ namespace CameraTransitions
           {
             do
             {
-              nextCamera = random.Next(0, cameras.Count - 1);
+              nextCamera = random.Next(0, cameras.Count);
             } while (nextCamera == cameraIdx);
           }
           else
@@ -210,9 +216,11 @@ namespace CameraTransitions
 
     private void OnGUI()
     {
-      //const float screenWidth = 960;
-      //const float screenHeight = 600;
-      //GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(Screen.width / screenWidth, Screen.height / screenHeight, 1.0f));
+      if (Application.isMobilePlatform == true)
+      {
+        const float screenHeight = 600;
+        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1.0f, Screen.height / screenHeight, 1.0f));
+      }
 
       if (effectNameStyle == null)
       {
@@ -228,14 +236,19 @@ namespace CameraTransitions
         menuStyle.fontSize = 14;
       }
 
-#if ENABLE_VIDEO_MODE
-/*
+      if (boxStyle == null)
+      {
+        boxStyle = new GUIStyle(GUI.skin.box);
+        boxStyle.normal.background = MakeTex(2, 2, new Color(0.75f, 0.75f, 0.75f, 0.75f));
+        boxStyle.focused.textColor = Color.red;
+      }
+
+#if ENABLE_DEMO
       if (cameraTransition.IsRunning == true)
       {
         GUILayout.BeginArea(new Rect(Screen.width * 0.5f - 150.0f, 20.0f, 300.0f, 30.0f), AddSpacesToName(cameraTransition.Transition.ToString()), effectNameStyle);
         GUILayout.EndArea();
       }
-*/
 #endif
 
       if (showTransitionName == true && guiShow == false && cameraTransition.IsRunning == true)
@@ -247,11 +260,11 @@ namespace CameraTransitions
       if (guiShow == false)
         return;
 
-      GUILayout.BeginHorizontal(@"box", GUILayout.Width(Screen.width));
+      GUILayout.BeginHorizontal(boxStyle, GUILayout.Width(Screen.width));
       {
         GUILayout.Space(guiMargen);
 
-        if (GUILayout.Button(@"Menu", menuStyle, GUILayout.Width(60.0f)) == true)
+        if (GUILayout.Button(@"MENU", menuStyle, GUILayout.Width(60.0f)) == true)
           menuOpen = !menuOpen;
 
         GUILayout.FlexibleSpace();
@@ -316,7 +329,7 @@ namespace CameraTransitions
 
       if (menuOpen == true)
       {
-        GUILayout.BeginVertical("box", GUILayout.Width(guiWidth));
+        GUILayout.BeginVertical(boxStyle, GUILayout.Width(guiWidth));
         {
           GUILayout.Space(guiMargen);
 
@@ -361,6 +374,9 @@ namespace CameraTransitions
         }
         GUILayout.EndVertical();
       }
+
+      if (Application.isMobilePlatform == true)
+        GUI.matrix = Matrix4x4.identity;
     }
 
     /// <summary>
@@ -373,14 +389,15 @@ namespace CameraTransitions
       // Add some random parameters (optional).
       List<object> parameters = new List<object>();
 
-#if ENABLE_VIDEO_MODE
+#if ENABLE_DEMO
       if ((int)transition < transitionEnum.Count - 1)
         transition++;
       else
         transition = 0;
 
-      transition = CameraTransitionEffects.WarpWave;
+      transition = CameraTransitionEffects.Cube;
 #else
+
       if (randomTransition == true)
       {
           do
@@ -394,10 +411,20 @@ namespace CameraTransitions
           transitionSelected = 0;
 
         transition = transitionEnum[transitionSelected];
+/*
+        if ((int)transitionSelected < transitionEnum.Count - 1)
+          transitionSelected++;
+        else
+          transitionSelected = 0;*/
       }
 
       switch (transition)
       {
+        case CameraTransitionEffects.CrossZoom:
+          parameters.Add(UnityEngine.Random.Range(0.3f, 0.6f));                         // Strength.
+          parameters.Add(20.0f);                                                        // Quality.
+          break;
+
         case CameraTransitionEffects.Cube:
           parameters.Add(UnityEngine.Random.Range(0.5f, 0.9f));                         // Perspective.
           parameters.Add(UnityEngine.Random.Range(0.0f, 0.8f));                         // Zoom.
@@ -406,7 +433,7 @@ namespace CameraTransitions
           break;
 
         case CameraTransitionEffects.Doom:
-          parameters.Add(UnityEngine.Random.Range(1, 20));                              // Bar width.
+          parameters.Add(UnityEngine.Random.Range(5, 10));                              // Bar width.
           parameters.Add(UnityEngine.Random.Range(1.0f, 5.0f));                         // Amplitude.
           parameters.Add(UnityEngine.Random.Range(0.0f, 0.25f));                        // Noise.
           parameters.Add(UnityEngine.Random.Range(0.5f, 3.0f));                         // Frequency.
@@ -414,7 +441,7 @@ namespace CameraTransitions
 
         case CameraTransitionEffects.FadeToColor:
           parameters.Add(UnityEngine.Random.Range(0.2f, 0.4f));                         // Strength.
-          parameters.Add(UnityEngine.Random.value > 0.5f ? Color.black : Color.white);  // Color.
+          parameters.Add(NiceColor());                                                  // Color.
           break;
 
         case CameraTransitionEffects.FadeToGrayscale:
@@ -426,9 +453,7 @@ namespace CameraTransitions
           parameters.Add(UnityEngine.Random.Range(2.0f, 4.0f));                         // Intensity.
           parameters.Add(UnityEngine.Random.Range(0.4f, 0.6f));                         // Zoom.
           parameters.Add(UnityEngine.Random.Range(2.0f, 4.0f));                         // Velocity.
-          parameters.Add(new Color(UnityEngine.Random.Range(0.8f, 1.0f),
-                                   UnityEngine.Random.Range(0.7f, 0.9f),
-                                   UnityEngine.Random.Range(0.2f, 0.4f)));              // Color.
+          parameters.Add(NiceColor());                                                  // Color.
           break;
 
         case CameraTransitionEffects.Flip:
@@ -452,7 +477,7 @@ namespace CameraTransitions
           Vector2 jumpTo = Vector2.zero;
           while (jumpTo == Vector2.zero)
             jumpTo = new Vector2(Mathf.Floor(UnityEngine.Random.Range(-2.0f, 2.0f)),
-                                 Mathf.Floor(UnityEngine.Random.Range(-2.0f, 2.0f)));
+                                  Mathf.Floor(UnityEngine.Random.Range(-2.0f, 2.0f)));
 
           parameters.Add(jumpTo);                                                       // Steps.
           parameters.Add(UnityEngine.Random.value > 0.5f);                              // Rotation.
@@ -467,7 +492,7 @@ namespace CameraTransitions
         case CameraTransitionEffects.Pixelate:
           parameters.Add(UnityEngine.Random.Range(5.0f, 100.0f));                       // Pixelate size.
           break;
-        
+
         case CameraTransitionEffects.Radial:
           parameters.Add(UnityEngine.Random.value > 0.5f);                              // Clockwise?
           break;
@@ -481,16 +506,17 @@ namespace CameraTransitions
         case CameraTransitionEffects.SmoothCircle:
           parameters.Add(UnityEngine.Random.value > 0.5f);                              // Invert?
           parameters.Add(UnityEngine.Random.Range(0.1f, 0.4f));                         // Smoothness.
+          parameters.Add(Vector2.one * UnityEngine.Random.Range(0.4f, 0.6f));           // Center.
           break;
 
         case CameraTransitionEffects.SmoothLine:
           parameters.Add(UnityEngine.Random.Range(0.0f, 359.9f));                       // Angle.
           parameters.Add(UnityEngine.Random.Range(0.1f, 0.4f));                         // Smoothness.
           break;
-        
+
         case CameraTransitionEffects.Valentine:
           parameters.Add(UnityEngine.Random.Range(10.0f, 50.0f));                       // Border.
-          parameters.Add(Color.red * UnityEngine.Random.Range(0.75f, 1.0f));            // Color.
+          parameters.Add(NiceColor());                                                  // Color.
           break;
 
         case CameraTransitionEffects.WarpWave:
@@ -508,6 +534,26 @@ namespace CameraTransitions
     private string AddSpacesToName(string name)
     {
       return System.Text.RegularExpressions.Regex.Replace(name, @"((?<=\p{Ll})\p{Lu})|((?!\A)\p{Lu}(?>\p{Ll}))", " $0");
+    }
+
+    private Color NiceColor()
+    {
+      Color source = (UnityEngine.Random.value > 0.33f) ? Color.red : ((UnityEngine.Random.value > 0.5f) ? Color.green : Color.blue);
+
+      return new Color((UnityEngine.Random.value + source.r) * 0.5f, (UnityEngine.Random.value + source.g) * 0.5f, (UnityEngine.Random.value + source.b) * 0.5f);
+    }
+
+    private Texture2D MakeTex(int width, int height, Color col)
+    {
+      Color[] pix = new Color[width * height];
+      for (int i = 0; i < pix.Length; ++i)
+        pix[i] = col;
+
+      Texture2D result = new Texture2D(width, height);
+      result.SetPixels(pix);
+      result.Apply();
+
+      return result;
     }
   }
 }

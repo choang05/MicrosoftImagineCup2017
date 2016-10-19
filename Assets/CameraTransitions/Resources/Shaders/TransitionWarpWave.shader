@@ -33,37 +33,22 @@ Shader "Hidden/Camera Transitions/Warp Wave"
   sampler2D _MainTex;
   sampler2D _SecondTex;
 
-  fixed _T;
-  fixed _WarpWaveCurvature;
+  half _T;
+  half _WarpWaveCurvature;
 
-  float4 frag_gamma(v2f_img i) : COLOR
+  half4 frag(v2f_img i) : COLOR
   {
-    float p = smoothstep(0.0, 1.0,
+    half p = smoothstep(0.0, 1.0,
 #ifdef MODE_HORIZONTAL
       (_T * 2.0 + i.uv.x - 1.0));
 #else
       (_T * 2.0 + i.uv.y - 1.0));
 #endif
 
-    float3 from = tex2D(_MainTex, (i.uv - _WarpWaveCurvature) * (1.0 - p) + _WarpWaveCurvature);
-    float3 to = tex2D(_SecondTex, RenderTextureUV((i.uv - _WarpWaveCurvature) * p + _WarpWaveCurvature));
+    half3 from = tex2D(_MainTex, (i.uv - _WarpWaveCurvature) * (1.0 - p) + _WarpWaveCurvature);
+    half3 to = tex2D(_SecondTex, FixUV((i.uv - _WarpWaveCurvature) * p + _WarpWaveCurvature));
 
-    return float4(lerp(from, to, _T), 1.0);
-  }
-
-  float4 frag_linear(v2f_img i) : COLOR
-  {
-    float p = smoothstep(0.0, 1.0,
-#ifdef MODE_HORIZONTAL
-      (_T * 2.0 + i.uv.x - 1.0));
-#else
-      (_T * 2.0 + i.uv.y - 1.0));
-#endif
-
-    float3 from = tex2D(_MainTex, (i.uv - _WarpWaveCurvature) * (1.0 - p) + _WarpWaveCurvature);
-    float3 to = tex2D(_SecondTex, RenderTextureUV((i.uv - _WarpWaveCurvature) * p + _WarpWaveCurvature));
-
-    return float4(lerp(from, to, _T), 1.0);
+    return half4(lerp(from, to, _T), 1.0);
   }
   ENDCG
 
@@ -76,7 +61,6 @@ Shader "Hidden/Camera Transitions/Warp Wave"
     ZWrite Off
     Fog { Mode off }
 
-    // Pass 0: Color Space Gamma.
     Pass
     {
       CGPROGRAM
@@ -85,20 +69,7 @@ Shader "Hidden/Camera Transitions/Warp Wave"
       #pragma multi_compile ___ MODE_HORIZONTAL
       #pragma multi_compile ___ INVERT_RENDERTEXTURE
       #pragma vertex vert_img
-      #pragma fragment frag_gamma
-      ENDCG
-    }
-
-    // Pass 1: Color Space Linear.
-    Pass
-    {
-      CGPROGRAM
-      #pragma fragmentoption ARB_precision_hint_fastest
-      #pragma target 3.0
-      #pragma multi_compile ___ MODE_HORIZONTAL
-      #pragma multi_compile ___ INVERT_RENDERTEXTURE
-      #pragma vertex vert_img
-      #pragma fragment frag_linear
+      #pragma fragment frag
       ENDCG
     }
   }

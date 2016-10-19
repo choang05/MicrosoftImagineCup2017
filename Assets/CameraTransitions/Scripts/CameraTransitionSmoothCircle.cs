@@ -30,6 +30,15 @@ namespace CameraTransitions
     }
 
     /// <summary>
+    /// .
+    /// </summary>
+    public Vector2 Center
+    {
+      get { return center; }
+      set { center = value; }
+    }
+
+    /// <summary>
     /// Opening or closing.
     /// </summary>
     public bool Invert
@@ -42,9 +51,13 @@ namespace CameraTransitions
     private float smoothness = 0.3f;
 
     [SerializeField, HideInInspector]
+    private Vector2 center = Vector2.one * 0.5f;
+
+    [SerializeField, HideInInspector]
     private bool invert = false;
 
     private const string variableSmoothness = @"_Smoothness";
+    private const string variableCenter = @"_Center";
     private const string variableInvert = @"_Invert";
 
     /// <summary>
@@ -55,6 +68,8 @@ namespace CameraTransitions
       base.ResetDefaultValues();
 
       smoothness = 0.3f;
+      center = Vector2.one * 0.5f;
+      invert = false;
     }
 
     /// <summary>
@@ -65,8 +80,8 @@ namespace CameraTransitions
       base.SendValuesToShader();
 
       material.SetFloat(variableSmoothness, smoothness);
-
       material.SetInt(variableInvert, invert == true ? 1 : 0);
+      material.SetVector(variableCenter, center);
     }
   }
 }

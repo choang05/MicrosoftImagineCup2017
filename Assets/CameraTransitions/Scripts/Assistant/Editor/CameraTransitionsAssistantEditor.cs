@@ -42,7 +42,7 @@ namespace CameraTransitions
       {
         EditorGUILayout.Separator();
 
-        baseTarget.transitionEffect = (CameraTransitionEffects)EditorGUILayout.EnumPopup("Transition", baseTarget.transitionEffect);
+        baseTarget.transitionEffect = (CameraTransitionEffects)EditorGUILayout.EnumPopup(@"Transition", baseTarget.transitionEffect);
 
         // Custom parameters.
 
@@ -50,6 +50,11 @@ namespace CameraTransitions
 
         switch (baseTarget.transitionEffect)
         {
+          case CameraTransitionEffects.CrossZoom:
+            baseTarget.crossZoomParams.strength = EditorGUILayout.Slider("Strength", baseTarget.crossZoomParams.strength, 0.0f, 1.0f);
+            baseTarget.crossZoomParams.quality = EditorGUILayout.Slider("Quality", Mathf.Abs(baseTarget.crossZoomParams.quality), 1.0f, 40.0f);
+            break;
+
           case CameraTransitionEffects.Cube:
             baseTarget.cubeParams.perspective = EditorGUILayout.Slider("Perspective", baseTarget.cubeParams.perspective, 0.0f, 1.0f);
             baseTarget.cubeParams.zoom = EditorGUILayout.Slider("Zoom", baseTarget.cubeParams.zoom, 0.0f, 100.0f);
@@ -58,7 +63,7 @@ namespace CameraTransitions
             break;
 
           case CameraTransitionEffects.Doom:
-            baseTarget.doomParams.barWidth = EditorGUILayout.IntSlider("Bar width", baseTarget.doomParams.barWidth, 0, 1024);
+            baseTarget.doomParams.barWidth = EditorGUILayout.IntSlider("Bar width", baseTarget.doomParams.barWidth, 1, 100);
             baseTarget.doomParams.amplitude = EditorGUILayout.Slider("Amplitude", baseTarget.doomParams.amplitude, 0.0f, 25.0f);
             baseTarget.doomParams.noise = EditorGUILayout.Slider("Noise", baseTarget.doomParams.noise, 0.0f, 1.0f);
             baseTarget.doomParams.frequency = EditorGUILayout.Slider("Frequency", baseTarget.doomParams.frequency, 0.0f, 100.0f);
@@ -148,6 +153,7 @@ namespace CameraTransitions
           case CameraTransitionEffects.SmoothCircle:
             baseTarget.smoothCircleParams.smoothness = EditorGUILayout.Slider("Smoothness", baseTarget.smoothCircleParams.smoothness, 0.0f, 1.0f);
             baseTarget.smoothCircleParams.invert = EditorGUILayout.Toggle("Invert", baseTarget.smoothCircleParams.invert);
+            baseTarget.smoothCircleParams.center = EditorGUILayout.Vector2Field("Center", baseTarget.smoothCircleParams.center);
             break;
 
           case CameraTransitionEffects.SmoothLine:
@@ -177,6 +183,16 @@ namespace CameraTransitions
         EditorGUILayout.Separator();
 
         baseTarget.transitionTime = EditorGUILayout.Slider(@"Transition time", baseTarget.transitionTime, 0.0f, 10.0f);
+
+        baseTarget.executeMethod = (ExecutionMethod)EditorGUILayout.EnumPopup(@"Execution", baseTarget.executeMethod);
+        if (baseTarget.executeMethod == ExecutionMethod.OnEnable)
+        {
+          EditorGUI.indentLevel++;
+
+          baseTarget.delayTime = EditorGUILayout.Slider(@"Delay", baseTarget.delayTime, 0.0f, 60.0f);
+
+          EditorGUI.indentLevel--;
+        }
 
         if (baseTarget.cameraTransition != null && baseTarget.cameraTransition.ProgressMode == CameraTransition.ProgressModes.Manual)
         {
@@ -212,9 +228,9 @@ namespace CameraTransitions
 
         EditorGUILayout.Separator();
 
-        GUI.enabled = baseTarget.cameraTransition != null && baseTarget.cameraTransition.IsRunning == false && EditorApplication.isPlaying == true;
+        GUI.enabled = (EditorApplication.isPlaying == true);
 
-        if (baseTarget.cameraTransition != null && GUILayout.Button(AddSpacesToName(string.Format("Execute '{0}'", baseTarget.transitionEffect.ToString()))) == true)
+        if (GUILayout.Button(AddSpacesToName(string.Format("Execute '{0}'", baseTarget.transitionEffect.ToString()))) == true)
           baseTarget.ExecuteTransition();
 
         GUI.enabled = true;

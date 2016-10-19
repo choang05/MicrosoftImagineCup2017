@@ -58,12 +58,16 @@ namespace CameraTransitions
       {
         EditorGUILayout.Separator();
 
-        foldoutAdvancedSettings = EditorGUILayout.Foldout(foldoutAdvancedSettings, @"Advanced settings");
+        EditorGUILayout.HelpBox(@"CameraTransition is a collection of transition effects between two cameras in the same scene.", MessageType.Info);
+
+        EditorGUILayout.Separator();
+
+        foldoutAdvancedSettings = CameraTransitionEditorHelper.Foldout(foldoutAdvancedSettings, @"Advanced settings");
         if (foldoutAdvancedSettings == true)
         {
           EditorGUILayout.BeginVertical(@"Box");
           {
-            EditorGUILayout.LabelField(@"Behavior");
+            EditorGUILayout.LabelField(@"Behaviors");
 
             EditorGUI.indentLevel++;
 
@@ -83,11 +87,9 @@ namespace CameraTransitions
             }
 
             EditorGUI.indentLevel--;
-          }
-          EditorGUILayout.EndVertical();
 
-          EditorGUILayout.BeginVertical(@"Box");
-          {
+            EditorGUILayout.Separator();
+
             EditorGUILayout.LabelField(@"RenderTexture");
             
             EditorGUI.indentLevel++;
@@ -105,11 +107,22 @@ namespace CameraTransitions
 
             baseTarget.RenderTextureSize = (CameraTransition.RenderTextureSizes)EditorGUILayout.EnumPopup(new GUIContent(@"Size", "The size of the render texture.\nThe smaller, the worse the quality."), baseTarget.RenderTextureSize);
 
+            baseTarget.RenderTextureDepth = (CameraTransition.RenderTextureDepths)EditorGUILayout.EnumPopup(new GUIContent(@"Depth", "The precision of the render texture's depth buffer in bits."), baseTarget.RenderTextureDepth);
+
+            baseTarget.RenderTextureHDR = (CameraTransition.RenderTextureHDRModes)EditorGUILayout.EnumPopup(new GUIContent(@"HDR mode", "HDR format."), baseTarget.RenderTextureHDR);
+
             baseTarget.InvertRenderTexture = EditorGUILayout.Toggle(@"Invert", baseTarget.InvertRenderTexture);
 
             GUI.enabled = true;
 
             EditorGUI.indentLevel--;
+
+            EditorGUILayout.Separator();
+
+            if (GUILayout.Button(@"Reset advanced options") == true)
+              baseTarget.ResetAdvancedOptions();
+
+            EditorGUILayout.Separator();
           }
           EditorGUILayout.EndVertical();
         }
@@ -127,8 +140,6 @@ namespace CameraTransitions
 
           EditorGUILayout.HelpBox(errors, MessageType.Error);
         }
-
-        EditorGUILayout.HelpBox(@"CameraTransition is a collection of transition effects between two cameras.", MessageType.Info);
 
         EditorGUILayout.BeginHorizontal();
         {

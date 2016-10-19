@@ -169,7 +169,7 @@ namespace CameraTransitions
 
         SendValuesToShader();
 
-        Graphics.Blit(source, destination, material, QualitySettings.activeColorSpace == ColorSpace.Linear ? 1 : 0);
+        Graphics.Blit(source, destination, material);
       }
     }
   }

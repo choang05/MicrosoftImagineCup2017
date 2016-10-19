@@ -116,7 +116,10 @@ public class WorldChanger : MonoBehaviour
 
         //  Disable audio listener
         currentCamera.GetComponent<AudioListener>().enabled = false;
-          
+
+        //  Cache the player's position in normalized screen space coordinates.
+        Vector2 transitionCenter = currentCamera.WorldToViewportPoint(transform.position);
+
         //  Determine which world ID to switch to and check if world is already active.
         if (worldID == 1)
         {
@@ -124,7 +127,7 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Present;
 
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 0);
@@ -135,7 +138,7 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Past;
             
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 25);
@@ -146,7 +149,7 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Future;
             
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 50);

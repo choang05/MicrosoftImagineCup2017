@@ -21,10 +21,85 @@ namespace CameraTransitions
   /// </summary>
   public static class CameraTransitionEditorHelper
   {
+    private class HeaderStyle
+    {
+      public GUIStyle header = @"ShurikenModuleTitle";
+      public GUIStyle headerCheckbox = @"ShurikenCheckMark";
+
+      internal HeaderStyle()
+      {
+        header.font = (new GUIStyle(@"Label")).font;
+        header.border = new RectOffset(15, 7, 4, 4);
+        header.fixedHeight = 22;
+        header.contentOffset = new Vector2(20f, -2f);
+      }
+    }
+
+    private static HeaderStyle headerStyle;
+
+    static CameraTransitionEditorHelper()
+    {
+      headerStyle = new HeaderStyle();
+    }
+
     /// <summary>
     /// Misc.
     /// </summary>
     public static readonly string DocumentationURL = @"http://www.ibuprogames.com/2015/11/10/camera-transitions/";
+
+    /// <summary>
+    /// Foldout.
+    /// </summary>
+    public static bool Foldout(bool display, string title)
+    {
+      Rect rect = GUILayoutUtility.GetRect(16.0f, 22.0f, headerStyle.header);
+      GUI.Box(rect, title, headerStyle.header);
+
+      Rect toggleRect = new Rect(rect.x + 4.0f, rect.y + 2.0f, 13.0f, 13.0f);
+      if (Event.current.type == EventType.Repaint)
+        EditorStyles.foldout.Draw(toggleRect, false, false, display, false);
+
+      Event e = Event.current;
+      if (e.type == EventType.MouseDown && rect.Contains(e.mousePosition))
+      {
+        display = !display;
+        e.Use();
+      }
+
+      return display;
+    }
+
+    /// <summary>
+    /// Header.
+    /// </summary>
+    public static bool Header(ref bool display, bool enabled, string title)
+    {
+      Rect rect = GUILayoutUtility.GetRect(16.0f, 22.0f, headerStyle.header);
+      GUI.Box(rect, title, headerStyle.header);
+
+      Rect toggleRect = new Rect(rect.x + 4.0f, rect.y + 4.0f, 13.0f, 13.0f);
+      if (Event.current.type == EventType.Repaint)
+        headerStyle.headerCheckbox.Draw(toggleRect, false, false, enabled, false);
+
+      Event e = Event.current;
+      if (e.type == EventType.MouseDown)
+      {
+        if (toggleRect.Contains(e.mousePosition))
+        {
+          enabled = !enabled;
+          e.Use();
+          GUI.changed = true;
+        }
+        else if (rect.Contains(e.mousePosition))
+        {
+          display = !display;
+          e.Use();
+          GUI.changed = true;
+        }
+      }
+
+      return enabled;
+    }
 
     /// <summary>
     /// A slider with a reset button.
