@@ -44,7 +44,7 @@ public class PushPullObject : MonoBehaviour
     {
         if (interactType == InteractableType.Transferable)
         {
-            gameObject.layer = playerGO.layer;
+            gameObject.layer = Layers.ViewAlways;
         }
     }
 
@@ -66,8 +66,8 @@ public class PushPullObject : MonoBehaviour
             if (playerGO.GetComponent<CharacterController2D>().pushpullObject == this)
                 playerGO.GetComponent<CharacterController2D>().CancelPushingPulling();
 
-            //  Set layer to player so it always displays
-            gameObject.layer = playerGO.layer;
+            //  Set layer to ViewAlways so it always displays
+            gameObject.layer = Layers.ViewAlways;
 
             //  Determine the new Z position of the object after world change
             switch (worldState)

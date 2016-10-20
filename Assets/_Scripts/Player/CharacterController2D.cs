@@ -731,7 +731,7 @@ public class CharacterController2D : MonoBehaviour
             isTouchingGround = false;
 
         //  Evaluate interaction things because CharacterController is in special status state that does not allow itself to collide agaisnt awake physics
-        Rigidbody body = hit.collider.GetComponent<Rigidbody>();
+        /*Rigidbody body = hit.collider.GetComponent<Rigidbody>();
         if (body != null)
         {
             if (!body.isKinematic)
@@ -744,7 +744,7 @@ public class CharacterController2D : MonoBehaviour
                 // Apply the push
                 body.velocity = pushDir;
             }
-        }
+        } */
     }
 }
 
