@@ -27,7 +27,7 @@ public class WorldChanger : MonoBehaviour
 
     public CameraTransition cameraTransition;
     private CharacterController charController;
-    [HideInInspector] public bool isWorldTransitioning;
+    private bool isCurrentlyTransitioning = false;
     
     //  Events
     public delegate void WorldChangeEvent(WorldState worldState);
@@ -62,12 +62,6 @@ public class WorldChanger : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        //  Determine if the world is currently transferring
-        if (cameraTransition != null && cameraTransition.IsRunning)
-            isWorldTransitioning = true;
-        else
-            isWorldTransitioning = false;
-
         //  Determine which world player can be teleported too if there is open space
         CheckWorldCollisions();
 
@@ -86,7 +80,7 @@ public class WorldChanger : MonoBehaviour
         }
 
         //  If player is allowed to switch & a transition is currently not running...
-        if (!isWorldTransitioning)
+        if (!isCurrentlyTransitioning)
         {
             //  Evaluate input from player. 1-3 selects which world to transition to
             if (Input.GetKeyUp(KeyCode.Alpha1) && currentWorldState != WorldState.Present && isPresentAvaliable && canSwitchPresent)
@@ -247,8 +241,10 @@ public class WorldChanger : MonoBehaviour
 
     private void BroadcastTransitionStartEvent(CameraTransitionEffects effect)
     {
-        if (OnWorldChangeStart != null)
-            OnWorldChangeStart(currentWorldState);
+        //if (OnWorldChangeStart != null)
+        //OnWorldChangeStart(currentWorldState);
+
+        isCurrentlyTransitioning = true;
 
         //  Update the layer
         ChangeLayers(gameObject, Layers.ViewAlways);
@@ -257,6 +253,10 @@ public class WorldChanger : MonoBehaviour
     {
         if (OnWorldChangeComplete != null)
             OnWorldChangeComplete(currentWorldState);
+
+        isCurrentlyTransitioning = false;
+
+        Debug.Log("transition complete");
 
         //  Update the layer
         ChangeLayers(gameObject, originalLayer);
