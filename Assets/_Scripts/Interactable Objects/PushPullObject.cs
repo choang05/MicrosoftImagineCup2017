@@ -11,7 +11,7 @@ public class PushPullObject : MonoBehaviour
 
     //  Private variables
     LayerMask originalLayer;
-    GameObject playerGO;
+    CharacterController2D playerController;
 
     WorldChanger worldChanger;
 
@@ -29,7 +29,7 @@ public class PushPullObject : MonoBehaviour
 
     void Awake()
     {
-        playerGO = FindObjectOfType<CharacterController2D>().gameObject;
+        playerController = FindObjectOfType<CharacterController2D>();
         worldChanger = FindObjectOfType<WorldChanger>();
     }
 
@@ -44,43 +44,43 @@ public class PushPullObject : MonoBehaviour
     {
         if (interactType == InteractableType.Transferable)
         {
-            gameObject.layer = Layers.ViewAlways;
+            WorldChanger.ChangeLayers(gameObject, Layers.ViewAlways);
         }
     }
 
     public void OnPushPullEnd()
     {
-        gameObject.layer = originalLayer;
+        WorldChanger.ChangeLayers(gameObject, originalLayer);
     }
 
     private void EvaluateTransitionStart(WorldChanger.WorldState worldState)
     {
         //  If the interaction type of this object is non transferable then cancel the pushpull operation of the player
-        if (interactType == InteractableType.NonTransferable && playerGO.GetComponent<CharacterController2D>().pushpullObject == this)
-            playerGO.GetComponent<CharacterController2D>().CancelPushingPulling();
+        if (interactType == InteractableType.NonTransferable && playerController.pushpullObject == this)
+            playerController.CancelPushingPulling();
 
         //  If the object interation type is Always Transferable, evaluate
         if (interactType == InteractableType.AlwaysTransferable && CheckWorldCollisions(worldState))
         {
             //  if player is currently pushing/pulling this object... cancel the player push/pull interaction
-            if (playerGO.GetComponent<CharacterController2D>().pushpullObject == this)
-                playerGO.GetComponent<CharacterController2D>().CancelPushingPulling();
-
-            //  Set layer to ViewAlways so it always displays
-            gameObject.layer = Layers.ViewAlways;
-
-            //  Determine the new Z position of the object after world change
-            switch (worldState)
+            if (playerController.pushpullObject != this)
             {
-                case WorldChanger.WorldState.Present:
-                    transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-                    break;
-                case WorldChanger.WorldState.Past:
-                    transform.position = new Vector3(transform.position.x, transform.position.y, 25);
-                    break;
-                case WorldChanger.WorldState.Future:
-                    transform.position = new Vector3(transform.position.x, transform.position.y, 50);
-                    break;
+                //  Set layer to ViewAlways so it always displays
+                WorldChanger.ChangeLayers(gameObject, Layers.ViewAlways);
+
+                //  Determine the new Z position of the object after world change
+                switch (worldState)
+                {
+                    case WorldChanger.WorldState.Present:
+                        transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+                        break;
+                    case WorldChanger.WorldState.Past:
+                        transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+                        break;
+                    case WorldChanger.WorldState.Future:
+                        transform.position = new Vector3(transform.position.x, transform.position.y, 50);
+                        break;
+                }
             }
         }   
     }
@@ -90,7 +90,9 @@ public class PushPullObject : MonoBehaviour
         //  Reset the layer if object is always transferrable type
         if (interactType == InteractableType.AlwaysTransferable)
         {
-            gameObject.layer = originalLayer;
+            Debug.Log("transition complete");
+            WorldChanger.ChangeLayers(gameObject, originalLayer);
+
             //Debug.Log("Revert layer");
         }
     }

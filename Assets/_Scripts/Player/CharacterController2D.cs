@@ -80,6 +80,8 @@ public class CharacterController2D : MonoBehaviour
     public static event PlayerActionEvent OnLadderClimbStart;
     public static event PlayerActionEvent OnLadderClimbExit;
     public static event PlayerActionEvent OnLadderClimbing;
+    public delegate void PlayerCollisionEvent(ControllerColliderHit hit);
+    public static event PlayerCollisionEvent OnCollisionHit;
 
     void Awake ()
     {
@@ -729,6 +731,10 @@ public class CharacterController2D : MonoBehaviour
             isTouchingGround = true;
         else
             isTouchingGround = false;
+
+        //  Event
+        if (OnCollisionHit != null)
+            OnCollisionHit(hit);
 
         //  Evaluate interaction things because CharacterController is in special status state that does not allow itself to collide agaisnt awake physics
         /*Rigidbody body = hit.collider.GetComponent<Rigidbody>();
