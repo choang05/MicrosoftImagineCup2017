@@ -14,6 +14,16 @@ public class ImpactAudio : MonoBehaviour
         impact = GetComponent<AudioSource>();
     }
 
+    void OnEnable()
+    {
+        CharacterController2D.OnCollisionHit += playerHit;
+    }
+
+    void OnDisable()
+    {
+        CharacterController2D.OnCollisionHit -= playerHit;
+    }
+
     //on collision play attached audiosource and calculate volume of impact
     void OnCollisionEnter(Collision hit)
     {
@@ -21,5 +31,16 @@ public class ImpactAudio : MonoBehaviour
         float hitVol = hit.impulse.magnitude * velToVol;
         impact.volume = hitVol;
         impact.Play();
+    }
+
+    void playerHit(ControllerColliderHit hit)
+    {
+        if (hit.collider.CompareTag("Box"))
+        {
+            playerAudio.randomizePitch(impact);
+            float hitVol = hit.moveLength;
+            impact.volume = hitVol;
+            impact.Play();
+        }
     }
 }
