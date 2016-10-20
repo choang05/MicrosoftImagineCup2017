@@ -23,6 +23,7 @@ public class WorldChanger : MonoBehaviour
     [HideInInspector] public bool canSwitchFuture = true;
     public float transitionDuration;
     [Range(0, 1)] public float transitionEdgeSmoothness;
+    private LayerMask originalLayer;
 
     public CameraTransition cameraTransition;
     private CharacterController charController;
@@ -36,13 +37,13 @@ public class WorldChanger : MonoBehaviour
     void OnEnable()
     {
         cameraTransition.transitionStartEvent += BroadcastTransitionStartEvent;
-        cameraTransition.transitionEndEvent += BroadcastTransitionStartEvent;
+        cameraTransition.transitionEndEvent += BroadcastTransitionCompleteEvent;
     }
 
     void OnDisable()
     {
         cameraTransition.transitionStartEvent -= BroadcastTransitionStartEvent;
-        cameraTransition.transitionEndEvent -= BroadcastTransitionStartEvent;
+        cameraTransition.transitionEndEvent -= BroadcastTransitionCompleteEvent;
     }
 
     void Awake()
@@ -55,6 +56,7 @@ public class WorldChanger : MonoBehaviour
     {
         //  Initial setups
         currentWorldState = WorldState.Present;
+        originalLayer = gameObject.layer;
     }
 
 	// Update is called once per frame
@@ -247,10 +249,23 @@ public class WorldChanger : MonoBehaviour
     {
         if (OnWorldChangeStart != null)
             OnWorldChangeStart(currentWorldState);
+
+        //  Update the layer
+        ChangeLayers(gameObject, Layers.ViewAlways);
     }
     private void BroadcastTransitionCompleteEvent(CameraTransitionEffects effect)
     {
         if (OnWorldChangeComplete != null)
             OnWorldChangeComplete(currentWorldState);
+
+        //  Update the layer
+        ChangeLayers(gameObject, originalLayer);
+    }
+
+    public static void ChangeLayers(GameObject go, int layer)
+    {
+        go.layer = layer;
+        foreach (Transform child in go.transform)
+            ChangeLayers(child.gameObject, layer);
     }
 }

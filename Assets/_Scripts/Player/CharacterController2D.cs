@@ -729,6 +729,22 @@ public class CharacterController2D : MonoBehaviour
             isTouchingGround = true;
         else
             isTouchingGround = false;
+
+        //  Evaluate interaction things because CharacterController is in special status state that does not allow itself to collide agaisnt awake physics
+        /*Rigidbody body = hit.collider.GetComponent<Rigidbody>();
+        if (body != null)
+        {
+            if (!body.isKinematic)
+            {
+                // Calculate push direction from move direction,
+                // we only push objects to the sides never up and down
+                Vector3 pushDir = new Vector3(hit.moveDirection.x, hit.moveDirection.y, 0);
+                // If you know how fast your character is trying to move,
+                // then you can also multiply the push velocity by that.
+                // Apply the push
+                body.velocity = pushDir;
+            }
+        } */
     }
 }
 
