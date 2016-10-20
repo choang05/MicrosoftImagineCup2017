@@ -34,18 +34,6 @@ public class WorldChanger : MonoBehaviour
     public static event WorldChangeEvent OnWorldChangeStart;
     public static event WorldChangeEvent OnWorldChangeComplete;
 
-    void OnEnable()
-    {
-        cameraTransition.transitionStartEvent += BroadcastTransitionStartEvent;
-        cameraTransition.transitionEndEvent += BroadcastTransitionCompleteEvent;
-    }
-
-    void OnDisable()
-    {
-        cameraTransition.transitionStartEvent -= BroadcastTransitionStartEvent;
-        cameraTransition.transitionEndEvent -= BroadcastTransitionCompleteEvent;
-    }
-
     void Awake()
     {
         //  Find and assign references
@@ -118,6 +106,11 @@ public class WorldChanger : MonoBehaviour
 
         //  Disable audio listener
         currentCamera.GetComponent<AudioListener>().enabled = false;
+
+        isCurrentlyTransitioning = true;
+
+        //  Update the layer
+        Layers.ChangeLayers(gameObject, Layers.ViewAlways);
 
         //  Cache the player's position in normalized screen space coordinates.
         Vector2 transitionCenter = currentCamera.WorldToViewportPoint(transform.position);
@@ -239,33 +232,14 @@ public class WorldChanger : MonoBehaviour
     }
     #endregion
 
-    private void BroadcastTransitionStartEvent(CameraTransitionEffects effect)
-    {
-        //if (OnWorldChangeStart != null)
-        //OnWorldChangeStart(currentWorldState);
-
-        isCurrentlyTransitioning = true;
-
-        //  Update the layer
-        ChangeLayers(gameObject, Layers.ViewAlways);
-    }
-    private void BroadcastTransitionCompleteEvent(CameraTransitionEffects effect)
+    public void BroadcastTransitionCompleteEvent()
     {
         if (OnWorldChangeComplete != null)
             OnWorldChangeComplete(currentWorldState);
 
         isCurrentlyTransitioning = false;
 
-        Debug.Log("transition complete");
-
         //  Update the layer
-        ChangeLayers(gameObject, originalLayer);
-    }
-
-    public static void ChangeLayers(GameObject go, int layer)
-    {
-        go.layer = layer;
-        foreach (Transform child in go.transform)
-            ChangeLayers(child.gameObject, layer);
+        Layers.ChangeLayers(gameObject, originalLayer);
     }
 }
