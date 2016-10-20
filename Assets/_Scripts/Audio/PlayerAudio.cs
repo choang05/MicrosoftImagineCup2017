@@ -5,7 +5,8 @@ public class PlayerAudio : MonoBehaviour {
 
     //variables
     private float velToVol = 0.2f;
-    public AudioClip[] playerClips;                  //Audio components stored into array from the child objects of player
+    public AudioClip footsteps;                  //Audio components stored into array from the child objects of player
+    public AudioClip ladder;
     private AudioSource playerSound;
 
     // Use this for initialization
@@ -17,14 +18,14 @@ public class PlayerAudio : MonoBehaviour {
     void grassFootstepAudio()
     {
         randomizePitch(playerSound);
-        playerSound.PlayOneShot(playerClips[0], randomVolume());
+        playerSound.PlayOneShot(footsteps, randomVolume());
     }
 
     //Play audio source for climbing ladder
     void climbingLadderAudio()
     {
         randomizePitch(playerSound);
-        playerSound.PlayOneShot(playerClips[1], randomVolume());
+        playerSound.PlayOneShot(ladder, randomVolume());
     }
 
     // Called to randomize the pitch of certain audio sources so they don't get dull to hear

@@ -41,7 +41,9 @@ public class CharacterController2D : MonoBehaviour
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
 
-    public AudioClip[] sounds;
+    public AudioClip boxSlide;
+    public AudioClip playerImpactGrass;
+    public AudioClip playerImpactWood;
     private AudioSource charSound;
 
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
@@ -275,7 +277,7 @@ public class CharacterController2D : MonoBehaviour
                 {
                     pa.randomizePitch(charSound);
                     charSound.loop = true;
-                    charSound.PlayOneShot(sounds[0], pa.randomVolume());
+                    charSound.PlayOneShot(boxSlide, pa.randomVolume());
                 }
             }
             //  Pushing - LEFT
@@ -288,7 +290,7 @@ public class CharacterController2D : MonoBehaviour
                 {
                     pa.randomizePitch(charSound);
                     charSound.loop = true;
-                    charSound.PlayOneShot(sounds[0], pa.randomVolume());
+                    charSound.PlayOneShot(boxSlide, pa.randomVolume());
                 }
             }
             //  Pulling - RIGHT
@@ -301,7 +303,7 @@ public class CharacterController2D : MonoBehaviour
                 {
                     pa.randomizePitch(charSound);
                     charSound.loop = true;
-                    charSound.PlayOneShot(sounds[0], pa.randomVolume());
+                    charSound.PlayOneShot(boxSlide, pa.randomVolume());
                 }
             }
             //  Pulling - LEFT
@@ -314,7 +316,7 @@ public class CharacterController2D : MonoBehaviour
                 {
                     pa.randomizePitch(charSound);
                     charSound.loop = true;
-                    charSound.PlayOneShot(sounds[0], pa.randomVolume());
+                    charSound.PlayOneShot(boxSlide, pa.randomVolume());
                 }
             }
             else
@@ -705,7 +707,7 @@ public class CharacterController2D : MonoBehaviour
                 if (!charSound.isPlaying)
                 {
                     pa.randomizePitch(charSound);
-                    charSound.PlayOneShot(sounds[1], hitVol);
+                    charSound.PlayOneShot(playerImpactGrass, hitVol);
                 }
             }
             else if (hit.collider.CompareTag(Tags.Box))
@@ -713,7 +715,7 @@ public class CharacterController2D : MonoBehaviour
                 if (!charSound.isPlaying)
                 {
                     pa.randomizePitch(charSound);
-                    charSound.PlayOneShot(sounds[2], hitVol);
+                    charSound.PlayOneShot(playerImpactWood, hitVol);
                 }
             }
         }
