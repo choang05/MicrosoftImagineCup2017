@@ -33,24 +33,16 @@ Shader "Hidden/Camera Transitions/Random Grid"
   sampler2D _MainTex;
   sampler2D _SecondTex;
 
-  fixed _T;
-  fixed2 _GridSize;
-  fixed _Smoothness;
+  half _T;
+  half2 _GridSize;
+  half _Smoothness;
 
-  float4 frag_gamma(v2f_img i) : COLOR
+  half4 frag(v2f_img i) : COLOR
   {
-    fixed rnd = Rand01(floor(_GridSize * i.uv));
-	  fixed m = smoothstep(0.0, -_Smoothness, rnd - (_T * (1.0 + _Smoothness)));
+    half rnd = Rand01(floor(_GridSize * i.uv));
+	  half m = smoothstep(0.0, -_Smoothness, rnd - (_T * (1.0 + _Smoothness)));
 
-    return float4(lerp(tex2D(_MainTex, i.uv).rgb, tex2D(_SecondTex, RenderTextureUV(i.uv)).rgb, m), 1.0);
-  }
-
-  float4 frag_linear(v2f_img i) : COLOR
-  {
-    fixed rnd = Rand01(floor(_GridSize * i.uv));
-	  fixed m = smoothstep(0.0, -_Smoothness, rnd - (_T * (1.0 + _Smoothness)));
-
-    return float4(Linear(lerp(sRGB(tex2D(_MainTex, i.uv).rgb), sRGB(tex2D(_SecondTex, RenderTextureUV(i.uv)).rgb), m)), 1.0);
+    return half4(lerp(tex2D(_MainTex, i.uv).rgb, tex2D(_SecondTex, FixUV(i.uv)).rgb, m), 1.0);
   }
   ENDCG
 
@@ -63,7 +55,6 @@ Shader "Hidden/Camera Transitions/Random Grid"
     ZWrite Off
     Fog { Mode off }
 
-    // Pass 0: Color Space Gamma.
     Pass
     {
       CGPROGRAM
@@ -71,19 +62,7 @@ Shader "Hidden/Camera Transitions/Random Grid"
       #pragma target 3.0
       #pragma multi_compile ___ INVERT_RENDERTEXTURE
       #pragma vertex vert_img
-      #pragma fragment frag_gamma
-      ENDCG
-    }
-
-    // Pass 1: Color Space Linear.
-    Pass
-    {
-      CGPROGRAM
-      #pragma fragmentoption ARB_precision_hint_fastest
-      #pragma target 3.0
-      #pragma multi_compile ___ INVERT_RENDERTEXTURE
-      #pragma vertex vert_img
-      #pragma fragment frag_linear
+      #pragma fragment frag
       ENDCG
     }
   }

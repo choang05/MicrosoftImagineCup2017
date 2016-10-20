@@ -28,25 +28,26 @@ Shader "Hidden/Camera Transitions/Doom"
 
   CGINCLUDE
   #include "UnityCG.cginc"
+
   #include "CameraTransitionsCG.cginc"
 
   sampler2D _MainTex;
   sampler2D _SecondTex;
 
-  fixed _T;
-  int _BarWidth;
-  fixed _Amplitude;
-  fixed _Noise;
-  fixed _Frequency;
-
-  inline float Wave(int num)
+  half _T;
+  half _BarWidth;
+  half _Amplitude;
+  half _Noise;
+  half _Frequency;
+  
+  inline half Wave(int num)
   {
-    float fn = float(num) * _Frequency * 0.1 * float(_BarWidth);
+    half fn = half(num) * _Frequency * 0.1 * _BarWidth;
     
     return cos(fn * 0.5) * cos(fn * 0.13) * sin((fn + 10.0) * 0.3) / 2.0 + 0.5;
   }
 
-  inline float BarPosition(int num)
+  inline half BarPosition(int num)
   {
     if (_Noise == 0.0)
       return Wave(num);
@@ -54,49 +55,30 @@ Shader "Hidden/Camera Transitions/Doom"
     return lerp(Wave(num), Rand01(num), _Noise);
   }
 
-  float4 frag_gamma(v2f_img i) : COLOR
+  half4 frag(v2f_img i) : COLOR
   {
-    float2 uv = i.uv * _ScreenParams.xy;
+    i.uv = FixUV(i.uv);
 
-    int bar = uv.x / (float)_BarWidth;
-    float scale = 1.0 + BarPosition(bar) * _Amplitude;
-    float phase = _T * scale;
+    half2 uv = i.uv * _ScreenParams.xy;
 
-    float2 p;
-    float3 pixel;
+    int bar = uv.x / _BarWidth;
+    half scale = 1.0 + BarPosition(bar) * _Amplitude;
+    half phase = _T * scale;
+
+    half2 p;
+    half3 pixel;
     
     if (phase + i.uv.y < 1.0)
     {
-      p = float2(uv.x, uv.y + lerp(0.0, _ScreenParams.y, phase)) / _ScreenParams.xy;
-      pixel = tex2D(_MainTex, p).rgb;
+      p = half2(uv.x, uv.y + lerp(0.0, _ScreenParams.y, phase)) / _ScreenParams.xy;
+      pixel = tex2D(_MainTex, FixUV(p)).rgb;
     }
     else
-      pixel = tex2D(_SecondTex, RenderTextureUV(i.uv)).rgb;
+      pixel = tex2D(_SecondTex, i.uv).rgb;
 
-    return float4(pixel, 1.0);
+    return half4(pixel, 1.0);
   }
 
-  float4 frag_linear(v2f_img i) : COLOR
-  {
-    float2 uv = i.uv * _ScreenParams.xy;
-
-    int bar = uv.x / (float)_BarWidth;
-    float scale = 1.0 + BarPosition(bar) * _Amplitude;
-    float phase = _T * scale;
-
-    float2 p;
-    float3 pixel;
-    
-    if (phase + i.uv.y < 1.0)
-    {
-      p = float2(uv.x, uv.y + lerp(0.0, _ScreenParams.y, phase)) / _ScreenParams.xy;
-      pixel = tex2D(_MainTex, p).rgb;
-    }
-    else
-      pixel = tex2D(_SecondTex, RenderTextureUV(i.uv)).rgb;
-
-    return float4(pixel, 1.0);
-  }
   ENDCG
 
   // Techniques (http://unity3d.com/support/documentation/Components/SL-SubShader.html).
@@ -108,7 +90,6 @@ Shader "Hidden/Camera Transitions/Doom"
     ZWrite Off
     Fog { Mode off }
 
-    // Pass 0: Color Space Gamma.
     Pass
     {
       CGPROGRAM
@@ -116,19 +97,7 @@ Shader "Hidden/Camera Transitions/Doom"
       #pragma target 3.0
       #pragma multi_compile ___ INVERT_RENDERTEXTURE
       #pragma vertex vert_img
-      #pragma fragment frag_gamma
-      ENDCG
-    }
-
-    // Pass 1: Color Space Linear.
-    Pass
-    {
-      CGPROGRAM
-      #pragma fragmentoption ARB_precision_hint_fastest
-      #pragma target 3.0
-      #pragma multi_compile ___ INVERT_RENDERTEXTURE
-      #pragma vertex vert_img
-      #pragma fragment frag_linear
+      #pragma fragment frag
       ENDCG
     }
   }

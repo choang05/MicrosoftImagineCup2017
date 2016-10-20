@@ -33,28 +33,28 @@ Shader "Hidden/Camera Transitions/Linear Blur"
   sampler2D _MainTex;
   sampler2D _SecondTex;
 
-  fixed _T;
-  fixed _Intensity;
+  half _T;
+  half _Intensity;
   int _Passes;
 
-  float4 frag_gamma(v2f_img i) : COLOR
+  float4 frag(v2f_img i) : COLOR
   {
-    fixed3 from = 0.0, to = 0.0;
-    fixed displacement = _Intensity * (0.5 - distance(0.5, _T));
-	  fixed2 secondUV = RenderTextureUV(i.uv);
+    half3 from = 0.0, to = 0.0;
+    half displacement = _Intensity * (0.5 - distance(0.5, _T));
+	  half2 secondUV = FixUV(i.uv);
 
 #if SHADER_API_D3D9
 	  _Passes = 3;
 #endif
     for (int xi = 0; xi < _Passes; ++xi)
     {
-      fixed x = fixed(xi) / fixed(_Passes) - 0.5;
+      half x = fixed(xi) / fixed(_Passes) - 0.5;
 
       for (int yi = 0; yi < _Passes; ++yi)
       {
-        fixed y = fixed(yi) / fixed(_Passes) - 0.5;
+        half y = fixed(yi) / fixed(_Passes) - 0.5;
       
-        fixed2 v = fixed2(x, y);
+        half2 v = fixed2(x, y);
         from += tex2D(_MainTex, i.uv + displacement * v).rgb;
         to += tex2D(_SecondTex, secondUV + displacement * v).rgb;
       }
@@ -63,36 +63,7 @@ Shader "Hidden/Camera Transitions/Linear Blur"
     from /= fixed(_Passes * _Passes);
     to /= fixed(_Passes * _Passes);
 
-    return float4(lerp(from, to, _T), 1.0);
-  }
-
-  float4 frag_linear(v2f_img i) : COLOR
-  {
-    fixed3 from = 0.0, to = 0.0;
-    fixed displacement = _Intensity * (0.5 - distance(0.5, _T));
-	  fixed2 secondUV = RenderTextureUV(i.uv);
-
-#if SHADER_API_D3D9
-	  _Passes = 3;
-#endif
-    for (int xi = 0; xi < _Passes; ++xi)
-    {
-      fixed x = fixed(xi) / fixed(_Passes) - 0.5;
-
-      for (int yi = 0; yi < _Passes; ++yi)
-      {
-        fixed y = fixed(yi) / fixed(_Passes) - 0.5;
-        
-        fixed2 v = fixed2(x, y);
-        from += sRGB(tex2D(_MainTex, i.uv + displacement * v).rgb);
-        to += sRGB(tex2D(_SecondTex, secondUV + displacement * v).rgb);
-      }
-    }
-
-  	from /= fixed(_Passes * _Passes);
-  	to /= fixed(_Passes * _Passes);
-
-    return float4(Linear(lerp(from, to, _T)), 1.0);
+    return half4(lerp(from, to, _T), 1.0);
   }
   ENDCG
 
@@ -105,7 +76,6 @@ Shader "Hidden/Camera Transitions/Linear Blur"
     ZWrite Off
     Fog { Mode off }
 
-    // Pass 0: Color Space Gamma.
     Pass
     {
       CGPROGRAM
@@ -113,19 +83,7 @@ Shader "Hidden/Camera Transitions/Linear Blur"
       #pragma target 3.0
       #pragma multi_compile ___ INVERT_RENDERTEXTURE
       #pragma vertex vert_img
-      #pragma fragment frag_gamma
-      ENDCG
-    }
-
-    // Pass 1: Color Space Linear.
-    Pass
-    {
-      CGPROGRAM
-      #pragma fragmentoption ARB_precision_hint_fastest
-      #pragma target 3.0
-      #pragma multi_compile ___ INVERT_RENDERTEXTURE
-      #pragma vertex vert_img
-      #pragma fragment frag_linear
+      #pragma fragment frag
       ENDCG
     }
   }

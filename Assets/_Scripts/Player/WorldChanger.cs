@@ -27,7 +27,10 @@ public class WorldChanger : MonoBehaviour
     public CameraTransition cameraTransition;
     private CharacterController charController;
     [HideInInspector] public bool isWorldTransitioning;
-    
+    private AudioSource[] timeSounds;
+    private AudioSource timeWarp;
+    public PlayerAudio pa;
+
     //  Events
     public delegate void WorldChangeEvent(WorldState worldState);
     public static event WorldChangeEvent OnWorldChangedState;
@@ -36,6 +39,7 @@ public class WorldChanger : MonoBehaviour
     {
         //  Find and assign references
         cameraTransition = FindObjectOfType<CameraTransition>();
+        timeSounds = GetComponentsInChildren<AudioSource>();
     }
 
     void Start()
@@ -48,7 +52,7 @@ public class WorldChanger : MonoBehaviour
 	void Update ()
     {
         //  Determine if the world is currently transferring
-        if (cameraTransition.IsRunning)
+        if (cameraTransition != null && cameraTransition.IsRunning)
             isWorldTransitioning = true;
         else
             isWorldTransitioning = false;
@@ -79,7 +83,8 @@ public class WorldChanger : MonoBehaviour
                 //  Broadcast event delegate
                 if (OnWorldChangedState != null)
                     OnWorldChangedState(WorldState.Present);
-
+                timeWarp = pa.randomTimeWarp(timeSounds);
+                timeWarp.Play();
                 SwitchWorld(1); //  Present
             }
             else if (Input.GetKeyUp(KeyCode.Alpha2) && currentWorldState != WorldState.Past && isPastAvaliable && canSwitchPast)
@@ -87,7 +92,8 @@ public class WorldChanger : MonoBehaviour
                 //  Broadcast event delegate
                 if (OnWorldChangedState != null)
                     OnWorldChangedState(WorldState.Past);
-
+                timeWarp = pa.randomTimeWarp(timeSounds);
+                timeWarp.Play();
                 SwitchWorld(2); //  Past
             }
             else if (Input.GetKeyUp(KeyCode.Alpha3) && currentWorldState != WorldState.Future && isFutureAvaliable && canSwitchFuture) 
@@ -95,7 +101,8 @@ public class WorldChanger : MonoBehaviour
                 //  Broadcast event delegate
                 if (OnWorldChangedState != null)
                     OnWorldChangedState(WorldState.Future);
-
+                timeWarp = pa.randomTimeWarp(timeSounds);
+                timeWarp.Play();
                 SwitchWorld(3); //  Future
             }
         }
@@ -109,7 +116,10 @@ public class WorldChanger : MonoBehaviour
 
         //  Disable audio listener
         currentCamera.GetComponent<AudioListener>().enabled = false;
-          
+
+        //  Cache the player's position in normalized screen space coordinates.
+        Vector2 transitionCenter = currentCamera.WorldToViewportPoint(transform.position);
+
         //  Determine which world ID to switch to and check if world is already active.
         if (worldID == 1)
         {
@@ -117,7 +127,7 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Present;
 
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 0);
@@ -128,7 +138,7 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Past;
             
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 25);
@@ -139,7 +149,7 @@ public class WorldChanger : MonoBehaviour
             currentWorldState = WorldState.Future;
             
             //  Perform transition
-            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness });
+            cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
             //  Set new Z position for player
             transform.position = new Vector3(transform.position.x, transform.position.y, 50);

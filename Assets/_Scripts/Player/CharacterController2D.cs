@@ -5,10 +5,11 @@ public class CharacterController2D : MonoBehaviour
 {
     //  User Parameters variables
     public float runSpeed;                                          //  The speed at which the player's runs horizontally
-    public float climbSpeed;                                        //  The speed at which the player's climbs vertically
+    public float ladderClimbSpeed;                                  //  The speed at which the player's climbs vertically on ladders
+    public float ropeClimbSpeed;                                    //  The speed at which the player's climbs vertically on ropes
+    public float swingForce;
     public float pushPullSpeed;                                     //  The speed at which the player pushes/pulls an object
     public float pushpullDistance;                                  //  The farthest distance at which the player can push/pull objects
-    public LayerMask pushpullLayer;	                                //  The layer assigned to push/pull objects
     public float gravity;                                           //  The incremental speed that is added to the player's y velocity
     public float terminalVelocity;                                  //  The max speed that is added to the player's y velocity 
     public float verticalJumpForce;                                 //  The amount of vertical force applied to jumps
@@ -17,12 +18,17 @@ public class CharacterController2D : MonoBehaviour
     public bool canMove = true;	                                    //  is the player allowed to move?
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
-    public bool canPushPull = true;                                 //  is the player allowed to push/pull
+    public bool canPushPull = true;                                 //  is the player allowed to push/pull 
+    public PlayerAudio pa;
+    
+
+    //  Private variables
     [HideInInspector] public PlayerState currentState;              //  The current state of the player
     public enum PlayerState                                         //  The states the player can have
     {
         None,
-        Climbing,
+        ClimbingRope,
+        ClimbingLadder,
         ClimbingLedge,
         PushingPulling
     }      
@@ -30,9 +36,23 @@ public class CharacterController2D : MonoBehaviour
     [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
 
     //  Private variables
+    private float velToVol = 0.2f;
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
+
+    private AudioSource[] sounds;
+    private AudioSource pushpullsound;
+    private AudioSource woodImpact;
+    private AudioSource grassImpact;
+    private AudioSource deathImpact;
+
+    private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
+    private BoxCollider currentLadderBoxCollider;                   //  The BoxCollider of the currently using ladder
+    private Rigidbody currentRopeRigidBody;
+    private bool canSwingRight;
+    private bool canSwingLeft;
+
 
     //  References variables
     private CharacterController charController;
@@ -44,9 +64,14 @@ public class CharacterController2D : MonoBehaviour
     int xVelocityHash = Animator.StringToHash("xVelocity");
     int yVelocityHash = Animator.StringToHash("yVelocity");
     int isGroundedHash = Animator.StringToHash("isGrounded");
-    int isClimbingHash = Animator.StringToHash("isClimbing");
-    int isClimbingUpHash = Animator.StringToHash("isClimbingUp");
-    int isClimbingDownHash = Animator.StringToHash("isClimbingDown");
+    int isClimbingLadderHash = Animator.StringToHash("isClimbingLadder");
+    int isClimbingLadderUpHash = Animator.StringToHash("isClimbingLadderUp");
+    int isClimbingLadderDownHash = Animator.StringToHash("isClimbingLadderDown");
+    int isClimbingRopeHash = Animator.StringToHash("isClimbingRope");
+    int isClimbingRopeUpHash = Animator.StringToHash("isClimbingRopeUp");
+    int isClimbingRopeDownHash = Animator.StringToHash("isClimbingRopeDown");
+    int isSwingingForwardHash = Animator.StringToHash("isSwingingForward");
+    int isSwingingBackwardHash = Animator.StringToHash("isSwingingBackward");
     int ledgeClimbUpRightTriggerHash = Animator.StringToHash("ledgeClimbUpRightTrigger");
     int ledgeClimbUpLeftTriggerHash = Animator.StringToHash("ledgeClimbUpLeftTrigger");
     int isPushPullingHash = Animator.StringToHash("isPushingPulling");
@@ -61,14 +86,26 @@ public class CharacterController2D : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
+        sounds = GetComponentsInChildren<AudioSource>();
+        pushpullsound = sounds[5];
+        woodImpact = sounds[2];
+        grassImpact = sounds[1];
+        deathImpact = sounds[3];
 	}
 
     #region Update(): check and evaluate input and states every frame
     void Update ()
     {
+
+       
+
         //  Check and update the facing direction of the player
         if (currentState == PlayerState.None)
             UpdateFacingDirection();
+        
+        //  Apply gravity
+        if (currentState == PlayerState.None)
+            ApplyGravity();
 
         //  Check Push/Pull, else perform push/pull
         if (Input.GetKeyDown(KeyCode.E) && charController.isGrounded)
@@ -76,13 +113,13 @@ public class CharacterController2D : MonoBehaviour
         else if (currentState == PlayerState.PushingPulling)
             PushingPulling();
 
-        //  Climbing
-        if (currentState == PlayerState.Climbing)
-            Climb();
+        //  Climbing Ladders
+        if (currentState == PlayerState.ClimbingLadder)
+            ClimbLadder();
 
-        //  Apply gravity
-        if (currentState == PlayerState.None)
-            ApplyGravity();
+        //  Climbing Ropes
+        if (currentState == PlayerState.ClimbingRope)
+            ClimbRope();
 
         //  Moving Horizontally
         if (currentState == PlayerState.None)
@@ -93,18 +130,23 @@ public class CharacterController2D : MonoBehaviour
             //  if player is on the ground... add run speed multiplier
             if (charController.isGrounded)
                 velocity.x = xAxis * runSpeed;
+                
+                
             //  else... add horizontal jump multiplier when player is in air
             else
                 velocity.x = xAxis * horizontalJumpForce;
+            
 
             //  Animation
             animator.SetFloat(xVelocityHash, Mathf.Abs(xAxis));
         }
 
         //  Jumping
-        if (Input.GetButtonDown("Jump") && canJump && ((charController.isGrounded && currentState == PlayerState.None) || currentState == PlayerState.Climbing))
+        if (Input.GetButtonDown("Jump") && canJump && ((charController.isGrounded && currentState == PlayerState.None) 
+            || currentState == PlayerState.ClimbingLadder 
+            || currentState == PlayerState.ClimbingRope))
         {
-            if (currentState == PlayerState.Climbing)
+            if (currentState == PlayerState.ClimbingLadder || currentState == PlayerState.ClimbingRope)
                 CancelClimbing();
 
             //  Animation
@@ -113,15 +155,15 @@ public class CharacterController2D : MonoBehaviour
         }
 
         //  Move
-        if (canMove)
+        if (canMove && currentState != PlayerState.ClimbingRope)
             charController.Move(velocity * Time.deltaTime);
 
         //  Animation
         animator.SetBool(isGroundedHash, charController.isGrounded);
 
-
         //Debug.Log(currentState);
         //Debug.Log(charController.isGrounded);
+        //Debug.Log(isTouchingGround);
         //Debug.Log(velocity);
     }
     #endregion
@@ -145,9 +187,7 @@ public class CharacterController2D : MonoBehaviour
 
     #region UpdateFacingDirection()
     private void UpdateFacingDirection()
-    {
-		//Vector3 flippedScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
-        	
+    {        	
         //  if player's velocity is positive... flip character scale to positive
         if (velocity.x > 0)
         {
@@ -194,7 +234,7 @@ public class CharacterController2D : MonoBehaviour
 
             //  cast ray
             RaycastHit hit;
-            Physics.Raycast(transform.position, dir, out hit, pushpullDistance, pushpullLayer);
+            Physics.Raycast(transform.position, dir, out hit, pushpullDistance, Layers.PushPullable);
             if (Application.isEditor) Debug.DrawRay(transform.position, dir * pushpullDistance, Color.red, 5f);
 
             //  Evaluate hit
@@ -239,6 +279,8 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
+                if (!pushpullsound.isPlaying) //check if audio not playing
+                    pushpullsound.Play(); //if not then play sound
             }
             //  Pushing - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
@@ -246,6 +288,8 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
+                if (!pushpullsound.isPlaying) //check audio
+                    pushpullsound.Play(); //play audio
             }
             //  Pulling - RIGHT
             else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
@@ -253,6 +297,8 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
+                if (!pushpullsound.isPlaying) //check audio
+                    pushpullsound.Play(); //play audio
             }
             //  Pulling - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
@@ -260,12 +306,16 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
+                if (!pushpullsound.isPlaying) //check audio
+                    pushpullsound.Play(); //play audio
             }
             else
             {
                 //  Animation - Idling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, false);
+                if (pushpullsound.isPlaying) //check audio for true value
+                    pushpullsound.loop = false; //stop audio loop if it is
             }
         }
         else
@@ -291,57 +341,209 @@ public class CharacterController2D : MonoBehaviour
         animator.SetBool(isPushingHash, false);
         animator.SetBool(isPullingHash, false);
         animator.SetBool(isPushPullingHash, false);
+
+        if (pushpullsound.isPlaying) //check audio for true value
+            pushpullsound.loop = false; //stop audio loop if it is
     }
     #endregion
 
-    #region Climb()
-    private void Climb()
+    #region ClimbLadder()
+    private void ClimbLadder()
     {
         //  Get input from y axis.
         float yAxisInput = Input.GetAxisRaw("Vertical");
         //float xAxisInput = Input.GetAxisRaw("Horizontal");
 
         //  Apply movement vectors
-        velocity.y = yAxisInput * climbSpeed;
+        velocity.y = yAxisInput * ladderClimbSpeed;
         //velocity.x = xAxisInput * climbSpeed / 2;
 
         //  if player inputs up or down...
         if (yAxisInput > 0)
         {
-            //  Animation - Climb up
-            animator.SetBool(isClimbingUpHash, true);
-            animator.SetBool(isClimbingDownHash, false);
+            //  Animation - ClimbLadder up
+            animator.SetBool(isClimbingLadderUpHash, true);
+            animator.SetBool(isClimbingLadderDownHash, false);
         }
         else if (yAxisInput < 0)
         {
-            //  Animation - Climb down
-            animator.SetBool(isClimbingUpHash, false);
-            animator.SetBool(isClimbingDownHash, true);
+            //  Animation - ClimbLadder down
+            animator.SetBool(isClimbingLadderUpHash, false);
+            animator.SetBool(isClimbingLadderDownHash, true);
         }
         else
         {
-            //  Animation - Climb Idle
-            animator.SetBool(isClimbingUpHash, false);
-            animator.SetBool(isClimbingDownHash, false);
+            //  Animation - ClimbLadder Idle
+            animator.SetBool(isClimbingLadderUpHash, false);
+            animator.SetBool(isClimbingLadderDownHash, false);
         }
 
         //  Cancels climbing when touching the ground at the bottom of ladder
-        if (charController.isGrounded)
+        if (isTouchingGround && charController.isGrounded)
             CancelClimbing();
+
+        //  Cancels climb when distance between ladder length and player is too far. Using this method over OnTriggerExit due to bugs
+        if (Vector2.Distance(currentLadderBoxCollider.center + currentLadderBoxCollider.transform.position, transform.position) >= currentLadderBoxCollider.size.y/2)
+            CancelClimbing();
+    }
+    #endregion
+
+    #region ClimbRope()
+    private void ClimbRope()
+    {
+        //  Get input from y axis.
+        float yAxisInput = Input.GetAxisRaw("Vertical");
+        float xAxisInput = Input.GetAxisRaw("Horizontal");
+
+        //  if player insputs left or right... apply forces to rope
+        if (xAxisInput != 0)
+        {
+            if (xAxisInput > 0 && canSwingRight)
+            {
+                canSwingRight = false;
+                canSwingLeft = true;
+
+                //  Apply swing force in the right direction
+                currentRopeRigidBody.AddForce(Vector2.right * swingForce, ForceMode.Force);
+
+                //  Animation
+                if (facingDirection == FacingDirection.Right)
+                {
+                    animator.SetBool(isSwingingForwardHash, true);
+                    animator.SetBool(isSwingingBackwardHash, false);
+                }
+                else
+                {
+                    animator.SetBool(isSwingingForwardHash, false);
+                    animator.SetBool(isSwingingBackwardHash, true);
+                }
+            }
+            else if (xAxisInput < 0 && canSwingLeft)
+            {
+                canSwingRight = true;
+                canSwingLeft = false;
+
+                //  Apply swing force to the left direction
+                currentRopeRigidBody.AddForce(Vector2.left * swingForce, ForceMode.Force);
+
+                //  Animation
+                if (facingDirection == FacingDirection.Right)
+                {
+                    animator.SetBool(isSwingingForwardHash, false);
+                    animator.SetBool(isSwingingBackwardHash, true);
+                }
+                else
+                {
+                    animator.SetBool(isSwingingForwardHash, true);
+                    animator.SetBool(isSwingingBackwardHash, false);
+                }
+            }
+        }
+        else
+        {
+            //  Animation - not swinging
+            animator.SetBool(isSwingingForwardHash, false);
+            animator.SetBool(isSwingingBackwardHash, false);
+
+            //  if player inputs up or down...
+            if (yAxisInput > 0)
+            {
+                //  Animation - ClimbLadder up
+                animator.SetBool(isClimbingRopeUpHash, true);
+                animator.SetBool(isClimbingRopeDownHash, false);
+            }
+            else if (yAxisInput < 0)
+            {
+                //  Animation - ClimbLadder down
+                animator.SetBool(isClimbingRopeUpHash, false);
+                animator.SetBool(isClimbingRopeDownHash, true);
+            }
+            else
+            {
+                //  Animation - ClimbLadder Idle
+                animator.SetBool(isClimbingRopeUpHash, false);
+                animator.SetBool(isClimbingRopeDownHash, false);
+            }
+
+            //  Move vertically
+            transform.localPosition = new Vector2(transform.localPosition.x, transform.localPosition.y + yAxisInput * ropeClimbSpeed * Time.deltaTime);
+        }
+
+
+        //  Cancels climbing when touching the ground at the bottom of ladder
+        //if (isTouchingGround && charController.isGrounded)
+        //CancelClimbing();
+
+        //  Cancels climb when distance between ladder length and player is too far. Using this method over OnTriggerExit due to bugs
+        /*float distance = Vector2.Distance(currentRopeRigidBody.transform.parent.position, transform.position);
+        if (distance >= currentRopeRigidBody.transform.parent.localScale.y / 2f)
+        {
+            Debug.Log("distance: " + distance + " break distance: " + currentRopeRigidBody.transform.parent.localScale.y / 2f);
+            CancelClimbing();
+        }*/
     }
     #endregion
 
     #region CancelClimbing()
     private void CancelClimbing()
     {
+        if (currentState == PlayerState.ClimbingLadder)
+        {
+            //  Revert collision agianst platforms when climbing downwards
+            Physics.IgnoreLayerCollision(gameObject.layer, Layers.Platforms, false);
+            
+            // Animation
+            animator.SetBool(isClimbingLadderUpHash, false);
+            animator.SetBool(isClimbingLadderDownHash, false);
+            animator.SetBool(isClimbingLadderHash, false);
+        }
+        
+        else if (currentState == PlayerState.ClimbingRope)
+        {
+            //  Reset parent
+            transform.SetParent(null);
+            //  Reset rotation
+            transform.rotation = Quaternion.identity;
+
+            // Animation
+            animator.SetBool(isClimbingRopeUpHash, false);
+            animator.SetBool(isClimbingRopeDownHash, false);
+            animator.SetBool(isClimbingRopeHash, false);
+        }
+        
         //  Set player state
         currentState = PlayerState.None;
+    }
+    #endregion
 
+    #region LedgeClimbUp(): Called when player climbs up a ledge
+    void ClimbUpLedge()
+    {
+        //  Update state
+        currentState = PlayerState.ClimbingLedge;
 
-        // Animation
-        animator.SetBool(isClimbingUpHash, false);
-        animator.SetBool(isClimbingDownHash, false);
-        animator.SetBool(isClimbingHash, false);
+        //  Reset the velocity so player does not slide
+        velocity = Vector2.zero;
+
+        //  Determine the direction of the ledge climb clip
+        if (facingDirection == FacingDirection.Right)
+            animator.SetTrigger(ledgeClimbUpRightTriggerHash);
+        else
+            animator.SetTrigger(ledgeClimbUpLeftTriggerHash);
+    }
+    #endregion
+
+    #region OnLedgeClimbUpComplete(): Called when player completes ledge climbing animation. Animation Event
+    public void OnLedgeClimbUpComplete()
+    {
+        //  Set state
+        currentState = PlayerState.None;
+
+        //  Determine the direction of the ledge climb clip
+        if (facingDirection == FacingDirection.Right)
+            transform.position = new Vector2(transform.position.x + 1, transform.position.y + 1.5f);
+        else
+            transform.position = new Vector2(transform.position.x - 1, transform.position.y + 1.5f);
     }
     #endregion
 
@@ -364,40 +566,10 @@ public class CharacterController2D : MonoBehaviour
         //  Evaluate force and see if its enough to kill the player
         if (collisionForce.magnitude >= impactForceThreshold)
         {
+            pa.randomizePitch(deathImpact);
+            deathImpact.Play();
             Die();
         }
-    }
-    #endregion
-
-    #region LedgeClimbUp(): Called when player climbs up a ledge
-    void ClimbUpLedge()
-    {
-        currentState = PlayerState.ClimbingLedge;
-
-        velocity = Vector2.zero;
-
-        //  Determine the direction of the ledge climb clip
-        if (facingDirection == FacingDirection.Right)
-            animator.SetTrigger(ledgeClimbUpRightTriggerHash);
-        else
-            animator.SetTrigger(ledgeClimbUpLeftTriggerHash);
-
-        Debug.Log("Climb Ledge");
-    }
-    #endregion
-
-    #region OnLedgeClimbUpComplete(): Called when player completes ledge climbing animation. Animation Event
-    public void OnLedgeClimbUpComplete()
-    {
-        currentState = PlayerState.None;
-
-        //  Determine the direction of the ledge climb clip
-        if (facingDirection == FacingDirection.Right)
-            transform.position = new Vector2(transform.position.x + 1, transform.position.y + 1.5f);
-        else
-            transform.position = new Vector2(transform.position.x - 1, transform.position.y + 1.5f);
-
-        Debug.Log("Ledge climb up complete");
     }
     #endregion
 
@@ -407,10 +579,13 @@ public class CharacterController2D : MonoBehaviour
         //  If player collides with a trap, perform death function
         if (other.CompareTag(Tags.Trap))
         {
-            Die();   
+            pa.randomizePitch(deathImpact);
+            deathImpact.Play();
+            Die();
         }
+            Die();
 
-        //  Perform Ledge climbs if within ledge colliders
+        #region Perform Ledge climbs if within ledge colliders
         if (other.CompareTag(Tags.Ledge))
         {
             if (true)
@@ -425,39 +600,129 @@ public class CharacterController2D : MonoBehaviour
                 }
             }
         }
-    }
+        #endregion
 
-    //  Called when a collider stay within another collider with isTrigger enabled
-    void OnTriggerStay(Collider other)
-    {
-        #region Check Climb
-        if (canClimb && currentState == PlayerState.None && other.CompareTag(Tags.Ladder))
+        #region Update rope parents when climbing
+        if (currentState == PlayerState.ClimbingRope && other.CompareTag(Tags.Rope))
         {
-            //  If the player inputs up or down... evaluate
-            float yAxisInput = Input.GetAxisRaw("Vertical");
-            if (yAxisInput > 0 || (yAxisInput < 0 && !charController.isGrounded))
+            if (Input.GetAxisRaw("Horizontal") == 0)
             {
-                //  Set state
-                currentState = PlayerState.Climbing;
-
-                //  Set position to match ladder
-                transform.position = new Vector3(other.transform.position.x, transform.position.y, transform.position.z);
-
-                //  Reset horizontal speed so player does not slide horizontally during ladder use
-                velocity.x = 0;
-                
-                // Animation
-                animator.SetBool(isClimbingHash, true);
+                currentRopeRigidBody = other.GetComponent<Rigidbody>();
+                transform.SetParent(other.transform);
+                transform.localPosition = new Vector3(currentRopeRigidBody.transform.localPosition.x, transform.localPosition.y, transform.position.z);
+                transform.localRotation = Quaternion.identity;
+                transform.localScale = new Vector3(currentRopeRigidBody.transform.lossyScale.y, currentRopeRigidBody.transform.lossyScale.x, 1);
             }
         }
         #endregion
     }
 
-    //  Called when a collider exits another collider with isTrigger enabled
-    void OnTriggerExit(Collider other)
+    //  Called when a collider stay within another collider with isTrigger enabled
+    void OnTriggerStay(Collider other)
     {
-        if (currentState == PlayerState.Climbing && other.CompareTag(Tags.Ladder))
-            CancelClimbing();
+        #region Check Ladder Climb
+        if (canClimb && currentState == PlayerState.None && other.CompareTag(Tags.Ladder))
+        {
+            //  If the player inputs up or down... evaluate
+            float yAxisInput = Input.GetAxisRaw("Vertical");
+            if (yAxisInput > 0 || (yAxisInput < 0 && !isTouchingGround))
+            {
+                //  Set state
+                currentState = PlayerState.ClimbingLadder;
+
+                //  Ignore collision agianst platforms when climbing upwards
+                Physics.IgnoreLayerCollision(gameObject.layer, Layers.Platforms, true);
+
+                //  Cache the ladder's BoxCollider
+                currentLadderBoxCollider = other.GetComponent<BoxCollider>();
+
+                //  Set position to match ladder
+                if (facingDirection == FacingDirection.Right)
+                    transform.position = new Vector3(other.transform.position.x - 0.5f, transform.position.y, transform.position.z);
+                else
+                    transform.position = new Vector3(other.transform.position.x + 0.5f, transform.position.y, transform.position.z);
+
+                //  correct facing direction
+                /*if (facingDirection == FacingDirection.Left)
+                {
+                    facingDirection = FacingDirection.Right;
+                    //  Flip the global control rig
+                    puppet2DGlobalControl.flip = false;
+                }*/
+
+                //  Reset horizontal speed so player does not slide horizontally during ladder use
+                velocity.x = 0;
+
+                // Animation
+                animator.SetBool(isClimbingLadderHash, true);
+                animator.SetFloat(yVelocityHash, 0);
+            }
+        }
+        #endregion
+
+        #region Check Rope Climb
+        if (canClimb && currentState == PlayerState.None && other.CompareTag(Tags.Rope))
+        {
+            //  If the player inputs up or down... evaluate
+            float yAxisInput = Input.GetAxisRaw("Vertical");
+            if (yAxisInput > 0 || (yAxisInput < 0 && !isTouchingGround))
+            {
+                //  Set state
+                currentState = PlayerState.ClimbingRope;
+
+                canSwingRight = true;
+                canSwingLeft = true;
+
+                //  Cache the rope
+                currentRopeRigidBody = other.GetComponent<Rigidbody>();
+
+                //  Set position to match rope
+                transform.position = other.transform.position;
+
+                transform.SetParent(other.transform);
+                transform.rotation = Quaternion.identity;
+
+                //  Reset horizontal speed so player does not slide horizontally during ladder use
+                velocity = Vector2.zero;
+
+                // Animation
+                animator.SetBool(isClimbingRopeHash, true);
+                animator.SetFloat(yVelocityHash, 0);
+            }
+        }
+        #endregion
     }
+
+    //  Must use this because OnCollisionEnter/Exit does not work for character controller
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        float hitVol = hit.controller.velocity.magnitude * velToVol;
+        if (hitVol >= 1f)
+        {
+            if (hit.collider.CompareTag(Tags.Ground) || hit.collider.CompareTag(Tags.Platform))
+            {
+                pa.randomizePitch(grassImpact);
+                grassImpact.volume = hitVol;
+                if(!grassImpact.isPlaying)
+                    grassImpact.Play();
+            }
+            else if (hit.collider.CompareTag(Tags.Box))
+            {
+                pa.randomizePitch(woodImpact);
+                woodImpact.volume = hitVol;
+                if (!woodImpact.isPlaying)
+                    woodImpact.Play();
+            }
+        }
+
+
+
+        //  Evaluate what if the object hit is the ground (lowest platform/terrain)
+        if (hit.collider.CompareTag(Tags.Ground))
+            isTouchingGround = true;
+        else
+            isTouchingGround = false;
+    }
+
 }
 

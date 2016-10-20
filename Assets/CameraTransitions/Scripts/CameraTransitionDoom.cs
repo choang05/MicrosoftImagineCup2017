@@ -21,12 +21,12 @@ namespace CameraTransitions
   public sealed class CameraTransitionDoom : CameraTransitionBase
   {
     /// <summary>
-    /// Bar width [0 - ...].
+    /// Bar width [1 - ...].
     /// </summary>
     public int BarWidth
     {
       get { return barWidth; }
-      set { barWidth = value < 0 ? 0 : value; }
+      set { barWidth = value < 1 ? 1 : value; }
     }
 
     /// <summary>
@@ -93,7 +93,7 @@ namespace CameraTransitions
     {
       base.SendValuesToShader();
 
-      material.SetInt(variableBarWidth, barWidth);
+      material.SetFloat(variableBarWidth, barWidth);
       material.SetFloat(variableAmplitude, amplitude);
       material.SetFloat(variableNoise, noise);
       material.SetFloat(variableFrequency, frequency);

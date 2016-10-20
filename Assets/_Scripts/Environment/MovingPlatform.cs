@@ -56,17 +56,11 @@ public class MovingPlatform : MonoBehaviour
     //  Detect when player is on the platform
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag(Tags.Player))
-        {
-            other.transform.SetParent(transform);
-            //Debug.Log("Player is on moving platform!");
-        }
+        other.transform.SetParent(transform);
+        //Debug.Log("Player is on moving platform!");
     }
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag(Tags.Player))
-        {
-            other.transform.SetParent(null);
-        }
+        other.transform.SetParent(null);
     }
 }

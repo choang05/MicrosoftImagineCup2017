@@ -33,23 +33,23 @@ Shader "Hidden/Camera Transitions/Page Curl"
   sampler2D _MainTex;
   sampler2D _SecondTex;
 
-	fixed _T;
-	fixed _Radius;
-	fixed2 _Angle;
+	half _T;
+	half _Radius;
+	half2 _Angle;
   int _Obtuse;
 
-	float2 PageCurl(float t, float maxt, float cyl)
+	half2 PageCurl(half t, half maxt, half cyl)
 	{
-		float2 ret = float2(t, 1.0);
+		half2 ret = half2(t, 1.0);
 
     if (t < cyl - _Radius)
         return ret;
 
 		if (t > cyl + _Radius)
-      return float2(-1.0, -1.0);
+      return half2(-1.0, -1.0);
 
-		float a = asin((t - cyl) / _Radius);
-		float ca = -a + _PI;
+		half a = asin((t - cyl) / _Radius);
+		half ca = -a + _PI;
 
 		ret.x = cyl + ca * _Radius;
 		ret.y = cos(ca);
@@ -58,66 +58,39 @@ Shader "Hidden/Camera Transitions/Page Curl"
 			return ret;
 
 		if (t < cyl)
-			return float2(t, 1.0);
+			return half2(t, 1.0);
 
 		ret.x = cyl + a * _Radius;
 		ret.y = cos(a);
 
-    return (ret.x < maxt) ? ret : float2(-1.0, -1.0);
+    return (ret.x < maxt) ? ret : half2(-1.0, -1.0);
   }
 
-	float4 frag_gamma(v2f_img i) : COLOR
+	half4 frag(v2f_img i) : COLOR
 	{
-    float2 uv = (_Obtuse == 0) ? i.uv : float2(1.0 - i.uv.x, i.uv.y);
+    half2 uv = (_Obtuse == 0) ? i.uv : half2(1.0 - i.uv.x, i.uv.y);
 
-		float2 angle = _Angle * _T;
-		float d = length(angle * (1.0 + 4.0 * _Radius)) - 2.0 * _Radius;
-		float3 cyl = float3(normalize(angle), d);
+		half2 angle = _Angle * _T;
+		half d = length(angle * (1.0 + 4.0 * _Radius)) - 2.0 * _Radius;
+		half3 cyl = half3(normalize(angle), d);
 
 		d = dot(uv, cyl.xy);
-    float2 end = abs((1.0 - uv) / cyl.xy);
-		float maxt = d + min(end.x, end.y);
-		float2 cf = PageCurl(d, maxt, cyl.z);
-    float2 tuv = i.uv + cyl.xy * (cf.x - d);
+    half2 end = abs((1.0 - uv) / cyl.xy);
+		half maxt = d + min(end.x, end.y);
+		half2 cf = PageCurl(d, maxt, cyl.z);
+    half2 tuv = i.uv + cyl.xy * (cf.x - d);
 
-		float shadow = 1.0 - smoothstep(0.0, _Radius * 2.0, -(d - cyl.z));
+		half shadow = 1.0 - smoothstep(0.0, _Radius * 2.0, -(d - cyl.z));
 		shadow *= (smoothstep(-_Radius, _Radius, (maxt - (cf.x + 1.5 * _PI * _Radius + _Radius))));
 
-		float3 from = tex2D(_SecondTex, RenderTextureUV(tuv)).rgb;
+		half3 from = tex2D(_SecondTex, FixUV(tuv)).rgb;
 		from = cf.y > 0.0 ? from * cf.y * (1.0 - shadow) : (from * 0.25 + 0.75) * (-cf.y);
 
 		shadow = smoothstep(0.0, _Radius * 2.0, (d - cyl.z));
 
-		float3 to = tex2D(_MainTex, i.uv).rgb * shadow;
+		half3 to = tex2D(_MainTex, i.uv).rgb * shadow;
 
-		return float4(cf.x > 0.0 ? from : to, 1.0);
-	}
-
-  float4 frag_linear(v2f_img i) : COLOR
-	{
-    float2 uv = (_Obtuse == 0) ? i.uv : float2(1.0 - i.uv.x, i.uv.y);
-
-		float2 angle = _Angle * _T;
-		float d = length(angle * (1.0 + 4.0 * _Radius)) - 2.0 * _Radius;
-		float3 cyl = float3(normalize(angle), d);
-
-		d = dot(uv, cyl.xy);
-		float2 end = abs((1.0 - uv) / cyl.xy);
-		float maxt = d + min(end.x, end.y);
-		float2 cf = PageCurl(d, maxt, cyl.z);
-		float2 tuv = i.uv + cyl.xy * (cf.x - d);
-
-		float shadow = 1.0 - smoothstep(0.0, _Radius * 2.0, -(d - cyl.z));
-		shadow *= (smoothstep(-_Radius, _Radius, (maxt - (cf.x + 1.5 * _PI * _Radius + _Radius))));
-
-		float3 from = sRGB(tex2D(_SecondTex, RenderTextureUV(tuv)).rgb);
-		from = cf.y > 0.0 ? from * cf.y * (1.0 - shadow) : (from * 0.25 + 0.75) * (-cf.y);
-
-		shadow = smoothstep(0.0, _Radius * 2.0, (d - cyl.z));
-
-		float3 to = sRGB(tex2D(_MainTex, i.uv).rgb) * shadow;
-
-		return float4(Linear(cf.x > 0.0 ? from : to), 1.0);
+		return half4(cf.x > 0.0 ? from : to, 1.0);
 	}
   ENDCG
 
@@ -130,7 +103,6 @@ Shader "Hidden/Camera Transitions/Page Curl"
 		ZWrite Off
 		Fog { Mode off }
 
-		// Pass 0: Color Space Gamma.
 		Pass
 		{
 			CGPROGRAM
@@ -138,19 +110,7 @@ Shader "Hidden/Camera Transitions/Page Curl"
       #pragma target 3.0
       #pragma multi_compile ___ INVERT_RENDERTEXTURE
       #pragma vertex vert_img
-      #pragma fragment frag_gamma
-			ENDCG
-		}
-
-		// Pass 1: Color Space Linear.
-		Pass
-		{
-			CGPROGRAM
-      #pragma fragmentoption ARB_precision_hint_fastest
-      #pragma target 3.0
-      #pragma multi_compile ___ INVERT_RENDERTEXTURE
-      #pragma vertex vert_img
-      #pragma fragment frag_linear
+      #pragma fragment frag
 			ENDCG
 		}
 	}

@@ -33,40 +33,33 @@ Shader "Hidden/Camera Transitions/Glitch"
   sampler2D _MainTex;
   sampler2D _SecondTex;
 
-  fixed _T;
-  fixed _GlitchStrength;
+  half _T;
+  half _GlitchStrength;
 
-  inline float3 Glitch(sampler2D tex, float2 uv, float progress)
+  inline half3 Glitch(sampler2D tex, half2 uv, half progress)
   {
-    float2 block = floor(_ScreenParams.xy / 16.0);
-    float2 uvNoise = block / 64.0;
-    uvNoise += floor(_T * float2(1200.0, 3500.0)) / 64.0;
+    half2 block = floor(_ScreenParams.xy / 16.0);
+    half2 uvNoise = block / 64.0;
+    uvNoise += floor(_T * half2(1200.0, 3500.0)) / 64.0;
 
-    float blockThresh = pow(frac(_T * 1200.0), 2.0) * 0.2;
-    float lineThresh = pow(frac(_T * 2200.0), 3.0) * 0.7;
+    half blockThresh = pow(frac(_T * 1200.0), 2.0) * 0.2;
+    half lineThresh = pow(frac(_T * 2200.0), 3.0) * 0.7;
     
-    float2 red = uv, green = uv, blue = uv, o = uv;
+    half2 red = uv, green = uv, blue = uv, o = uv;
 
-    float2 dist = (frac(uvNoise) - 0.5) * _GlitchStrength * progress;
+    half2 dist = (frac(uvNoise) - 0.5) * _GlitchStrength * progress;
     red += dist * 0.1;
     green += dist * 0.2;
     blue += dist * 0.125;
     
-    return float3(tex2D(tex, red).r, tex2D(tex, green).g, tex2D(tex, blue).b);
+    return half3(tex2D(tex, red).r, tex2D(tex, green).g, tex2D(tex, blue).b);
   }
 
-  float4 frag_gamma(v2f_img i) : COLOR
+  half4 frag(v2f_img i) : COLOR
   {
-    float smoothed = smoothstep(0.0, 1.0, _T);
+    half smoothed = smoothstep(0.0, 1.0, _T);
 
-    return float4(lerp(Glitch(_MainTex, i.uv, sin(smoothed)), Glitch(_SecondTex, RenderTextureUV(i.uv), sin(1.0 - smoothed)), smoothed), 1.0);
-  }
-
-  float4 frag_linear(v2f_img i) : COLOR
-  {
-    float smoothed = smoothstep(0.0, 1.0, _T);
-
-    return float4(Linear(lerp(sRGB(Glitch(_MainTex, i.uv, sin(smoothed))), sRGB(Glitch(_SecondTex, RenderTextureUV(i.uv), sin(1.0 - smoothed))), smoothed)), 1.0);
+    return half4(lerp(Glitch(_MainTex, i.uv, sin(smoothed)), Glitch(_SecondTex, FixUV(i.uv), sin(1.0 - smoothed)), smoothed), 1.0);
   }
   ENDCG
 
@@ -79,7 +72,6 @@ Shader "Hidden/Camera Transitions/Glitch"
     ZWrite Off
     Fog { Mode off }
 
-    // Pass 0: Color Space Gamma.
     Pass
     {
       CGPROGRAM
@@ -87,19 +79,7 @@ Shader "Hidden/Camera Transitions/Glitch"
       #pragma target 3.0
       #pragma multi_compile ___ INVERT_RENDERTEXTURE
       #pragma vertex vert_img
-      #pragma fragment frag_gamma
-      ENDCG
-    }
-
-    // Pass 1: Color Space Linear.
-    Pass
-    {
-      CGPROGRAM
-      #pragma fragmentoption ARB_precision_hint_fastest
-      #pragma target 3.0
-      #pragma multi_compile ___ INVERT_RENDERTEXTURE
-      #pragma vertex vert_img
-      #pragma fragment frag_linear
+      #pragma fragment frag
       ENDCG
     }
   }

@@ -33,92 +33,55 @@ Shader "Hidden/Camera Transitions/Gate"
   sampler2D _MainTex;
   sampler2D _SecondTex;
 
-  fixed _T;
-  fixed _GatePerspective;
-  fixed _GateDepth;
-  fixed _GateReflection;
+  half _T;
+  half _GatePerspective;
+  half _GateDepth;
+  half _GateReflection;
 
-  inline bool InBounds(float2 p)
+  inline bool InBounds(half2 p)
   {
     return all(0.0 < p) && all(p < 1.0);
   }
 
-  inline float3 BackgroundColorGamma(float2 p, float2 pto, sampler2D to)
+  inline half3 BackgroundColor(half2 p, half2 pto, sampler2D to)
   {
-    float3 pixel = 0.0; // Black.
+    half3 pixel = half3(0.0, 0.0, 0.0); // Black.
 
-    pto *= float2(1.0, -1.2);
-    pto += float2(0.0, -0.02);
-
-    if (InBounds(pto))
-      pixel += lerp(0.0, tex2D(to, RenderTextureUV(pto)).rgb, _GateReflection * lerp(1.0, 0.0, pto.y));
-
-    return pixel;
-  }
-
-  inline float3 BackgroundColorLinear(float2 p, float2 pto, sampler2D to)
-  {
-    float3 pixel = 0.0; // Black.
-
-    pto *= float2(1.0, -1.2);
+    pto *= half2(1.0, -1.2);
     pto.y -= 0.02;
 
     if (InBounds(pto))
-      pixel += lerp(0.0, sRGB(tex2D(to, RenderTextureUV(pto)).rgb), _GateReflection * lerp(1.0, 0.0, pto.y));
+      pixel += lerp(0.0, tex2D(to, pto).rgb, _GateReflection * lerp(1.0, 0.0, pto.y));
 
     return pixel;
   }
 
-  float4 frag_gamma(v2f_img i) : COLOR
+  half4 frag(v2f_img i) : COLOR
   {
-    float2 pfr = -1.0;
-    float2 pto = -1.0;
+    i.uv = FixUV(i.uv);
 
-    float middleSlit = 2.0 * abs(i.uv.x - 0.5) - _T;
+    half2 pfr = -1.0;
+    half2 pto = -1.0;
+
+    half middleSlit = 2.0 * abs(i.uv.x - 0.5) - _T;
     if (middleSlit > 0.0)
     {
-      pfr = i.uv + (i.uv.x > 0.5 ? -1.0 : 1.0) * float2(0.5 * _T, 0.0);
-      float d = 1.0 / (1.0 + _GatePerspective * _T * (1.0 - middleSlit));
+      pfr = i.uv + (i.uv.x > 0.5 ? -1.0 : 1.0) * half2(0.5 * _T, 0.0);
+      half d = 1.0 / (1.0 + _GatePerspective * _T * (1.0 - middleSlit));
       pfr.y -= d / 2.0;
       pfr.y *= d;
       pfr.y += d / 2.0;
     }
 
-    float size = lerp(1.0, _GateDepth, 1.0 - _T);
+    half size = lerp(1.0, _GateDepth, 1.0 - _T);
     pto = (i.uv - 0.5) * size + 0.5;
 
     if (InBounds(pfr))
-      return tex2D(_MainTex, pfr);
+      return tex2D(_MainTex, FixUV(pfr));
     else if (InBounds(pto))
-      return tex2D(_SecondTex, RenderTextureUV(pto));
+      return tex2D(_SecondTex, pto);
 
-    return float4(BackgroundColorGamma(i.uv, pto, _SecondTex), 1.0);
-  }
-
-  float4 frag_linear(v2f_img i) : COLOR
-  {
-    float2 pfr = -1.0;
-    float2 pto = -1.0;
-
-    float middleSlit = 2.0 * abs(i.uv.x - 0.5) - _T;
-    if (middleSlit > 0.0)
-    {
-      pfr = i.uv + (i.uv.x > 0.5 ? -1.0 : 1.0) * float2(0.5 * _T, 0.0);
-      float d = 1.0 / (1.0 + _GatePerspective * _T * (1.0 - middleSlit));
-      pfr.y -= d / 2.0;
-      pfr.y *= d;
-      pfr.y += d / 2.0;
-    }
-
-    float size = lerp(1.0, _GateDepth, 1.0 - _T);
-    pto = (i.uv - 0.5) * size + 0.5;
-
-    if (InBounds(pfr))
-      return tex2D(_MainTex, pfr);
-    else if (InBounds(pto))
-      return tex2D(_SecondTex, RenderTextureUV(pto));
-
-    return float4(Linear(BackgroundColorLinear(i.uv, pto, _SecondTex)), 1.0);
+    return half4(BackgroundColor(i.uv, pto, _SecondTex), 1.0);
   }
   ENDCG
 
@@ -131,7 +94,6 @@ Shader "Hidden/Camera Transitions/Gate"
     ZWrite Off
     Fog { Mode off }
 
-    // Pass 0: Color Space Gamma.
     Pass
     {
       CGPROGRAM
@@ -139,19 +101,7 @@ Shader "Hidden/Camera Transitions/Gate"
       #pragma target 3.0
       #pragma multi_compile ___ INVERT_RENDERTEXTURE
       #pragma vertex vert_img
-      #pragma fragment frag_gamma
-      ENDCG
-    }
-
-    // Pass 1: Color Space Linear.
-    Pass
-    {
-      CGPROGRAM
-      #pragma fragmentoption ARB_precision_hint_fastest
-      #pragma target 3.0
-      #pragma multi_compile ___ INVERT_RENDERTEXTURE
-      #pragma vertex vert_img
-      #pragma fragment frag_linear
+      #pragma fragment frag
       ENDCG
     }
   }

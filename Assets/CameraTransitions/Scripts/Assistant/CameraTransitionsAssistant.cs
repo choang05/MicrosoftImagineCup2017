@@ -162,8 +162,9 @@ namespace CameraTransitions
     {
       public bool invert = false;
       public float smoothness = 0.3f;
+      public Vector2 center = Vector2.one * 0.5f;
 
-      public object[] ToParams() { return new object[] { invert, smoothness }; }
+      public object[] ToParams() { return new object[] { invert, smoothness, center }; }
     }
 
     [Serializable]
@@ -191,6 +192,15 @@ namespace CameraTransitions
       public float curvature = 0.5f;
 
       public object[] ToParams() { return new object[] { mode, curvature }; }
+    }
+
+    [Serializable]
+    public class CrossZoomParams : CameraTransitionParams
+    {
+      public float strength = 0.4f;
+      public float quality = 20.0f;
+
+      public object[] ToParams() { return new object[] { strength, quality }; }
     }
 
     [Serializable]
@@ -270,6 +280,8 @@ namespace CameraTransitions
 
     public WarpWaveParams warpWaveParams = new WarpWaveParams();
 
+    public CrossZoomParams crossZoomParams = new CrossZoomParams();
+
     public CubeParams cubeParams = new CubeParams();
 
     public DoomParams doomParams = new DoomParams();
@@ -278,19 +290,50 @@ namespace CameraTransitions
 
     public SwapParams swapParams = new SwapParams();
     #endregion
+    
+    /// <summary>
+    /// Execution method.
+    /// </summary>
+    public ExecutionMethod executeMethod = ExecutionMethod.Manual;
 
+    /// <summary>
+    /// Delay time in Awake mode (>0).
+    /// </summary>
+    public float delayTime;
+
+    /// <summary>
+    /// Transition effect.
+    /// </summary>
     public CameraTransitionEffects transitionEffect;
 
+    /// <summary>
+    /// Source camera.
+    /// </summary>
     public Camera cameraA;
 
+    /// <summary>
+    /// Destiny camera.
+    /// </summary>
     public Camera cameraB;
 
-    public EaseType easeType;
+    /// <summary>
+    /// Easing equation.
+    /// </summary>
+    public EaseType easeType = EaseType.Linear;
 
+    /// <summary>
+    /// Easing mode.
+    /// </summary>
     public EaseMode easeMode;
 
+    /// <summary>
+    /// Transition time (>0).
+    /// </summary>
     public float transitionTime = 1.0f;
 
+    /// <summary>
+    /// CameraTransition object.
+    /// </summary>
     public CameraTransition cameraTransition;
 
     /// <summary>
@@ -301,6 +344,8 @@ namespace CameraTransitions
       get { return cameraTransition != null ? cameraTransition.IsRunning : false; }
     }
 
+    private float timeToExecute = -1.0f;
+    
     /// <summary>
     /// Execute transition.
     /// </summary>
@@ -308,45 +353,60 @@ namespace CameraTransitions
     {
       if (cameraTransition != null)
       {
-        if (cameraTransition.IsRunning == false)
-        {
-          object[] parameters = null;
-          switch (transitionEffect)
-          {
-            case CameraTransitionEffects.Cube:              parameters = cubeParams.ToParams(); break;
-            case CameraTransitionEffects.Doom:              parameters = doomParams.ToParams(); break;
-            case CameraTransitionEffects.FadeToColor:       parameters = fadeToColorParams.ToParams(); break;
-            case CameraTransitionEffects.FadeToGrayscale:   parameters = fadeToGrayscaleParams.ToParams(); break;
-            case CameraTransitionEffects.Flash:             parameters = flashParams.ToParams(); break;
-            case CameraTransitionEffects.Flip:              parameters = flipParams.ToParams(); break;
-            case CameraTransitionEffects.Fold:              parameters = foldParams.ToParams(); break;
-            case CameraTransitionEffects.Gate:              parameters = gateParams.ToParams(); break;
-            case CameraTransitionEffects.Glitch:            parameters = glitchParams.ToParams(); break;
-            case CameraTransitionEffects.LinearBlur:        parameters = linearBlurParams.ToParams(); break;
-            case CameraTransitionEffects.Mosaic:            parameters = mosaicParams.ToParams(); break;
-            case CameraTransitionEffects.PageCurl:          parameters = pageCurlParams.ToParams(); break;
-            case CameraTransitionEffects.PageCurlAdvanced:  parameters = pageCurlAdvancedParams.ToParams(); break;
-            case CameraTransitionEffects.Pixelate:          parameters = pixelateParams.ToParams(); break;
-            case CameraTransitionEffects.Radial:            parameters = radialParams.ToParams(); break;
-            case CameraTransitionEffects.RandomGrid:        parameters = randomGridParams.ToParams(); break;
-            case CameraTransitionEffects.SmoothCircle:      parameters = smoothCircleParams.ToParams(); break;
-            case CameraTransitionEffects.SmoothLine:        parameters = smoothLineParams.ToParams(); break;
-            case CameraTransitionEffects.Swap:              parameters = swapParams.ToParams(); break;
-            case CameraTransitionEffects.Valentine:         parameters = valentineParams.ToParams(); break;
-            case CameraTransitionEffects.WarpWave:          parameters = warpWaveParams.ToParams(); break;
-          }
+        timeToExecute = -1.0f;
 
-          cameraTransition.DoTransition(transitionEffect, cameraA, cameraB, transitionTime, easeType, easeMode, parameters);
+        object[] parameters = null;
+        switch (transitionEffect)
+        {
+          case CameraTransitionEffects.CrossZoom:         parameters = crossZoomParams.ToParams(); break;
+          case CameraTransitionEffects.Cube:              parameters = cubeParams.ToParams(); break;
+          case CameraTransitionEffects.Doom:              parameters = doomParams.ToParams(); break;
+          case CameraTransitionEffects.FadeToColor:       parameters = fadeToColorParams.ToParams(); break;
+          case CameraTransitionEffects.FadeToGrayscale:   parameters = fadeToGrayscaleParams.ToParams(); break;
+          case CameraTransitionEffects.Flash:             parameters = flashParams.ToParams(); break;
+          case CameraTransitionEffects.Flip:              parameters = flipParams.ToParams(); break;
+          case CameraTransitionEffects.Fold:              parameters = foldParams.ToParams(); break;
+          case CameraTransitionEffects.Gate:              parameters = gateParams.ToParams(); break;
+          case CameraTransitionEffects.Glitch:            parameters = glitchParams.ToParams(); break;
+          case CameraTransitionEffects.LinearBlur:        parameters = linearBlurParams.ToParams(); break;
+          case CameraTransitionEffects.Mosaic:            parameters = mosaicParams.ToParams(); break;
+          case CameraTransitionEffects.PageCurl:          parameters = pageCurlParams.ToParams(); break;
+          case CameraTransitionEffects.PageCurlAdvanced:  parameters = pageCurlAdvancedParams.ToParams(); break;
+          case CameraTransitionEffects.Pixelate:          parameters = pixelateParams.ToParams(); break;
+          case CameraTransitionEffects.Radial:            parameters = radialParams.ToParams(); break;
+          case CameraTransitionEffects.RandomGrid:        parameters = randomGridParams.ToParams(); break;
+          case CameraTransitionEffects.SmoothCircle:      parameters = smoothCircleParams.ToParams(); break;
+          case CameraTransitionEffects.SmoothLine:        parameters = smoothLineParams.ToParams(); break;
+          case CameraTransitionEffects.Swap:              parameters = swapParams.ToParams(); break;
+          case CameraTransitionEffects.Valentine:         parameters = valentineParams.ToParams(); break;
+          case CameraTransitionEffects.WarpWave:          parameters = warpWaveParams.ToParams(); break;
         }
-        else
-          Debug.LogWarning(@"A transition is still running.");
+
+        cameraTransition.DoTransition(transitionEffect, cameraA, cameraB, transitionTime, easeType, easeMode, parameters);
       }
       else
         Debug.LogWarning(@"CameraTransition component not found.");
     }
 
+    private void OnEnable()
+    {
+      if (executeMethod == ExecutionMethod.OnEnable)
+      {
+        if (delayTime <= 0.0f)
+          ExecuteTransition();
+        else
+          timeToExecute = delayTime;
+      }
+    }
+
     private void Update()
     {
+      if (executeMethod == ExecutionMethod.OnEnable && timeToExecute >= 0.0f)
+      {
+        timeToExecute -= Time.deltaTime;
+        if (timeToExecute <= 0)
+          ExecuteTransition();
+      }
     }
   }
 }

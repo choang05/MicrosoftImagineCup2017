@@ -33,30 +33,19 @@ Shader "Hidden/Camera Transitions/Smooth Line"
   sampler2D _MainTex;
   sampler2D _SecondTex;
 
-  fixed _T;
-  fixed2 _Angle;
-  fixed _Smoothness;
+  half _T;
+  half2 _Angle;
+  half _Smoothness;
 
-  float4 frag_gamma(v2f_img i) : COLOR
+  half4 frag(v2f_img i) : COLOR
   {
-    fixed2 v = _Angle;
+    half2 v = _Angle;
 	  v /= abs(v.x) + abs(v.y);
 
-  	fixed d = v.x * 0.5 + v.y * 0.5;
-  	fixed m = smoothstep(-_Smoothness, 0.0, v.x * i.uv.x + v.y * i.uv.y - (d - 0.5 + _T * (1.0 + _Smoothness)));
+  	half d = v.x * 0.5 + v.y * 0.5;
+  	half m = smoothstep(-_Smoothness, 0.0, v.x * i.uv.x + v.y * i.uv.y - (d - 0.5 + _T * (1.0 + _Smoothness)));
 
-    return float4(lerp(tex2D(_SecondTex, RenderTextureUV(i.uv)).rgb, tex2D(_MainTex, i.uv).rgb, m), 1.0);
-  }
-
-  float4 frag_linear(v2f_img i) : COLOR
-  {
-    fixed2 v = _Angle;
-	  v /= abs(v.x) + abs(v.y);
-
-  	fixed d = v.x * 0.5 + v.y * 0.5;
-  	fixed m = smoothstep(-_Smoothness, 0.0, v.x * i.uv.x + v.y * i.uv.y - (d - 0.5 + _T * (1.0 + _Smoothness)));
-
-    return float4(Linear(lerp(sRGB(tex2D(_SecondTex, RenderTextureUV(i.uv)).rgb), sRGB(tex2D(_MainTex, i.uv).rgb), m)), 1.0);
+    return half4(lerp(tex2D(_SecondTex, FixUV(i.uv)).rgb, tex2D(_MainTex, i.uv).rgb, m), 1.0);
   }
   ENDCG
 
@@ -69,7 +58,6 @@ Shader "Hidden/Camera Transitions/Smooth Line"
     ZWrite Off
     Fog { Mode off }
 
-    // Pass 0: Color Space Gamma.
     Pass
     {
       CGPROGRAM
@@ -77,19 +65,7 @@ Shader "Hidden/Camera Transitions/Smooth Line"
       #pragma target 3.0
       #pragma multi_compile ___ INVERT_RENDERTEXTURE
       #pragma vertex vert_img
-      #pragma fragment frag_gamma
-      ENDCG
-    }
-
-    // Pass 1: Color Space Linear.
-    Pass
-    {
-      CGPROGRAM
-      #pragma fragmentoption ARB_precision_hint_fastest
-      #pragma target 3.0
-      #pragma multi_compile ___ INVERT_RENDERTEXTURE
-      #pragma vertex vert_img
-      #pragma fragment frag_linear
+      #pragma fragment frag
       ENDCG
     }
   }
