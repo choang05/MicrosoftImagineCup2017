@@ -17,14 +17,14 @@ public class PushPullObject : MonoBehaviour
 
     void OnEnable()
     {
-        WorldChanger.OnWorldChangeStart += OnWorldChangeStart;
-        WorldChanger.OnWorldChangeComplete += OnWorldChangeComplete;
+        WorldChanger.OnWorldChangeStart += EvaluateTransitionStart;
+        WorldChanger.OnWorldChangeComplete += EvaluateTransitionComplete;
     }
 
     void OnDisable()
     {
-        WorldChanger.OnWorldChangeStart -= OnWorldChangeStart;
-        WorldChanger.OnWorldChangeComplete -= OnWorldChangeComplete;
+        WorldChanger.OnWorldChangeStart -= EvaluateTransitionStart;
+        WorldChanger.OnWorldChangeComplete -= EvaluateTransitionComplete;
     }
 
     void Awake()
@@ -53,7 +53,7 @@ public class PushPullObject : MonoBehaviour
         gameObject.layer = originalLayer;
     }
 
-    private void OnWorldChangeStart(WorldChanger.WorldState worldState)
+    private void EvaluateTransitionStart(WorldChanger.WorldState worldState)
     {
         //  If the interaction type of this object is non transferable then cancel the pushpull operation of the player
         if (interactType == InteractableType.NonTransferable && playerGO.GetComponent<CharacterController2D>().pushpullObject == this)
@@ -85,7 +85,7 @@ public class PushPullObject : MonoBehaviour
         }   
     }
 
-    private void OnWorldChangeComplete(WorldChanger.WorldState currentState)
+    private void EvaluateTransitionComplete(WorldChanger.WorldState currentState)
     {
         //  Reset the layer if object is always transferrable type
         if (interactType == InteractableType.AlwaysTransferable)
