@@ -66,6 +66,21 @@ public class CharacterController2D : MonoBehaviour
     int isPullingHash = Animator.StringToHash("isPulling");
     int jumpTriggerHash = Animator.StringToHash("jumpTrigger");
 
+    //  Events
+    public delegate void PlayerActionEvent();
+    public static event PlayerActionEvent OnJumpLaunch;
+    public static event PlayerActionEvent OnLanding;
+    public static event PlayerActionEvent OnPushPullStart;
+    public static event PlayerActionEvent OnPushing;
+    public static event PlayerActionEvent OnPulling;
+    public static event PlayerActionEvent OnPushPullEnd;
+    public static event PlayerActionEvent OnRopeClimbStart;
+    public static event PlayerActionEvent OnRopeClimbExit;
+    public static event PlayerActionEvent OnRopeClimbing;
+    public static event PlayerActionEvent OnLadderClimbStart;
+    public static event PlayerActionEvent OnLadderClimbExit;
+    public static event PlayerActionEvent OnLadderClimbing;
+
     void Awake ()
     {
         //  Find and assign references
@@ -127,7 +142,6 @@ public class CharacterController2D : MonoBehaviour
 
             //  Animation
             animator.SetTrigger(jumpTriggerHash);
-            //Jump();	
         }
 
         //  Move
@@ -186,9 +200,13 @@ public class CharacterController2D : MonoBehaviour
 	{
         //  Set vertical velocity
         velocity.y = verticalJumpForce;
-            
+
         //  Animation
         //animator.SetTrigger(jumpTriggerHash);
+
+        //  Events
+        if (OnJumpLaunch != null)
+            OnJumpLaunch();
     }
     #endregion
 
@@ -232,6 +250,10 @@ public class CharacterController2D : MonoBehaviour
 
                 //  Animation
                 animator.SetBool(isPushPullingHash, true);
+
+                //  Events
+                if (OnPushPullStart != null)
+                    OnPushPullStart();
             }
         }
     }
@@ -255,6 +277,10 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
+
+                //  Events
+                if (OnPushing != null)
+                    OnPushing();
             }
             //  Pushing - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
@@ -262,6 +288,10 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - Pushing
                 animator.SetBool(isPushingHash, true);
                 animator.SetBool(isPullingHash, false);
+
+                //  Events
+                if (OnPushing != null)
+                    OnPushing();
             }
             //  Pulling - RIGHT
             else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
@@ -269,6 +299,10 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
+
+                //  Events
+                if (OnPulling != null)
+                    OnPulling();
             }
             //  Pulling - LEFT
             else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
@@ -276,6 +310,10 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - pulling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, true);
+
+                //  Events
+                if (OnPulling != null)
+                    OnPulling();
             }
             else
             {
@@ -307,6 +345,10 @@ public class CharacterController2D : MonoBehaviour
         animator.SetBool(isPushingHash, false);
         animator.SetBool(isPullingHash, false);
         animator.SetBool(isPushPullingHash, false);
+
+        //  Events
+        if (OnPushPullEnd != null)
+            OnPushPullEnd();
     }
     #endregion
 
@@ -315,11 +357,9 @@ public class CharacterController2D : MonoBehaviour
     {
         //  Get input from y axis.
         float yAxisInput = Input.GetAxisRaw("Vertical");
-        //float xAxisInput = Input.GetAxisRaw("Horizontal");
 
         //  Apply movement vectors
         velocity.y = yAxisInput * ladderClimbSpeed;
-        //velocity.x = xAxisInput * climbSpeed / 2;
 
         //  if player inputs up or down...
         if (yAxisInput > 0)
@@ -327,12 +367,20 @@ public class CharacterController2D : MonoBehaviour
             //  Animation - ClimbLadder up
             animator.SetBool(isClimbingLadderUpHash, true);
             animator.SetBool(isClimbingLadderDownHash, false);
+
+            //  Events
+            if (OnLadderClimbing != null)
+                OnLadderClimbing();
         }
         else if (yAxisInput < 0)
         {
             //  Animation - ClimbLadder down
             animator.SetBool(isClimbingLadderUpHash, false);
             animator.SetBool(isClimbingLadderDownHash, true);
+
+            //  Events
+            if (OnLadderClimbing != null)
+                OnLadderClimbing();
         }
         else
         {
@@ -414,12 +462,20 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - ClimbLadder up
                 animator.SetBool(isClimbingRopeUpHash, true);
                 animator.SetBool(isClimbingRopeDownHash, false);
+
+                //  Events
+                if (OnRopeClimbing != null)
+                    OnRopeClimbing();
             }
             else if (yAxisInput < 0)
             {
                 //  Animation - ClimbLadder down
                 animator.SetBool(isClimbingRopeUpHash, false);
                 animator.SetBool(isClimbingRopeDownHash, true);
+
+                //  Events
+                if (OnRopeClimbing != null)
+                    OnRopeClimbing();
             }
             else
             {
@@ -459,6 +515,10 @@ public class CharacterController2D : MonoBehaviour
             animator.SetBool(isClimbingLadderUpHash, false);
             animator.SetBool(isClimbingLadderDownHash, false);
             animator.SetBool(isClimbingLadderHash, false);
+
+            //  Events
+            if (OnRopeClimbExit != null)
+                OnRopeClimbExit();
         }
         
         else if (currentState == PlayerState.ClimbingRope)
@@ -472,6 +532,10 @@ public class CharacterController2D : MonoBehaviour
             animator.SetBool(isClimbingRopeUpHash, false);
             animator.SetBool(isClimbingRopeDownHash, false);
             animator.SetBool(isClimbingRopeHash, false);
+
+            //  Events
+            if (OnLadderClimbExit != null)
+                OnLadderClimbExit();
         }
         
         //  Set player state
@@ -612,6 +676,10 @@ public class CharacterController2D : MonoBehaviour
                 // Animation
                 animator.SetBool(isClimbingLadderHash, true);
                 animator.SetFloat(yVelocityHash, 0);
+
+                //  Events
+                if (OnLadderClimbStart != null)
+                    OnLadderClimbStart();
             }
         }
         #endregion
@@ -644,6 +712,10 @@ public class CharacterController2D : MonoBehaviour
                 // Animation
                 animator.SetBool(isClimbingRopeHash, true);
                 animator.SetFloat(yVelocityHash, 0);
+
+                //  Events
+                if (OnRopeClimbStart != null)
+                    OnRopeClimbStart();
             }
         }
         #endregion

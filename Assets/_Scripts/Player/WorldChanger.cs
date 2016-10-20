@@ -30,7 +30,20 @@ public class WorldChanger : MonoBehaviour
     
     //  Events
     public delegate void WorldChangeEvent(WorldState worldState);
-    public static event WorldChangeEvent OnWorldChangedState;
+    public static event WorldChangeEvent OnWorldChangeStart;
+    public static event WorldChangeEvent OnWorldChangeComplete;
+
+    void OnEnable()
+    {
+        cameraTransition.transitionStartEvent += BroadcastTransitionStartEvent;
+        cameraTransition.transitionEndEvent += BroadcastTransitionStartEvent;
+    }
+
+    void OnDisable()
+    {
+        cameraTransition.transitionStartEvent -= BroadcastTransitionStartEvent;
+        cameraTransition.transitionEndEvent -= BroadcastTransitionStartEvent;
+    }
 
     void Awake()
     {
@@ -77,24 +90,24 @@ public class WorldChanger : MonoBehaviour
             if (Input.GetKeyUp(KeyCode.Alpha1) && currentWorldState != WorldState.Present && isPresentAvaliable && canSwitchPresent)
             {
                 //  Broadcast event delegate
-                if (OnWorldChangedState != null)
-                    OnWorldChangedState(WorldState.Present);
+                if (OnWorldChangeStart != null)
+                    OnWorldChangeStart(WorldState.Present);
 
                 SwitchWorld(1); //  Present
             }
             else if (Input.GetKeyUp(KeyCode.Alpha2) && currentWorldState != WorldState.Past && isPastAvaliable && canSwitchPast)
             {
                 //  Broadcast event delegate
-                if (OnWorldChangedState != null)
-                    OnWorldChangedState(WorldState.Past);
+                if (OnWorldChangeStart != null)
+                    OnWorldChangeStart(WorldState.Past);
 
                 SwitchWorld(2); //  Past
             }
             else if (Input.GetKeyUp(KeyCode.Alpha3) && currentWorldState != WorldState.Future && isFutureAvaliable && canSwitchFuture) 
             {
                 //  Broadcast event delegate
-                if (OnWorldChangedState != null)
-                    OnWorldChangedState(WorldState.Future);
+                if (OnWorldChangeStart != null)
+                    OnWorldChangeStart(WorldState.Future);
 
                 SwitchWorld(3); //  Future
             }
@@ -229,4 +242,15 @@ public class WorldChanger : MonoBehaviour
         }
     }
     #endregion
+
+    private void BroadcastTransitionStartEvent(CameraTransitionEffects effect)
+    {
+        if (OnWorldChangeStart != null)
+            OnWorldChangeStart(currentWorldState);
+    }
+    private void BroadcastTransitionCompleteEvent(CameraTransitionEffects effect)
+    {
+        if (OnWorldChangeComplete != null)
+            OnWorldChangeComplete(currentWorldState);
+    }
 }

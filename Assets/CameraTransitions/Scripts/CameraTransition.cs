@@ -28,11 +28,6 @@ namespace CameraTransitions
   [AddComponentMenu("Camera Transitions/Camera Transition")]
   public sealed class CameraTransition : MonoBehaviour
   {
-        //  CHAD STUFF
-        //  Events
-        public delegate void CameraTransitionEvent();
-        public static event CameraTransitionEvent OnTransitionComplete;
-
         /// <summary>
         /// The current transition type.
         /// </summary>
@@ -1095,10 +1090,6 @@ namespace CameraTransitions
 
         if (transitionProgressEvent != null)
           transitionProgressEvent(transition, currentEffect.Progress);
-        
-        //  CHAD STUFF
-        if (OnTransitionComplete != null)
-            OnTransitionComplete();
 
         yield return null;
       }

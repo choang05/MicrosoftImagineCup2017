@@ -17,14 +17,14 @@ public class PushPullObject : MonoBehaviour
 
     void OnEnable()
     {
-        WorldChanger.OnWorldChangedState += OnWorldChangeStart;
-        CameraTransition.OnTransitionComplete += OnWorldChangeComplete;
+        WorldChanger.OnWorldChangeStart += OnWorldChangeStart;
+        WorldChanger.OnWorldChangeComplete += OnWorldChangeComplete;
     }
 
     void OnDisable()
     {
-        WorldChanger.OnWorldChangedState -= OnWorldChangeStart;
-        CameraTransition.OnTransitionComplete -= OnWorldChangeComplete;
+        WorldChanger.OnWorldChangeStart -= OnWorldChangeStart;
+        WorldChanger.OnWorldChangeComplete -= OnWorldChangeComplete;
     }
 
     void Awake()
@@ -57,13 +57,15 @@ public class PushPullObject : MonoBehaviour
     {
         //  If the interaction type of this object is non transferable then cancel the pushpull operation of the player
         if (interactType == InteractableType.NonTransferable && playerGO.GetComponent<CharacterController2D>().pushpullObject == this)
-        {
             playerGO.GetComponent<CharacterController2D>().CancelPushingPulling();
-        }
 
         //  If the object interation type is Always Transferable, evaluate
         if (interactType == InteractableType.AlwaysTransferable && CheckWorldCollisions(worldState))
         {
+            //  if player is currently pushing/pulling this object... cancel the player push/pull interaction
+            if (playerGO.GetComponent<CharacterController2D>().pushpullObject == this)
+                playerGO.GetComponent<CharacterController2D>().CancelPushingPulling();
+
             //  Set layer to player so it always displays
             gameObject.layer = playerGO.layer;
 
@@ -83,13 +85,13 @@ public class PushPullObject : MonoBehaviour
         }   
     }
 
-    private void OnWorldChangeComplete()
+    private void OnWorldChangeComplete(WorldChanger.WorldState currentState)
     {
         //  Reset the layer if object is always transferrable type
         if (interactType == InteractableType.AlwaysTransferable)
         {
             gameObject.layer = originalLayer;
-            Debug.Log("Revert layer");
+            //Debug.Log("Revert layer");
         }
     }
 
