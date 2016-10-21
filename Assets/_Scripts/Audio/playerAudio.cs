@@ -8,6 +8,8 @@ public class playerAudio : MonoBehaviour {
     public AudioClip ladder;
     public AudioClip grassImpact;
     public AudioClip boxSlide;
+    public AudioClip ropeClimb;
+    public AudioClip ropeSwing;
 
     private AudioSource playerSound;
     private float velToVol = 0.2f;
@@ -72,6 +74,27 @@ public class playerAudio : MonoBehaviour {
             float hitVol = hit.controller.velocity.magnitude * velToVol;
             if (!playerSound.isPlaying)
                 playerSound.PlayOneShot(grassImpact, hitVol);
+        }
+    }
+
+    void playerRopeClimb()
+    {
+        randomizePitch(playerSound);
+        playerSound.PlayOneShot(ropeClimb, randomVolume());
+    }
+
+    void playerRopeSwing()
+    {
+        if (playerSound.isPlaying)
+        {
+            playerSound.Stop();
+            randomizePitch(playerSound);
+            playerSound.PlayOneShot(ropeSwing, randomVolume());
+        }
+        else
+        {
+            randomizePitch(playerSound);
+            playerSound.PlayOneShot(ropeSwing, randomVolume());
         }
     }
 }
