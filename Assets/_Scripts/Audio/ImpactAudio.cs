@@ -35,10 +35,10 @@ public class ImpactAudio : MonoBehaviour
 
     void playerHit(ControllerColliderHit hit)
     {
-        if (hit.collider.CompareTag("Box"))
+        if (hit.collider.CompareTag("Box") && hit.controller.velocity.magnitude*velToVol > 1f)
         {
             playerAudio.randomizePitch(impact);
-            float hitVol = hit.moveLength;
+            float hitVol = hit.controller.velocity.magnitude * velToVol;
             impact.volume = hitVol;
             impact.Play();
         }

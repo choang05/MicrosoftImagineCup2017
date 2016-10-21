@@ -10,4 +10,5 @@
     public const string Ground = "Ground";
     public const string Rope = "Rope";
     public const string Box = "Box";
+    public const string Platform = "Platform";
 }
