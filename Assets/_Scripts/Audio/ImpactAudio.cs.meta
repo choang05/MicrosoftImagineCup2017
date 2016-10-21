@@ -1,10 +1,11 @@
 fileFormatVersion: 2
 guid: 57f8ae4beb88fd74db76e9764695f097
-timeCreated: 1476997316
+timeCreated: 1477015975
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - woodHit: {fileID: 8300000, guid: a2660bac136a6034e93726f2f0505e36, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

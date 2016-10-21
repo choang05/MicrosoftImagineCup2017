@@ -5,6 +5,8 @@ public class ImpactAudio : MonoBehaviour
 {
 
     //variables
+    public AudioClip woodHit;
+
     private float velToVol = 0.2f;
     private AudioSource impact;
 
@@ -29,18 +31,18 @@ public class ImpactAudio : MonoBehaviour
     {
         playerAudio.randomizePitch(impact);
         float hitVol = hit.impulse.magnitude * velToVol;
-        impact.volume = hitVol;
-        impact.Play();
+        impact.PlayOneShot(woodHit, hitVol);
     }
 
+    // On collision with player play sound
     void playerHit(ControllerColliderHit hit)
     {
-        if (hit.collider.CompareTag("Box") && hit.controller.velocity.magnitude*velToVol > 1f)
+        if (hit.collider.CompareTag(Tags.Box) && ((hit.controller.velocity.magnitude*velToVol) > 1f))
         {
             playerAudio.randomizePitch(impact);
             float hitVol = hit.controller.velocity.magnitude * velToVol;
-            impact.volume = hitVol;
-            impact.Play();
+            if (!impact.isPlaying)
+                impact.PlayOneShot(woodHit, hitVol);
         }
     }
 }

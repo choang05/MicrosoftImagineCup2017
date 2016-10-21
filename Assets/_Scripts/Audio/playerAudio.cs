@@ -48,12 +48,14 @@ public class playerAudio : MonoBehaviour {
     {
         CharacterController2D.OnPushing += sliding;
         CharacterController2D.OnPulling += sliding;
+        CharacterController2D.OnCollisionHit += playerHitGround;
     }
 
     void OnDisable()
     {
         CharacterController2D.OnPushing -= sliding;
         CharacterController2D.OnPulling -= sliding;
+        CharacterController2D.OnCollisionHit -= playerHitGround;
     }
 
     public void sliding()
@@ -62,9 +64,14 @@ public class playerAudio : MonoBehaviour {
         playerSound.PlayOneShot(boxSlide, randomVolume());
     }
 
-    public void grassImpactsound()
+    void playerHitGround(ControllerColliderHit hit)
     {
-        randomizePitch(playerSound);
-        playerSound.PlayOneShot(grassImpact, randomVolume());
+        if ((hit.collider.CompareTag(Tags.Ground) || hit.collider.CompareTag(Tags.Platform)) && ((hit.controller.velocity.magnitude * velToVol) > 1f))
+        {
+            randomizePitch(playerSound);
+            float hitVol = hit.controller.velocity.magnitude * velToVol;
+            if (!playerSound.isPlaying)
+                playerSound.PlayOneShot(grassImpact, hitVol);
+        }
     }
 }
