@@ -44,13 +44,13 @@ public class PushPullObject : MonoBehaviour
     {
         if (interactType == InteractableType.Transferable)
         {
-            WorldChanger.ChangeLayers(gameObject, Layers.ViewAlways);
+            Layers.ChangeLayers(gameObject, Layers.ViewAlways);
         }
     }
 
     public void OnPushPullEnd()
     {
-        WorldChanger.ChangeLayers(gameObject, originalLayer);
+        Layers.ChangeLayers(gameObject, originalLayer);
     }
 
     private void EvaluateTransitionStart(WorldChanger.WorldState worldState)
@@ -66,7 +66,7 @@ public class PushPullObject : MonoBehaviour
             if (playerController.pushpullObject != this)
             {
                 //  Set layer to ViewAlways so it always displays
-                WorldChanger.ChangeLayers(gameObject, Layers.ViewAlways);
+                Layers.ChangeLayers(gameObject, Layers.ViewAlways);
 
                 //  Determine the new Z position of the object after world change
                 switch (worldState)
@@ -90,8 +90,8 @@ public class PushPullObject : MonoBehaviour
         //  Reset the layer if object is always transferrable type
         if (interactType == InteractableType.AlwaysTransferable)
         {
-            Debug.Log("transition complete");
-            WorldChanger.ChangeLayers(gameObject, originalLayer);
+            //Debug.Log("transition complete");
+            Layers.ChangeLayers(gameObject, originalLayer);
 
             //Debug.Log("Revert layer");
         }

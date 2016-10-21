@@ -5,6 +5,11 @@ public class CapePhysicsHelper : MonoBehaviour
 {
     public Transform capeControlNode;
 	
+    void Start()
+    {
+        transform.position = FindObjectOfType<CharacterController2D>().transform.position;
+    }
+
 	// Update is called once per frame
 	void LateUpdate ()
     {

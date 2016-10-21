@@ -28,6 +28,9 @@ namespace CameraTransitions
   [AddComponentMenu("Camera Transitions/Camera Transition")]
   public sealed class CameraTransition : MonoBehaviour
   {
+        //  CHAD STUFF
+        WorldChanger worldChanger;
+        
         /// <summary>
         /// The current transition type.
         /// </summary>
@@ -608,10 +611,14 @@ namespace CameraTransitions
     private void Awake()
     {
       this.enabled = CheckHardwareRequirements();
+
     }
 
     private void OnEnable()
     {
+        //  CHAD's STUFF
+        worldChanger = FindObjectOfType<WorldChanger>();
+
       if (fromCamera != null)
       {
         currentEffect = fromCamera.GetComponentInChildren<CameraTransitionBase>();
@@ -1079,7 +1086,9 @@ namespace CameraTransitions
       if (transitionStartEvent != null)
         transitionStartEvent(transition);
 
-      while (currentEffect.Progress < 1.0f)
+            //Debug.Log("transition start");
+
+    while (currentEffect.Progress < 1.0f)
       {
         if (progressMode == ProgressModes.Automatic)
         {
@@ -1113,9 +1122,13 @@ namespace CameraTransitions
 
       if (transitionEndEvent != null)
         transitionEndEvent(transition);
-    }
 
-    private bool IsRenderTextureSizeObsolete()
+            worldChanger.BroadcastTransitionCompleteEvent();
+            //Debug.Log("camera transition end");
+
+        }
+
+        private bool IsRenderTextureSizeObsolete()
     {
       if (renderTexture == null)
         return true;
