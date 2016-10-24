@@ -284,6 +284,10 @@ public class CharacterController2D : MonoBehaviour
                 //  Pushing - RIGHT
                 if (velocity.x > 0 && facingDirection == FacingDirection.Right)
                 {
+                    //  Stop moving if pushpull object collided agianst something.
+                    if (pushpullObject.isColliding)
+                        velocity.x = 0;
+                    
                     //  Animation - Pushing
                     animator.SetBool(isPushingHash, true);
                     animator.SetBool(isPullingHash, false);
@@ -295,6 +299,10 @@ public class CharacterController2D : MonoBehaviour
                 //  Pushing - LEFT
                 else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
                 {
+                    //  Stop moving if pushpull object collided agianst something.
+                    if (pushpullObject.isColliding)
+                        velocity.x = 0;
+
                     //  Animation - Pushing
                     animator.SetBool(isPushingHash, true);
                     animator.SetBool(isPullingHash, false);
@@ -758,10 +766,10 @@ public class CharacterController2D : MonoBehaviour
             OnCollisionHit(hit);
 
         //  Evaluate interaction things because CharacterController is in special status state that does not allow itself to collide agaisnt awake physics
-        /*Rigidbody body = hit.collider.GetComponent<Rigidbody>();
-        if (body != null)
+        Rigidbody hitRigidbody = hit.collider.GetComponent<Rigidbody>();
+        if (hitRigidbody != null)
         {
-            if (!body.isKinematic)
+            if (!hitRigidbody.isKinematic && hit.collider.CompareTag(Tags.Door))
             {
                 // Calculate push direction from move direction,
                 // we only push objects to the sides never up and down
@@ -769,9 +777,9 @@ public class CharacterController2D : MonoBehaviour
                 // If you know how fast your character is trying to move,
                 // then you can also multiply the push velocity by that.
                 // Apply the push
-                body.velocity = pushDir;
+                hitRigidbody.velocity = pushDir;
             }
-        } */
+        }
     }
 }
 
