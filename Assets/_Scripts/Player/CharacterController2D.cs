@@ -28,12 +28,13 @@ public class CharacterController2D : MonoBehaviour
         ClimbingLedge,
         PushingPulling
     }      
-    [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
-    [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
 
     //  Private variables
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
+    [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
+    [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
+    //private Rigidbody pushPullRigidBody;
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
     private BoxCollider currentLadderBoxCollider;                   //  The BoxCollider of the currently using ladder
@@ -242,6 +243,7 @@ public class CharacterController2D : MonoBehaviour
 
                 //  Cache pushing/pulling body
                 pushpullObject = hit.transform.GetComponent<PushPullObject>();
+                //pushPullRigidBody = hit.transform.GetComponent<Rigidbody>();
                 pushpullObject.transform.SetParent(transform);
 
                 //  Set the pushing/pulling break distance
@@ -273,49 +275,67 @@ public class CharacterController2D : MonoBehaviour
             float xAxis = Input.GetAxisRaw("Horizontal");
             velocity.x = xAxis * pushPullSpeed;
 
-            //  Pushing - RIGHT
-            if (velocity.x > 0 && facingDirection == FacingDirection.Right)
+            if (velocity.x != 0)
             {
-                //  Animation - Pushing
-                animator.SetBool(isPushingHash, true);
-                animator.SetBool(isPullingHash, false);
+                //  Move pushPullObject
+                //pushPullRigidBody.MovePosition(pushPullRigidBody.transform.position + velocity * Time.deltaTime);
+                //Debug.Log(pushPullRigidBody.transform.position + velocity * Time.deltaTime);
 
-                //  Events
-                if (OnPushing != null)
-                    OnPushing();
-            }
-            //  Pushing - LEFT
-            else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
-            {
-                //  Animation - Pushing
-                animator.SetBool(isPushingHash, true);
-                animator.SetBool(isPullingHash, false);
+                //  Pushing - RIGHT
+                if (velocity.x > 0 && facingDirection == FacingDirection.Right)
+                {
+                    //  Animation - Pushing
+                    animator.SetBool(isPushingHash, true);
+                    animator.SetBool(isPullingHash, false);
 
-                //  Events
-                if (OnPushing != null)
-                    OnPushing();
-            }
-            //  Pulling - RIGHT
-            else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
-            {
-                //  Animation - pulling
-                animator.SetBool(isPushingHash, false);
-                animator.SetBool(isPullingHash, true);
+                    //  Events
+                    if (OnPushing != null)
+                        OnPushing();
+                }
+                //  Pushing - LEFT
+                else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
+                {
+                    //  Animation - Pushing
+                    animator.SetBool(isPushingHash, true);
+                    animator.SetBool(isPullingHash, false);
 
-                //  Events
-                if (OnPulling != null)
-                    OnPulling();
-            }
-            //  Pulling - LEFT
-            else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
-            {
-                //  Animation - pulling
-                animator.SetBool(isPushingHash, false);
-                animator.SetBool(isPullingHash, true);
+                    //  Events
+                    if (OnPushing != null)
+                        OnPushing();
+                }
+                //  Pulling - RIGHT
+                else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
+                {
+                    //  Animation - pulling
+                    animator.SetBool(isPushingHash, false);
+                    animator.SetBool(isPullingHash, true);
 
-                //  Events
-                if (OnPulling != null)
-                    OnPulling();
+                    //  Events
+                    if (OnPulling != null)
+                        OnPulling();
+                }
+                //  Pulling - LEFT
+                else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
+                {
+                    //  Animation - pulling
+                    animator.SetBool(isPushingHash, false);
+                    animator.SetBool(isPullingHash, true);
+
+                    //  Events
+                    if (OnPulling != null)
+                        OnPulling();
+                }
+
+                //  Correct pushpull object colliding against a wall, still buggy
+                if (Vector3.Distance(transform.position, pushpullObject.transform.position) <= pushpullBreakDistance - 0.05f)
+                {
+                    //velocity.x = 0;
+                    transform.position = new Vector3(transform.position.x - 0.05f, transform.position.y, transform.position.z);
+                    pushpullObject.transform.position = new Vector3(pushpullObject.transform.position.x + 0.05f, pushpullObject.transform.position.y, pushpullObject.transform.position.z);
+                    //CancelPushingPulling();
+
+                    //Debug.Log("can't push any further!");
+                }
             }
             else
             {
@@ -341,6 +361,7 @@ public class CharacterController2D : MonoBehaviour
 
         //  Return parent of pushing/pulling body
         pushpullObject.transform.SetParent(null);
+        //pushPullRigidBody = null;
         pushpullObject = null;
 
         //  Animation

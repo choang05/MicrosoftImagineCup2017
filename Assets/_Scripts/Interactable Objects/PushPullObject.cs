@@ -10,9 +10,9 @@ public class PushPullObject : MonoBehaviour
     {   Transferable, NonTransferable, AlwaysTransferable   };
 
     //  Private variables
-    LayerMask originalLayer;
+    private LayerMask originalLayer;
+    private Rigidbody rigidBody;
     CharacterController2D playerController;
-
     WorldChanger worldChanger;
 
     void OnEnable()
@@ -29,6 +29,7 @@ public class PushPullObject : MonoBehaviour
 
     void Awake()
     {
+        rigidBody = GetComponent<Rigidbody>();
         playerController = FindObjectOfType<CharacterController2D>();
         worldChanger = FindObjectOfType<WorldChanger>();
     }
