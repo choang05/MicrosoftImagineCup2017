@@ -742,7 +742,7 @@ public class CharacterController2D : MonoBehaviour
         Rigidbody hitRigidbody = hit.collider.GetComponent<Rigidbody>();
         if (hitRigidbody != null)
         {
-            if (!hitRigidbody.isKinematic && hit.collider.CompareTag(Tags.Door))
+            if (!hitRigidbody.isKinematic /*&& hit.collider.CompareTag(Tags.Door)*/)
             {
                 // Calculate push direction from move direction,
                 // we only push objects to the sides never up and down

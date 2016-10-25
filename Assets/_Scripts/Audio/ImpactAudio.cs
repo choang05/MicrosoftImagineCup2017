@@ -5,7 +5,6 @@ public class ImpactAudio : MonoBehaviour
 {
 
     //variables
-    public AudioClip hitSound;
 
     public float velToVol = 0.2f;
     private AudioSource impact;
@@ -21,7 +20,8 @@ public class ImpactAudio : MonoBehaviour
     {
         playerAudio.randomizePitch(impact);
         float hitVol = hit.impulse.magnitude * velToVol;
-        impact.PlayOneShot(hitSound, hitVol);
+        impact.volume = hitVol;
+        impact.Play();
     }
 
     // On collision with player play sound
@@ -29,7 +29,8 @@ public class ImpactAudio : MonoBehaviour
     {
         playerAudio.randomizePitch(impact);
         float hitVol = hit.controller.velocity.magnitude * velToVol;
+        impact.volume = hitVol;
         if (!impact.isPlaying)
-            impact.PlayOneShot(hitSound, hitVol);
+            impact.Play();
     }
 }
