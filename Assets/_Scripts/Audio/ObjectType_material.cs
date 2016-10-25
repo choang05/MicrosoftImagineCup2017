@@ -9,5 +9,6 @@ public class ObjectType_material : MonoBehaviour {
         wood,
         grass
     }
+    // public instant of enums to select current attached gameObject's material
     public MaterialType material;
 }

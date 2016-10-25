@@ -10,6 +10,7 @@ public class playerAudio : MonoBehaviour {
     public AudioClip boxSlide;
     public AudioClip ropeClimb;
     public AudioClip ropeSwing;
+    public AudioClip[] timeWarps;
 
     private AudioSource playerSound;
     private float velToVol = 0.2f;
@@ -45,27 +46,29 @@ public class playerAudio : MonoBehaviour {
     {
         return Random.Range(0.95f, 1.05f);
     }
-
+    // add audio methods to events
     void OnEnable()
     {
         CharacterController2D.OnPushing += sliding;
         CharacterController2D.OnPulling += sliding;
         CharacterController2D.OnCollisionHit += playerHitGround;
+        WorldChanger.OnWorldChangeStart += timeWarpSound;
     }
-
+    // remove audio methods from events when completed
     void OnDisable()
     {
         CharacterController2D.OnPushing -= sliding;
         CharacterController2D.OnPulling -= sliding;
         CharacterController2D.OnCollisionHit -= playerHitGround;
+        WorldChanger.OnWorldChangeStart -= timeWarpSound;
     }
-
+    // audio for push/pull box
     public void sliding()
     {
         randomizePitch(playerSound);
         playerSound.PlayOneShot(boxSlide, randomVolume());
     }
-
+    // audio method for Player colliding with ground or platforms
     void playerHitGround(ControllerColliderHit hit)
     {
         if ((hit.collider.GetComponent<ObjectType_material>().material == ObjectType_material.MaterialType.grass) && ((hit.controller.velocity.magnitude * velToVol) > 1f))
@@ -76,13 +79,13 @@ public class playerAudio : MonoBehaviour {
                 playerSound.PlayOneShot(grassImpact, hitVol);
         }
     }
-
+    // audio for animation event of rope climbing
     void playerRopeClimb()
     {
         randomizePitch(playerSound);
         playerSound.PlayOneShot(ropeClimb, randomVolume());
     }
-
+    // experimental animation event method for rope swinging audio
     void playerRopeSwing()
     {
         if (playerSound.isPlaying)
@@ -96,5 +99,13 @@ public class playerAudio : MonoBehaviour {
             randomizePitch(playerSound);
             playerSound.PlayOneShot(ropeSwing, randomVolume());
         }
+    }
+
+    // method for time warp event audio
+    void timeWarpSound(WorldChanger.WorldState ws)
+    {
+        randomizePitch(playerSound);
+        int randomIndex = Random.Range(0, timeWarps.Length);
+        playerSound.PlayOneShot(timeWarps[randomIndex], randomVolume());
     }
 }
