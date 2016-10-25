@@ -68,7 +68,7 @@ public class playerAudio : MonoBehaviour {
 
     void playerHitGround(ControllerColliderHit hit)
     {
-        if ((hit.collider.CompareTag(Tags.Ground) || hit.collider.CompareTag(Tags.Platform)) && ((hit.controller.velocity.magnitude * velToVol) > 1f))
+        if ((hit.collider.GetComponent<ObjectType_material>().material == ObjectType_material.MaterialType.grass) && ((hit.controller.velocity.magnitude * velToVol) > 1f))
         {
             randomizePitch(playerSound);
             float hitVol = hit.controller.velocity.magnitude * velToVol;

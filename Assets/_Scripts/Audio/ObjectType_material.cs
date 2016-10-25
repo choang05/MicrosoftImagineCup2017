@@ -3,9 +3,11 @@ using System.Collections;
 
 public class ObjectType_material : MonoBehaviour {
     
-    public enum materialType
+    // material types
+    public enum MaterialType
     {
         wood,
         grass
     }
+    public MaterialType material;
 }

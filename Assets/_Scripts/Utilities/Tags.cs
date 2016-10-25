@@ -9,10 +9,7 @@
     public const string Ledge = "Ledge";
     public const string Ground = "Ground";
     public const string Rope = "Rope";
-<<<<<<< HEAD
     public const string Box = "Box";
     public const string Platform = "Platform";
-=======
     public const string Door = "Door";
->>>>>>> refs/remotes/origin/master
 }

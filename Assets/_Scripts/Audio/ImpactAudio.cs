@@ -37,7 +37,7 @@ public class ImpactAudio : MonoBehaviour
     // On collision with player play sound
     void playerHit(ControllerColliderHit hit)
     {
-        if (hit.collider.CompareTag(Tags.Box) && ((hit.controller.velocity.magnitude*velToVol) > 1f))
+        if ((hit.collider.GetComponent<ObjectType_material>().material == ObjectType_material.MaterialType.wood) && ((hit.controller.velocity.magnitude*velToVol) > 1f))
         {
             playerAudio.randomizePitch(impact);
             float hitVol = hit.controller.velocity.magnitude * velToVol;
