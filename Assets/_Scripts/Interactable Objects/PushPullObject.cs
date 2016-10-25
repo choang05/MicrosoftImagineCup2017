@@ -10,9 +10,10 @@ public class PushPullObject : MonoBehaviour
     {   Transferable, NonTransferable, AlwaysTransferable   };
 
     //  Private variables
-    LayerMask originalLayer;
+    private LayerMask originalLayer;
+    private Rigidbody rigidBody;
+    [HideInInspector] public bool isColliding;
     CharacterController2D playerController;
-
     WorldChanger worldChanger;
 
     void OnEnable()
@@ -29,6 +30,7 @@ public class PushPullObject : MonoBehaviour
 
     void Awake()
     {
+        rigidBody = GetComponent<Rigidbody>();
         playerController = FindObjectOfType<CharacterController2D>();
         worldChanger = FindObjectOfType<WorldChanger>();
     }
@@ -46,11 +48,47 @@ public class PushPullObject : MonoBehaviour
         {
             Layers.ChangeLayers(gameObject, Layers.ViewAlways);
         }
+
+        StartCoroutine(CoCheckForCollisions());
     }
 
     public void OnPushPullEnd()
     {
         Layers.ChangeLayers(gameObject, originalLayer);
+
+        StopAllCoroutines();
+    }
+
+    IEnumerator CoCheckForCollisions()
+    {
+        float collisionDistance = .02f;
+        RaycastHit hit;
+        BoxCollider boxColl = GetComponent<BoxCollider>();
+        
+        //  determine Player is facing direction
+        Vector3 direction = (transform.position - playerController.transform.position).normalized;
+        if (direction.magnitude > 0)
+            direction = Vector3.right;
+        else
+            direction = Vector3.left;
+
+        while (true)
+        {
+            //  Debug ray                                                                                                        
+            if (Application.isEditor) Debug.DrawRay(transform.position, direction * (boxColl.bounds.extents.x + collisionDistance), Color.red, 0.01f);
+
+            //  Test ray
+            if (Physics.Raycast(transform.position, direction, out hit, boxColl.bounds.extents.x + collisionDistance))
+            {
+                //Debug.Log("hit: " + hit.collider.name);
+                isColliding = true;
+            }
+            else
+                isColliding = false;
+
+            yield return null;
+        }
+        //yield return null;
     }
 
     private void EvaluateTransitionStart(WorldChanger.WorldState worldState)
