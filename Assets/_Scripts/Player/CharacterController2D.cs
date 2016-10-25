@@ -753,6 +753,12 @@ public class CharacterController2D : MonoBehaviour
                 hitRigidbody.velocity = pushDir;
             }
         }
+
+        // player audio impacts
+        ImpactAudio impactaudio = hit.collider.GetComponent<ImpactAudio>();
+        if (impactaudio != null)
+            if ((hit.controller.velocity.magnitude * impactaudio.velToVol) > 1f)
+                impactaudio.playerHit(hit);
     }
 }
 

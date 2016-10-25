@@ -6,7 +6,6 @@ public class playerAudio : MonoBehaviour {
     // variables
     public AudioClip footsteps;
     public AudioClip ladder;
-    public AudioClip grassImpact;
     public AudioClip boxSlide;
     public AudioClip ropeClimb;
     public AudioClip ropeSwing;
@@ -52,7 +51,6 @@ public class playerAudio : MonoBehaviour {
     {
         CharacterController2D.OnPushing += sliding;
         CharacterController2D.OnPulling += sliding;
-        CharacterController2D.OnCollisionHit += playerHitGround;
         WorldChanger.OnWorldChangeStart += timeWarpSound;
         WorldChanger.OnWorldChangeComplete += ambianceChange;
     }
@@ -61,7 +59,6 @@ public class playerAudio : MonoBehaviour {
     {
         CharacterController2D.OnPushing -= sliding;
         CharacterController2D.OnPulling -= sliding;
-        CharacterController2D.OnCollisionHit -= playerHitGround;
         WorldChanger.OnWorldChangeStart -= timeWarpSound;
         WorldChanger.OnWorldChangeComplete -= ambianceChange;
     }
@@ -70,17 +67,6 @@ public class playerAudio : MonoBehaviour {
     {
         randomizePitch(playerSound);
         playerSound.PlayOneShot(boxSlide, randomVolume());
-    }
-    // audio method for Player colliding with ground or platforms
-    void playerHitGround(ControllerColliderHit hit)
-    {
-        if ((hit.collider.GetComponent<ObjectType_material>().material == ObjectType_material.MaterialType.grass) && ((hit.controller.velocity.magnitude * velToVol) > 1f))
-        {
-            randomizePitch(playerSound);
-            float hitVol = hit.controller.velocity.magnitude * velToVol;
-            if (!playerSound.isPlaying)
-                playerSound.PlayOneShot(grassImpact, hitVol);
-        }
     }
     // audio for animation event of rope climbing
     void playerRopeClimb()
