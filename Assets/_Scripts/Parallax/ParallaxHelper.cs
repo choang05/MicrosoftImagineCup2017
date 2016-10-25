@@ -6,7 +6,7 @@ public class ParallaxHelper : MonoBehaviour
     private FreeParallax parallax;
     private CharacterController2D charController;
 
-	void Awake()
+	void Start()
     {
         parallax = GetComponent<FreeParallax>();
         charController = FindObjectOfType<CharacterController2D>();
