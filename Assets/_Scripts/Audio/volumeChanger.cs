@@ -20,4 +20,14 @@ public class volumeChanger : MonoBehaviour {
     {
         AudioManager.SetFloat("musicVol", musicLvl);
     }
+
+    public void SetAmbianceLvl(float ambLvl)
+    {
+        AudioManager.SetFloat("ambianceVol", ambLvl);
+    }
+
+    public void SetUilvl(float uiLvl)
+    {
+        AudioManager.SetFloat("uiVol", uiLvl);
+    }
 }
