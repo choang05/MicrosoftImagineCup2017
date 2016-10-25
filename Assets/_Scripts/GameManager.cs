@@ -23,10 +23,7 @@ public class GameManager : MonoBehaviour
         else if (control != this)
             Destroy(gameObject);
         #endregion
-    }
 
-    void Start()
-    {
         SetUpPlayer();
     }
 
