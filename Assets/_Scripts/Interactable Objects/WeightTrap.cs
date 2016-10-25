@@ -60,10 +60,10 @@ public class WeightTrap : MonoBehaviour
         {
 
             //  Cache the player's character controller
-            CharacterController2D charController = other.GetComponent<CharacterController2D>();
+            PlayerDeath playerDeath = other.GetComponent<PlayerDeath>();
 
             //  Perform death
-            charController.Die();
+            playerDeath.DieByImpact();
         }
 
         isFalling = false;

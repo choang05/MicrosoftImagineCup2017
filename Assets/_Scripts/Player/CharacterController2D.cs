@@ -14,7 +14,6 @@ public class CharacterController2D : MonoBehaviour
     public float terminalVelocity;                                  //  The max speed that is added to the player's y velocity 
     public float verticalJumpForce;                                 //  The amount of vertical force applied to jumps
     public float horizontalJumpForce;                               //  The amount of horizontal force applied to jumps
-    public int impactForceThreshold;                                //  The threshold reached to to kill player caused by colliding object's collision.impulse magnitude          	
     public bool canMove = true;	                                    //  is the player allowed to move?
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
@@ -43,7 +42,7 @@ public class CharacterController2D : MonoBehaviour
 
     //  References variables
     private CharacterController charController;
-    private GameManager gameManager;
+    //private GameManager gameManager;
     private Puppet2D_GlobalControl puppet2DGlobalControl;
 
     //  Animation variables
@@ -87,7 +86,7 @@ public class CharacterController2D : MonoBehaviour
     {
         //  Find and assign references
         charController = GetComponent<CharacterController> ();
-        gameManager = FindObjectOfType<GameManager>();
+        //gameManager = FindObjectOfType<GameManager>();
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
 	}
@@ -607,37 +606,9 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
-    #region Die()
-    public void Die()
-    {
-        //  Respawn player at GameManager's respawn node
-        transform.position = gameManager.RespawnNode.position;
-
-        Debug.Log("Player died!");
-    }
-    #endregion
-
-    #region ProcessImpact(): Evaluate collision impacts
-    //  called when player impacted by colliding object
-    public void ProcessImpact(Vector3 collisionForce)
-    {
-        //Debug.Log(collisionForce.magnitude);
-
-        //  Evaluate force and see if its enough to kill the player
-        if (collisionForce.magnitude >= impactForceThreshold)
-        {
-            Die();
-        }
-    }
-    #endregion
-
     //  Called when a collider enters another collider with isTrigger enabled
     void OnTriggerEnter(Collider other)
     {
-        //  If player collides with a trap, perform death function
-        if (other.CompareTag(Tags.Trap))
-            Die();
-
         #region Perform Ledge climbs if within ledge colliders
         if (other.CompareTag(Tags.Ledge))
         {

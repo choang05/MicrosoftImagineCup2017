@@ -7,12 +7,12 @@ public class ObstacleImpact : MonoBehaviour
         if (other.collider.CompareTag(Tags.Player))
         {
             //  Cache the player's character controller
-            CharacterController2D charController = other.collider.GetComponent<CharacterController2D>();
+            PlayerDeath playerDeath = other.collider.GetComponent<PlayerDeath>();
 
             //  Get total force. (impulse / time)
             Vector3 collisionForce = other.impulse / Time.fixedDeltaTime;
 
-            charController.ProcessImpact(collisionForce);
+            playerDeath.ProcessImpact(collisionForce);
         }
     }
 }
