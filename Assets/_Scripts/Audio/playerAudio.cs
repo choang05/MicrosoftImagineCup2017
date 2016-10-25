@@ -11,7 +11,8 @@ public class playerAudio : MonoBehaviour {
     public AudioClip ropeClimb;
     public AudioClip ropeSwing;
     public AudioClip[] timeWarps;
-
+    new GameObject camera;
+    private AudioSource ambiance;
     private AudioSource playerSound;
     private float velToVol = 0.2f;
 
@@ -53,6 +54,7 @@ public class playerAudio : MonoBehaviour {
         CharacterController2D.OnPulling += sliding;
         CharacterController2D.OnCollisionHit += playerHitGround;
         WorldChanger.OnWorldChangeStart += timeWarpSound;
+        WorldChanger.OnWorldChangeComplete += ambianceChange;
     }
     // remove audio methods from events when completed
     void OnDisable()
@@ -61,6 +63,7 @@ public class playerAudio : MonoBehaviour {
         CharacterController2D.OnPulling -= sliding;
         CharacterController2D.OnCollisionHit -= playerHitGround;
         WorldChanger.OnWorldChangeStart -= timeWarpSound;
+        WorldChanger.OnWorldChangeComplete -= ambianceChange;
     }
     // audio for push/pull box
     public void sliding()
@@ -107,5 +110,43 @@ public class playerAudio : MonoBehaviour {
         randomizePitch(playerSound);
         int randomIndex = Random.Range(0, timeWarps.Length);
         playerSound.PlayOneShot(timeWarps[randomIndex], randomVolume());
+    }
+
+    // start new ambiance in current time
+    void ambianceChange(WorldChanger.WorldState ws)
+    {
+        if (ws == WorldChanger.WorldState.Present)
+        {
+            cameraAudioStop("Past Camera");
+            cameraAudioStop("Future Camera");
+            cameraAudioStart("Present Camera");
+        }
+        else if (ws == WorldChanger.WorldState.Past)
+        {
+            cameraAudioStop("Present Camera");
+            cameraAudioStop("Future Camera");
+            cameraAudioStart("Past Camera");
+        }
+        else if (ws == WorldChanger.WorldState.Future)
+        {
+            cameraAudioStop("Past Camera");
+            cameraAudioStop("Present Camera");
+            cameraAudioStart("Future Camera");
+        }
+    }
+
+    // find target camera and disable audio
+    void cameraAudioStop(string cam)
+    {
+        camera = GameObject.Find(cam);
+        ambiance = camera.GetComponent<AudioSource>();
+        ambiance.Stop();
+    }
+    // find target camera and start audio
+    void cameraAudioStart(string cam)
+    {
+        camera = GameObject.Find(cam);
+        ambiance = camera.GetComponent<AudioSource>();
+        ambiance.Play();
     }
 }
