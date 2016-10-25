@@ -5,27 +5,32 @@ public class PlayerAudio : MonoBehaviour {
 
     //variables
     private float velToVol = 0.2f;
-    public AudioClip footsteps;                  //Audio components stored into array from the child objects of player
-    public AudioClip ladder;
-    private AudioSource playerSound;
+    private AudioSource[] audioSrcs;                  //Audio components stored into array from the child objects of player
+    private AudioSource grassStep;
+    private AudioSource ladderSound;
 
     // Use this for initialization
     void Awake () {
-        playerSound = GetComponent<AudioSource>();
+        audioSrcs = GetComponentsInChildren<AudioSource>();
+        grassStep = audioSrcs[0];
+        ladderSound = audioSrcs[4];
     }
 
     //play audio source for footsteps when player is walking
     void grassFootstepAudio()
     {
-        randomizePitch(playerSound);
-        playerSound.PlayOneShot(footsteps, randomVolume());
+        randomizePitch(grassStep);
+        randomizeVolume(grassStep, 0.95f, 1.05f);
+        grassStep.Play();
+
     }
 
     //Play audio source for climbing ladder
     void climbingLadderAudio()
     {
-        randomizePitch(playerSound);
-        playerSound.PlayOneShot(ladder, randomVolume());
+        randomizePitch(ladderSound);
+        randomizeVolume(ladderSound, 0.15f, 0.25f);
+        ladderSound.Play();
     }
 
     // Called to randomize the pitch of certain audio sources so they don't get dull to hear
@@ -34,16 +39,17 @@ public class PlayerAudio : MonoBehaviour {
         audio.pitch = Random.Range(0.95f, 1.05f);
     }
 
-    //OneShot random Volume value
-    public float randomVolume()
+    //randomize volume
+    void randomizeVolume(AudioSource audio, float a, float b)
     {
-        return Random.Range(0.95f, 1.05f);
+        audio.volume = Random.Range(a, b);
     }
 
     //randomize which audio clip plays during time warps
-    public AudioClip randomTimeWarp(AudioClip[] clips)
+    public AudioSource randomTimeWarp(AudioSource[] clips)
     {
-        int randomIndex = Random.Range(0, clips.Length);
+        int randomIndex = Random.Range(6, clips.Length);
+        randomizePitch(clips[randomIndex]);
         return clips[randomIndex];
     }
 }
