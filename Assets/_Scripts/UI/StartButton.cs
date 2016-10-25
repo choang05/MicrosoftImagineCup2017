@@ -6,6 +6,7 @@ public class StartButton : MonoBehaviour {
   
     public void LoadSceneByIndex(int index)
     {
+        GameManager.manager.CurrentScene++;
         SceneManager.LoadScene(index);
     }   
 }

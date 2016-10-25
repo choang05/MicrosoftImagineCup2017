@@ -87,7 +87,7 @@ public class CharacterController2D : MonoBehaviour
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
 <<<<<<< HEAD
         sounds = GetComponentsInChildren<AudioSource>();
-        pushpullsound = sounds[5];
+        pushpullsound = sounds[4];
         woodImpact = sounds[2];
         grassImpact = sounds[1];
         deathImpact = sounds[3];
@@ -100,70 +100,70 @@ public class CharacterController2D : MonoBehaviour
     void Update ()
     {
 
-       
-
-        //  Check and update the facing direction of the player
-        if (currentState == PlayerState.None)
-            UpdateFacingDirection();
-        
-        //  Apply gravity
-        if (currentState == PlayerState.None)
-            ApplyGravity();
-
-        //  Check Push/Pull, else perform push/pull
-        if (Input.GetKeyDown(KeyCode.E) && charController.isGrounded)
-            CheckPushPull();
-        else if (currentState == PlayerState.PushingPulling)
-            PushingPulling();
-
-        //  Climbing Ladders
-        if (currentState == PlayerState.ClimbingLadder)
-            ClimbLadder();
-
-        //  Climbing Ropes
-        if (currentState == PlayerState.ClimbingRope)
-            ClimbRope();
-
-        //  Moving Horizontally
-        if (currentState == PlayerState.None)
+        if (!GameManager.manager.IsPaused)
         {
-            //  Get input from x axis
-            float xAxis = Input.GetAxis("Horizontal");
+            //  Check and update the facing direction of the player
+            if (currentState == PlayerState.None)
+                UpdateFacingDirection();
 
-            //  if player is on the ground... add run speed multiplier
-            if (charController.isGrounded)
-                velocity.x = xAxis * runSpeed;
-                
-                
-            //  else... add horizontal jump multiplier when player is in air
-            else
-                velocity.x = xAxis * horizontalJumpForce;
-            
+            //  Apply gravity
+            if (currentState == PlayerState.None)
+                ApplyGravity();
+
+            //  Check Push/Pull, else perform push/pull
+            if (Input.GetKeyDown(KeyCode.E) && charController.isGrounded)
+                CheckPushPull();
+            else if (currentState == PlayerState.PushingPulling)
+                PushingPulling();
+
+            //  Climbing Ladders
+            if (currentState == PlayerState.ClimbingLadder)
+                ClimbLadder();
+
+            //  Climbing Ropes
+            if (currentState == PlayerState.ClimbingRope)
+                ClimbRope();
+
+            //  Moving Horizontally
+            if (currentState == PlayerState.None)
+            {
+                //  Get input from x axis
+                float xAxis = Input.GetAxis("Horizontal");
+
+                //  if player is on the ground... add run speed multiplier
+                if (charController.isGrounded)
+                    velocity.x = xAxis * runSpeed;
+
+
+                //  else... add horizontal jump multiplier when player is in air
+                else
+                    velocity.x = xAxis * horizontalJumpForce;
+
+
+                //  Animation
+                animator.SetFloat(xVelocityHash, Mathf.Abs(xAxis));
+            }
+
+            //  Jumping
+            if (Input.GetButtonDown("Jump") && canJump && ((charController.isGrounded && currentState == PlayerState.None)
+                || currentState == PlayerState.ClimbingLadder
+                || currentState == PlayerState.ClimbingRope))
+            {
+                if (currentState == PlayerState.ClimbingLadder || currentState == PlayerState.ClimbingRope)
+                    CancelClimbing();
+
+                //  Animation
+                animator.SetTrigger(jumpTriggerHash);
+                //Jump();	
+            }
+
+            //  Move
+            if (canMove && currentState != PlayerState.ClimbingRope)
+                charController.Move(velocity * Time.deltaTime);
 
             //  Animation
-            animator.SetFloat(xVelocityHash, Mathf.Abs(xAxis));
+            animator.SetBool(isGroundedHash, charController.isGrounded);
         }
-
-        //  Jumping
-        if (Input.GetButtonDown("Jump") && canJump && ((charController.isGrounded && currentState == PlayerState.None) 
-            || currentState == PlayerState.ClimbingLadder 
-            || currentState == PlayerState.ClimbingRope))
-        {
-            if (currentState == PlayerState.ClimbingLadder || currentState == PlayerState.ClimbingRope)
-                CancelClimbing();
-
-            //  Animation
-            animator.SetTrigger(jumpTriggerHash);
-            //Jump();	
-        }
-
-        //  Move
-        if (canMove && currentState != PlayerState.ClimbingRope)
-            charController.Move(velocity * Time.deltaTime);
-
-        //  Animation
-        animator.SetBool(isGroundedHash, charController.isGrounded);
-
         //Debug.Log(currentState);
         //Debug.Log(charController.isGrounded);
         //Debug.Log(isTouchingGround);
