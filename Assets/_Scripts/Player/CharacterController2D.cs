@@ -34,7 +34,6 @@ public class CharacterController2D : MonoBehaviour
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
     [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
-    //private Rigidbody pushPullRigidBody;
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
     private BoxCollider currentLadderBoxCollider;                   //  The BoxCollider of the currently using ladder
@@ -240,6 +239,9 @@ public class CharacterController2D : MonoBehaviour
                 //Debug.Log("Holding objecT: " + hit.collider.name);
                 //  Update player state
                 currentState = PlayerState.PushingPulling;
+
+                //  Reset x velocity
+                velocity.x = 0;
 
                 //  Cache pushing/pulling body
                 pushpullObject = hit.transform.GetComponent<PushPullObject>();

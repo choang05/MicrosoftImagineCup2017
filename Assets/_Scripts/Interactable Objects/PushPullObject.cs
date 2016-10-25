@@ -61,7 +61,7 @@ public class PushPullObject : MonoBehaviour
 
     IEnumerator CoCheckForCollisions()
     {
-        float collisionDistance = .02f;
+        float collisionDistance = .05f;
         RaycastHit hit;
         BoxCollider boxColl = GetComponent<BoxCollider>();
         
