@@ -63,6 +63,7 @@ public class GameManager : MonoBehaviour
         //  Set up camera
         ProCamera2D camera = ProCamera2D.Instance;
         camera.AddCameraTarget(player.transform);
+        camera.GetComponent<ProCamera2DRails>().AddRailsTarget(player.transform);
         camera.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, camera.transform.position.z);
 
         //  Set up world changer
