@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using Com.LuisPedroFonseca.ProCamera2D;
 
@@ -10,7 +11,8 @@ public class GameManager : MonoBehaviour
 
     //  User Parameters variables
     public GameObject playerObject;
-    public Transform LatestCheckpoint;
+    public List<Checkpoint> Checkpoints = new List<Checkpoint>();
+    public int CurrentAreaID;
 
     void Awake()
     {
@@ -24,20 +26,38 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         #endregion
 
-        SetUpPlayer();
     }
 
+    void Start()
+    {
+        SetUpPlayer();
+    }
+        
     public void Respawn()
     {
+        Checkpoints.Clear();
+
         SceneManager.LoadScene(0, LoadSceneMode.Single);
 
-        //  Respawn player at GameManager's respawn node
+        //  Respawn player at current checkpoint
         SetUpPlayer();
     }
 
     private void SetUpPlayer()
     {
-        GameObject player = Instantiate(playerObject, LatestCheckpoint.position, Quaternion.identity) as GameObject;
+        Vector3 currentCheckpointPosition = Vector3.zero;
+
+        //  Find the current areaID the player is in
+        for (int i = 0; i < Checkpoints.Count; i++)
+        {
+            if (Checkpoints[i].AreaID == CurrentAreaID)
+            {
+                currentCheckpointPosition = Checkpoints[i].transform.position;    
+            }
+        }
+
+        //  Instaniate the player at the checkpoint location
+        GameObject player = Instantiate(playerObject, currentCheckpointPosition, Quaternion.identity) as GameObject;
 
         //  Add to camera
         ProCamera2D.Instance.AddCameraTarget(player.transform);

@@ -9,13 +9,31 @@ public class ParallaxHelper : MonoBehaviour
 	void Start()
     {
         parallax = GetComponent<FreeParallax>();
-        charController = FindObjectOfType<CharacterController2D>();
+
+        //  Try to find character
+        StartCoroutine(CoCachePlayer());
     }
     
 	// Update is called once per frame
-	void Update ()
+	void LateUpdate ()
     {
-        parallax.Speed = charController.velocity.x * -1;
+        if (charController == null)
+            return;
 
+        parallax.Speed = charController.velocity.x * -1;
     }
+
+    #region IEnumerator that checks for a indicator panel that may not have been created yet thus we need to keep checking till it exist.
+    IEnumerator CoCachePlayer()
+    {
+        charController = FindObjectOfType<CharacterController2D>();
+
+        //  If the charController hasn't been found yet because the character hasn't spawned yet, keep trying to find.
+        while (charController == null)
+        {
+            charController = FindObjectOfType<CharacterController2D>();
+            yield return null;
+        }
+    }
+    #endregion
 }
