@@ -37,23 +37,19 @@ public class GameManager : MonoBehaviour
         #endregion
 
     }
-
-    void Start()
-    {
-        //SetUpPlayer(SceneManager.GetActiveScene(), LoadSceneMode.Single);
-    }
         
     public void Respawn()
     {
         Checkpoints.Clear();
 
-        Debug.Log(Checkpoints.Count);
         SceneManager.LoadScene(0, LoadSceneMode.Single);
     }
 
     private void SetUpPlayer(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log(Checkpoints.Count);
+        //  If the scene loaded was not the master scene, then do nothing.
+        if (scene.buildIndex != 0)
+            return;
 
         Vector3 currentCheckpointPosition = Vector3.zero;
         //  Find the current areaID the player is in
