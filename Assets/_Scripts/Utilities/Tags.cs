@@ -13,4 +13,7 @@
     public const string Water = "Water";
     public const string bone_Cape_CTRL = "bone_Cape_CTRL";
     public const string bone_Cape = "bone_Cape";
+    public const string PresentCamera = "PresentCamera";
+    public const string PastCamera = "PasttCamera";
+    public const string FutureCamera = "FutureCamera";
 }

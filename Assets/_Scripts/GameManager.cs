@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     private static GameManager control;
 
     //  User Parameters variables
-    public GameObject playerObject;
+    public GameObject playerPrefab;
     public List<Checkpoint> Checkpoints = new List<Checkpoint>();
     public int CurrentAreaID;
 
@@ -54,18 +54,19 @@ public class GameManager : MonoBehaviour
         Vector3 currentCheckpointPosition = Vector3.zero;
         //  Find the current areaID the player is in
         for (int i = 0; i < Checkpoints.Count; i++)
-        {
             if (Checkpoints[i].AreaID == CurrentAreaID)
-            {
                 currentCheckpointPosition = Checkpoints[i].transform.position;    
-            }
-        }
 
         //  Instaniate the player at the checkpoint location
-        GameObject player = Instantiate(playerObject, currentCheckpointPosition, Quaternion.identity) as GameObject;
+        GameObject player = Instantiate(playerPrefab, currentCheckpointPosition, Quaternion.identity) as GameObject;
 
-        //  Add to camera
-        ProCamera2D.Instance.AddCameraTarget(player.transform);
+        //  Set up camera
+        ProCamera2D camera = ProCamera2D.Instance;
+        camera.AddCameraTarget(player.transform);
+        camera.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, camera.transform.position.z);
+
+        //  Set up world changer
+        FindObjectOfType<WorldChanger>().charController = player.GetComponent<CharacterController2D>();
 
         //  Set up the cape helper
         CapePhysicsHelper capeHelper = FindObjectOfType<CapePhysicsHelper>();
