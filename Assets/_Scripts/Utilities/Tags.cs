@@ -16,4 +16,5 @@
     public const string PresentCamera = "PresentCamera";
     public const string PastCamera = "PasttCamera";
     public const string FutureCamera = "FutureCamera";
+    public const string Bridge = "Bridge";
 }
