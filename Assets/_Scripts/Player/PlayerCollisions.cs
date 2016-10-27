@@ -22,7 +22,8 @@ public class PlayerCollisions : MonoBehaviour
 
             //  Send message to the hit object through the parent OnPlayerCollision script
             OnPlayerCollision playerHitObject = hit.collider.GetComponent<OnPlayerCollision>();
-            playerHitObject.OnPlayerHit(hit, pushDir);
+            if (playerHitObject != null)
+                playerHitObject.OnPlayerHit(hit, pushDir);
         }
 
         //  Event
