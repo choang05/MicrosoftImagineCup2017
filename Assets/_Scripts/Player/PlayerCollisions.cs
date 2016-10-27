@@ -9,6 +9,18 @@ public class PlayerCollisions : MonoBehaviour
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        // ground Audio
+        GroundImpactAudio gimpactaudio = hit.collider.GetComponent<GroundImpactAudio>();
+        if (gimpactaudio != null)
+            if ((hit.controller.velocity.magnitude * 0.2f) > 1f)
+                gimpactaudio.playerHit(hit);
+
+        // other audio
+        ImpactAudio impactaudio = hit.collider.GetComponent<ImpactAudio>();
+        if (impactaudio != null)
+            if ((hit.controller.velocity.magnitude * 0.2f) > 1f)
+                impactaudio.playerHit(hit);
+
         //  Evaluate interaction things because CharacterController is in special status state that does not allow itself to collide agaisnt awake physics
         Rigidbody hitRigidbody = hit.collider.GetComponent<Rigidbody>();
         if (hitRigidbody != null)

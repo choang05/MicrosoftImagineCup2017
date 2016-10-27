@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 860c29367ce3ddc4cbfceff6576f85d6
+timeCreated: 1477426270
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - footsteps: {fileID: 8300000, guid: fc76bcdccbbb5264f87e2310f5d468d5, type: 3}
+  - ladder: {fileID: 8300000, guid: aa9f60b2bcc01c943bc1ae6da978fe41, type: 3}
+  - grassImpact: {fileID: 8300000, guid: 5ea6926e5557ee14c9d6bfd662f582c2, type: 3}
+  - boxSlide: {fileID: 8300000, guid: 6d129380a23babf41827ae5fcbdfd68a, type: 3}
+  - ropeClimb: {fileID: 8300000, guid: 0744e78213d6f05428a827ba5b2efd5a, type: 3}
+  - ropeSwing: {fileID: 8300000, guid: b96f1449d081bc74c9f17154e053a349, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
