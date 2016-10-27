@@ -13,7 +13,7 @@ public class PushPullObject : MonoBehaviour
     private LayerMask originalLayer;
     private Rigidbody rigidBody;
     [HideInInspector] public bool isColliding;
-    CharacterController2D playerController;
+    [HideInInspector] public CharacterController2D playerController;
     WorldChanger worldChanger;
 
     void OnEnable()
@@ -31,7 +31,6 @@ public class PushPullObject : MonoBehaviour
     void Awake()
     {
         rigidBody = GetComponent<Rigidbody>();
-        playerController = FindObjectOfType<CharacterController2D>();
         worldChanger = FindObjectOfType<WorldChanger>();
     }
 
