@@ -51,8 +51,8 @@ public class GameManager : MonoBehaviour
         if (scene.buildIndex != 0)
             return;
 
-        Vector3 currentCheckpointPosition = Vector3.zero;
         //  Find the current areaID the player is in
+        Vector3 currentCheckpointPosition = Vector3.zero;
         for (int i = 0; i < Checkpoints.Count; i++)
             if (Checkpoints[i].AreaID == CurrentAreaID)
                 currentCheckpointPosition = Checkpoints[i].transform.position;    
