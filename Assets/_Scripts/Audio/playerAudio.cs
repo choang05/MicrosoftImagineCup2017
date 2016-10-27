@@ -13,7 +13,6 @@ public class playerAudio : MonoBehaviour {
     new GameObject camera;
     private AudioSource ambiance;
     private AudioSource playerSound;
-    private float velToVol = 0.2f;
 
     // Initialize audiosource component
 	void Awake()
@@ -32,7 +31,7 @@ public class playerAudio : MonoBehaviour {
     void climbingLadderAudio()
     {
         randomizePitch(playerSound);
-        playerSound.PlayOneShot(ladder, randomVolume());
+        playerSound.PlayOneShot(ladder, playerSound.volume * randomVolume());
     }
 
     // audiosource pitch randomizer
@@ -66,13 +65,13 @@ public class playerAudio : MonoBehaviour {
     public void sliding()
     {
         randomizePitch(playerSound);
-        playerSound.PlayOneShot(boxSlide, randomVolume());
+        playerSound.PlayOneShot(boxSlide, playerSound.volume*randomVolume());
     }
     // audio for animation event of rope climbing
     void playerRopeClimb()
     {
         randomizePitch(playerSound);
-        playerSound.PlayOneShot(ropeClimb, randomVolume());
+        playerSound.PlayOneShot(ropeClimb, playerSound.volume * randomVolume());
     }
     // experimental animation event method for rope swinging audio
     void playerRopeSwing()
@@ -81,12 +80,12 @@ public class playerAudio : MonoBehaviour {
         {
             playerSound.Stop();
             randomizePitch(playerSound);
-            playerSound.PlayOneShot(ropeSwing, randomVolume());
+            playerSound.PlayOneShot(ropeSwing, playerSound.volume * randomVolume());
         }
         else
         {
             randomizePitch(playerSound);
-            playerSound.PlayOneShot(ropeSwing, randomVolume());
+            playerSound.PlayOneShot(ropeSwing, playerSound.volume * randomVolume());
         }
     }
 
@@ -95,7 +94,7 @@ public class playerAudio : MonoBehaviour {
     {
         randomizePitch(playerSound);
         int randomIndex = Random.Range(0, timeWarps.Length);
-        playerSound.PlayOneShot(timeWarps[randomIndex], randomVolume());
+        playerSound.PlayOneShot(timeWarps[randomIndex], playerSound.volume * randomVolume());
     }
 
     // start new ambiance in current time

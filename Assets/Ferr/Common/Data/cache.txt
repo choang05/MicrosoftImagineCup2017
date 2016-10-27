@@ -17,5 +17,3 @@ Assets/_Prefabs/Ferr2D/Platform_Stone.prefab
 Assets/_Prefabs/Template Interactables/Template_MovingPlatform.prefab
 Assets/_Prefabs/Template Interactables/Template_Climable_Ladder.prefab
 Assets/_Prefabs/Template Interactables/Template_Rope.prefab
-Assets/_Prefabs/PrefabsWithAudio/Platform.prefab
-Assets/_Prefabs/PrefabsWithAudio/Ground.prefab

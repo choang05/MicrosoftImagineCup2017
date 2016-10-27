@@ -728,6 +728,20 @@ public class CharacterController2D : MonoBehaviour
     //  Must use this because OnCollisionEnter/Exit does not work for character controller
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
+
+        // player audio impacts with ground
+        GroundImpactAudio gimpactaudio = hit.collider.GetComponent<GroundImpactAudio>();
+        if (gimpactaudio != null)
+            if ((hit.controller.velocity.magnitude * 0.2f) > 1f)
+                gimpactaudio.playerHit(hit);
+
+        // player impacts audio with other objects
+        ImpactAudio impactaudio = hit.collider.GetComponent<ImpactAudio>();
+        if (impactaudio != null)
+            if ((hit.controller.velocity.magnitude * 0.2f) > 1f)
+                impactaudio.playerHit(hit);
+
+
         //  Evaluate what if the object hit is the ground (lowest platform/terrain)
         if (hit.collider.CompareTag(Tags.Ground))
             isTouchingGround = true;
@@ -742,7 +756,7 @@ public class CharacterController2D : MonoBehaviour
         Rigidbody hitRigidbody = hit.collider.GetComponent<Rigidbody>();
         if (hitRigidbody != null)
         {
-            if (!hitRigidbody.isKinematic /*&& hit.collider.CompareTag(Tags.Door)*/)
+            if (!hitRigidbody.isKinematic && hit.collider.CompareTag(Tags.Door))
             {
                 // Calculate push direction from move direction,
                 // we only push objects to the sides never up and down
@@ -753,12 +767,6 @@ public class CharacterController2D : MonoBehaviour
                 hitRigidbody.velocity = pushDir;
             }
         }
-
-        // player audio impacts
-        ImpactAudio impactaudio = hit.collider.GetComponent<ImpactAudio>();
-        if (impactaudio != null)
-            if ((hit.controller.velocity.magnitude * impactaudio.velToVol) > 1f)
-                impactaudio.playerHit(hit);
     }
 }
 
