@@ -26,7 +26,7 @@ public class WorldChanger : MonoBehaviour
     private LayerMask originalLayer;
 
     public CameraTransition cameraTransition;
-    private CharacterController charController;
+    [HideInInspector] public CharacterController2D charController;
     private bool isCurrentlyTransitioning = false;
     
     //  Events
@@ -50,6 +50,10 @@ public class WorldChanger : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+        //  If character hasn't been spawned yet, do nothing
+        if (charController == null)
+            return;
+        
         //  Determine which world player can be teleported too if there is open space
         CheckWorldCollisions();
 
@@ -57,13 +61,13 @@ public class WorldChanger : MonoBehaviour
         switch (currentWorldState)
         {
             case WorldState.Present:
-                transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+                charController.transform.position = new Vector3(charController.transform.position.x, charController.transform.position.y, 0);
                 break;
             case WorldState.Past:
-                transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+                charController.transform.position = new Vector3(charController.transform.position.x, charController.transform.position.y, 25);
                 break;
             case WorldState.Future:
-                transform.position = new Vector3(transform.position.x, transform.position.y, 50);
+                charController.transform.position = new Vector3(charController.transform.position.x, charController.transform.position.y, 50);
                 break;
         }
 
@@ -113,7 +117,7 @@ public class WorldChanger : MonoBehaviour
         Layers.ChangeLayers(gameObject, Layers.ViewAlways);
 
         //  Cache the player's position in normalized screen space coordinates.
-        Vector2 transitionCenter = currentCamera.WorldToViewportPoint(transform.position);
+        Vector2 transitionCenter = currentCamera.WorldToViewportPoint(charController.transform.position);
 
         //  Determine which world ID to switch to and check if world is already active.
         if (worldID == 1)
@@ -125,7 +129,7 @@ public class WorldChanger : MonoBehaviour
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
             //  Set new Z position for player
-            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+            //charController.transform.position = new Vector3(charController.transform.position.x, transform.position.y, 0);
         }
         else if (worldID == 2)
         {
@@ -136,7 +140,7 @@ public class WorldChanger : MonoBehaviour
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
             //  Set new Z position for player
-            transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+            //transform.position = new Vector3(transform.position.x, transform.position.y, 25);
         }
         else if (worldID == 3)
         {
@@ -147,7 +151,7 @@ public class WorldChanger : MonoBehaviour
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
             //  Set new Z position for player
-            transform.position = new Vector3(transform.position.x, transform.position.y, 50);
+            //transform.position = new Vector3(transform.position.x, transform.position.y, 50);
         }
 
         //  Enable audio listener for new world
@@ -177,7 +181,7 @@ public class WorldChanger : MonoBehaviour
     #region CheckWorldCollisions(): Determine which world player can be teleported too if there is open space
     private void CheckWorldCollisions()
     {
-        Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
+        Vector2 playerPos = new Vector2(charController.transform.position.x, charController.transform.position.y);
         RaycastHit hit;
         Vector3 rayDir;
 

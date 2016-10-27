@@ -4,22 +4,31 @@ using System.Collections;
 public class PlayerDeath : MonoBehaviour
 {
     //  User Parameters variables
-    public int impactForceThreshold;                                //  The threshold reached to to kill player caused by colliding object's collision.impulse magnitude          	
+    public int impactForceThreshold;                //  The threshold reached to to kill player caused by colliding object's collision.impulse magnitude          	
 
     //  References
     private GameManager gameManager;
+    private CharacterController2D charController;
+
+    //  Animation
+    private Animator animator;
+    int drownTriggerHash = Animator.StringToHash("drownTrigger");
 
     void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
+        charController = GetComponent<CharacterController2D>();
+        animator = GetComponent<Animator>();
     }
 
     #region DieByWater()
     public void DieByWater()
     {
+        //  Stop player from moving
+        charController.canMove = false;
+        
         //  Animation
-
-        ProcessRespawn();
+        animator.SetTrigger(drownTriggerHash);
 
         Debug.Log("Player died by drowning!");
     }
@@ -30,11 +39,11 @@ public class PlayerDeath : MonoBehaviour
     {
         ProcessRespawn();
 
-        Debug.Log("Player died!");
+        Debug.Log("Player died by impact!");
     }
     #endregion
 
-    #region ProcessRespawn()
+    #region ProcessRespawn(): called from animation death events
     public void ProcessRespawn()
     {
         gameManager.Respawn(); 

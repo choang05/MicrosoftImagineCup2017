@@ -79,8 +79,6 @@ public class CharacterController2D : MonoBehaviour
     public static event PlayerActionEvent OnLadderClimbStart;
     public static event PlayerActionEvent OnLadderClimbExit;
     public static event PlayerActionEvent OnLadderClimbing;
-    public delegate void PlayerCollisionEvent(ControllerColliderHit hit);
-    public static event PlayerCollisionEvent OnCollisionHit;
 
     void Awake ()
     {
@@ -747,26 +745,6 @@ public class CharacterController2D : MonoBehaviour
             isTouchingGround = true;
         else
             isTouchingGround = false;
-
-        //  Event
-        if (OnCollisionHit != null)
-            OnCollisionHit(hit);
-
-        //  Evaluate interaction things because CharacterController is in special status state that does not allow itself to collide agaisnt awake physics
-        Rigidbody hitRigidbody = hit.collider.GetComponent<Rigidbody>();
-        if (hitRigidbody != null)
-        {
-            if (!hitRigidbody.isKinematic && hit.collider.CompareTag(Tags.Door))
-            {
-                // Calculate push direction from move direction,
-                // we only push objects to the sides never up and down
-                Vector3 pushDir = new Vector3(hit.moveDirection.x, hit.moveDirection.y, 0);
-                // If you know how fast your character is trying to move,
-                // then you can also multiply the push velocity by that.
-                // Apply the push
-                hitRigidbody.velocity = pushDir;
-            }
-        }
     }
 }
 
