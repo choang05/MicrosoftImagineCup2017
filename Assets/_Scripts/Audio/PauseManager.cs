@@ -37,4 +37,13 @@ public class PauseManager : MonoBehaviour {
         else
             unpaused.TransitionTo(.01f);
     }
+
+    public void Quit()
+    {
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #else
+        Application.Quit();
+        #endif
+    }
 }
