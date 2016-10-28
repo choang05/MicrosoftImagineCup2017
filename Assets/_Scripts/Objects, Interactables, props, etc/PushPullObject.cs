@@ -66,11 +66,12 @@ public class PushPullObject : MonoBehaviour
         
         //  determine Player is facing direction
         Vector3 direction = (transform.position - playerController.transform.position).normalized;
-        if (direction.magnitude > 0)
+        if (direction.x > 0)
             direction = Vector3.right;
         else
             direction = Vector3.left;
-
+        
+        //  Check for collisions while player is pushin/gpulling
         while (true)
         {
             //  Debug ray                                                                                                        
