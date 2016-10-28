@@ -30,7 +30,7 @@ public class PlayerDeath : MonoBehaviour
         //  Animation
         animator.SetTrigger(drownTriggerHash);
 
-        Debug.Log("Player died by drowning!");
+        //Debug.Log("Player died by drowning!");
     }
     #endregion
 
@@ -46,7 +46,7 @@ public class PlayerDeath : MonoBehaviour
     #region ProcessRespawn(): called from animation death events
     public void ProcessRespawn()
     {
-        gameManager.Respawn(); 
+        gameManager.StartCoRespawn(); 
     }
     #endregion
 

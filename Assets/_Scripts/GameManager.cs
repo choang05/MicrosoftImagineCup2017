@@ -16,12 +16,12 @@ public class GameManager : MonoBehaviour
 
     void OnEnable()
     {
-        SceneManager.sceneLoaded += SetUpPlayer;
+        SceneManager.sceneLoaded += SetUpScene;
     }
 
     void OnDisable()
     {
-        SceneManager.sceneLoaded -= SetUpPlayer;
+        SceneManager.sceneLoaded -= SetUpScene;
     }
 
     void Awake()
@@ -35,17 +35,26 @@ public class GameManager : MonoBehaviour
         else if (control != this)
             Destroy(gameObject);
         #endregion
-
     }
-        
-    public void Respawn()
-    {
-        Checkpoints.Clear();
 
+    //  Public function to start the coroutine
+    public void StartCoRespawn()
+    {   StartCoroutine(CoRespawn());    }
+
+    //  Coroutine that handles respawning in timly manner
+    private IEnumerator CoRespawn()
+    {
+        WorldChanger worldChanger = FindObjectOfType<WorldChanger>();
+        worldChanger.TransitionCameraExit();
+
+        yield return new WaitForSeconds(worldChanger.MainCamera.GetComponent<ProCamera2DTransitionsFX>().DurationExit);
+
+        Checkpoints.Clear();
         SceneManager.LoadScene(0, LoadSceneMode.Single);
     }
 
-    private void SetUpPlayer(Scene scene, LoadSceneMode mode)
+    //  Sets up the scene on master scene loaded
+    private void SetUpScene(Scene scene, LoadSceneMode mode)
     {
         //  If the scene loaded was not the master scene, then do nothing.
         if (scene.buildIndex != 0)
@@ -62,12 +71,14 @@ public class GameManager : MonoBehaviour
 
         //  Set up camera
         ProCamera2D camera = ProCamera2D.Instance;
+        camera.MoveCameraInstantlyToPosition(new Vector2(player.transform.position.x, player.transform.position.y));
         camera.AddCameraTarget(player.transform);
         camera.GetComponent<ProCamera2DRails>().AddRailsTarget(player.transform);
-        camera.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, camera.transform.position.z);
 
         //  Set up world changer
-        FindObjectOfType<WorldChanger>().charController = player.GetComponent<CharacterController2D>();
+        WorldChanger worldChanger = FindObjectOfType<WorldChanger>();
+        worldChanger.charController = player.GetComponent<CharacterController2D>();
+        worldChanger.TransitionCameraEnter();
 
         //  Set up the cape helper
         CapePhysicsHelper capeHelper = FindObjectOfType<CapePhysicsHelper>();

@@ -12,6 +12,7 @@ Assets/Ferr/2DTerrain/TerrainMaterials/ForegroundTerrainMaterial.prefab
 Assets/_Prefabs/Ferr2D/Platform_Stone.prefab
 Assets/Ferr/2DTerrain/TerrainMaterials/SandTerrainMaterial.prefab
 Assets/_Prefabs/Ferr2D/Ladder.prefab
+Assets/_Prefabs/Ferr2D/Platform_Stone2.prefab
 
 [Ferr2DT_PathTerrain]
 Assets/_Prefabs/Template Interactables/Template_Rope.prefab
