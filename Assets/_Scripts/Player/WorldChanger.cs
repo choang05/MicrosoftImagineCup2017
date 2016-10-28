@@ -7,6 +7,7 @@ using CameraTransitions;
 public class WorldChanger : MonoBehaviour
 {
     [Space(10)]
+    public ProCamera2D MainCamera;
     public Camera PresentCamera;
     public Camera PastCamera;
     public Camera FutureCamera;
@@ -100,6 +101,18 @@ public class WorldChanger : MonoBehaviour
                 SwitchWorld(3); //  Future
             }
         }
+    }
+
+    //  Do effect when player enters scene
+    public void TransitionCameraEnter()
+    {
+        MainCamera.GetComponent<ProCamera2DTransitionsFX>().TransitionEnter();
+    }
+
+    //  Do effect when player exits the scene
+    public void TransitionCameraExit()
+    {
+        MainCamera.GetComponent<ProCamera2DTransitionsFX>().TransitionExit();
     }
 
     #region SwitchWorld(): Switch world given an ID
