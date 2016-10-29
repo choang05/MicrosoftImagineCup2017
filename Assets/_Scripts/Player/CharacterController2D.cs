@@ -14,15 +14,10 @@ public class CharacterController2D : MonoBehaviour
     public float terminalVelocity;                                  //  The max speed that is added to the player's y velocity 
     public float verticalJumpForce;                                 //  The amount of vertical force applied to jumps
     public float horizontalJumpForce;                               //  The amount of horizontal force applied to jumps
-    public int impactForceThreshold;                                //  The threshold reached to to kill player caused by colliding object's collision.impulse magnitude          	
     public bool canMove = true;	                                    //  is the player allowed to move?
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
-    public bool canPushPull = true;                                 //  is the player allowed to push/pull 
-    public PlayerAudio pa;
-    
-
-    //  Private variables
+    public bool canPushPull = true;                                 //  is the player allowed to push/pull
     [HideInInspector] public PlayerState currentState;              //  The current state of the player
     public enum PlayerState                                         //  The states the player can have
     {
@@ -32,31 +27,22 @@ public class CharacterController2D : MonoBehaviour
         ClimbingLedge,
         PushingPulling
     }      
-    [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
-    [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
 
     //  Private variables
-    private float velToVol = 0.2f;
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
+    [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
+    [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
-
-    private AudioSource[] sounds;
-    private AudioSource pushpullsound;
-    private AudioSource woodImpact;
-    private AudioSource grassImpact;
-    private AudioSource deathImpact;
-
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
     private BoxCollider currentLadderBoxCollider;                   //  The BoxCollider of the currently using ladder
     private Rigidbody currentRopeRigidBody;
     private bool canSwingRight;
     private bool canSwingLeft;
 
-
     //  References variables
     private CharacterController charController;
-    private GameManager gameManager;
+    //private GameManager gameManager;
     private Puppet2D_GlobalControl puppet2DGlobalControl;
 
     //  Animation variables
@@ -79,88 +65,93 @@ public class CharacterController2D : MonoBehaviour
     int isPullingHash = Animator.StringToHash("isPulling");
     int jumpTriggerHash = Animator.StringToHash("jumpTrigger");
 
+    //  Events
+    public delegate void PlayerActionEvent();
+    public static event PlayerActionEvent OnJumpLaunch;
+    public static event PlayerActionEvent OnLanding;
+    public static event PlayerActionEvent OnPushPullStart;
+    public static event PlayerActionEvent OnPushing;
+    public static event PlayerActionEvent OnPulling;
+    public static event PlayerActionEvent OnPushPullEnd;
+    public static event PlayerActionEvent OnRopeClimbStart;
+    public static event PlayerActionEvent OnRopeClimbExit;
+    public static event PlayerActionEvent OnRopeClimbing;
+    public static event PlayerActionEvent OnLadderClimbStart;
+    public static event PlayerActionEvent OnLadderClimbExit;
+    public static event PlayerActionEvent OnLadderClimbing;
+    public delegate void PlayerCollisionEvent(ControllerColliderHit hit);
+    public static event PlayerCollisionEvent OnCollisionHit;
+
     void Awake ()
     {
         //  Find and assign references
         charController = GetComponent<CharacterController> ();
-        gameManager = FindObjectOfType<GameManager>();
+        //gameManager = FindObjectOfType<GameManager>();
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
-        sounds = GetComponentsInChildren<AudioSource>();
-        pushpullsound = sounds[4];
-        woodImpact = sounds[2];
-        grassImpact = sounds[1];
-        deathImpact = sounds[3];
 	}
 
     #region Update(): check and evaluate input and states every frame
     void Update ()
     {
+        //  Check and update the facing direction of the player
+        if (currentState == PlayerState.None)
+            UpdateFacingDirection();
+        
+        //  Apply gravity
+        if (currentState == PlayerState.None)
+            ApplyGravity();
 
-        if (!GameManager.manager.IsPaused)
+        //  Check Push/Pull, else perform push/pull
+        if (Input.GetKeyDown(KeyCode.E) && charController.isGrounded)
+            CheckPushPull();
+        else if (currentState == PlayerState.PushingPulling)
+            PushingPulling();
+
+        //  Climbing Ladders
+        if (currentState == PlayerState.ClimbingLadder)
+            ClimbLadder();
+
+        //  Climbing Ropes
+        if (currentState == PlayerState.ClimbingRope)
+            ClimbRope();
+
+        //  Moving Horizontally
+        if (currentState == PlayerState.None)
         {
-            //  Check and update the facing direction of the player
-            if (currentState == PlayerState.None)
-                UpdateFacingDirection();
+            //  Get input from x axis
+            float xAxis = Input.GetAxis("Horizontal");
 
-            //  Apply gravity
-            if (currentState == PlayerState.None)
-                ApplyGravity();
-
-            //  Check Push/Pull, else perform push/pull
-            if (Input.GetKeyDown(KeyCode.E) && charController.isGrounded)
-                CheckPushPull();
-            else if (currentState == PlayerState.PushingPulling)
-                PushingPulling();
-
-            //  Climbing Ladders
-            if (currentState == PlayerState.ClimbingLadder)
-                ClimbLadder();
-
-            //  Climbing Ropes
-            if (currentState == PlayerState.ClimbingRope)
-                ClimbRope();
-
-            //  Moving Horizontally
-            if (currentState == PlayerState.None)
-            {
-                //  Get input from x axis
-                float xAxis = Input.GetAxis("Horizontal");
-
-                //  if player is on the ground... add run speed multiplier
-                if (charController.isGrounded)
-                    velocity.x = xAxis * runSpeed;
-
-
-                //  else... add horizontal jump multiplier when player is in air
-                else
-                    velocity.x = xAxis * horizontalJumpForce;
-
-
-                //  Animation
-                animator.SetFloat(xVelocityHash, Mathf.Abs(xAxis));
-            }
-
-            //  Jumping
-            if (Input.GetButtonDown("Jump") && canJump && ((charController.isGrounded && currentState == PlayerState.None)
-                || currentState == PlayerState.ClimbingLadder
-                || currentState == PlayerState.ClimbingRope))
-            {
-                if (currentState == PlayerState.ClimbingLadder || currentState == PlayerState.ClimbingRope)
-                    CancelClimbing();
-
-                //  Animation
-                animator.SetTrigger(jumpTriggerHash);
-                //Jump();	
-            }
-
-            //  Move
-            if (canMove && currentState != PlayerState.ClimbingRope)
-                charController.Move(velocity * Time.deltaTime);
+            //  if player is on the ground... add run speed multiplier
+            if (charController.isGrounded)
+                velocity.x = xAxis * runSpeed;
+            //  else... add horizontal jump multiplier when player is in air
+            else
+                velocity.x = xAxis * horizontalJumpForce;
 
             //  Animation
-            animator.SetBool(isGroundedHash, charController.isGrounded);
+            animator.SetFloat(xVelocityHash, Mathf.Abs(xAxis));
         }
+
+        //  Jumping
+        if (Input.GetButtonDown("Jump") && canJump && ((charController.isGrounded && currentState == PlayerState.None) 
+            || currentState == PlayerState.ClimbingLadder 
+            || currentState == PlayerState.ClimbingRope))
+        {
+            if (currentState == PlayerState.ClimbingLadder || currentState == PlayerState.ClimbingRope)
+                CancelClimbing();
+
+            //  Animation
+            animator.SetTrigger(jumpTriggerHash);
+        }
+
+        //  Move
+        if (canMove && currentState != PlayerState.ClimbingRope)
+            charController.Move(velocity * Time.deltaTime);
+
+        //  Animation
+        animator.SetBool(isGroundedHash, charController.isGrounded);
+
         //Debug.Log(currentState);
         //Debug.Log(charController.isGrounded);
         //Debug.Log(isTouchingGround);
@@ -210,9 +201,13 @@ public class CharacterController2D : MonoBehaviour
 	{
         //  Set vertical velocity
         velocity.y = verticalJumpForce;
-            
+
         //  Animation
         //animator.SetTrigger(jumpTriggerHash);
+
+        //  Events
+        if (OnJumpLaunch != null)
+            OnJumpLaunch();
     }
     #endregion
 
@@ -244,18 +239,27 @@ public class CharacterController2D : MonoBehaviour
                 //  Update player state
                 currentState = PlayerState.PushingPulling;
 
+                //  Reset x velocity
+                velocity.x = 0;
+
                 //  Cache pushing/pulling body
                 pushpullObject = hit.transform.GetComponent<PushPullObject>();
+                //pushPullRigidBody = hit.transform.GetComponent<Rigidbody>();
                 pushpullObject.transform.SetParent(transform);
 
                 //  Set the pushing/pulling break distance
                 pushpullBreakDistance = Vector3.Distance(pushpullObject.transform.position, transform.position);
 
                 //  Process interaction event to the push/pull object
+                pushpullObject.playerController = this;
                 pushpullObject.OnPushPullStart();
 
                 //  Animation
                 animator.SetBool(isPushPullingHash, true);
+
+                //  Events
+                if (OnPushPullStart != null)
+                    OnPushPullStart();
             }
         }
     }
@@ -273,49 +277,81 @@ public class CharacterController2D : MonoBehaviour
             float xAxis = Input.GetAxisRaw("Horizontal");
             velocity.x = xAxis * pushPullSpeed;
 
-            //  Pushing - RIGHT
-            if (velocity.x > 0 && facingDirection == FacingDirection.Right)
+            if (velocity.x != 0)
             {
-                //  Animation - Pushing
-                animator.SetBool(isPushingHash, true);
-                animator.SetBool(isPullingHash, false);
-                if (!pushpullsound.isPlaying) //check if audio not playing
-                    pushpullsound.Play(); //if not then play sound
-            }
-            //  Pushing - LEFT
-            else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
-            {
-                //  Animation - Pushing
-                animator.SetBool(isPushingHash, true);
-                animator.SetBool(isPullingHash, false);
-                if (!pushpullsound.isPlaying) //check audio
-                    pushpullsound.Play(); //play audio
-            }
-            //  Pulling - RIGHT
-            else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
-            {
-                //  Animation - pulling
-                animator.SetBool(isPushingHash, false);
-                animator.SetBool(isPullingHash, true);
-                if (!pushpullsound.isPlaying) //check audio
-                    pushpullsound.Play(); //play audio
-            }
-            //  Pulling - LEFT
-            else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
-            {
-                //  Animation - pulling
-                animator.SetBool(isPushingHash, false);
-                animator.SetBool(isPullingHash, true);
-                if (!pushpullsound.isPlaying) //check audio
-                    pushpullsound.Play(); //play audio
+                //  Move pushPullObject
+                //pushPullRigidBody.MovePosition(pushPullRigidBody.transform.position + velocity * Time.deltaTime);
+                //Debug.Log(pushPullRigidBody.transform.position + velocity * Time.deltaTime);
+
+                //  Pushing - RIGHT
+                if (velocity.x > 0 && facingDirection == FacingDirection.Right)
+                {
+                    //  Stop moving if pushpull object collided agianst something.
+                    if (pushpullObject.isColliding)
+                        velocity.x = 0;
+                    
+                    //  Animation - Pushing
+                    animator.SetBool(isPushingHash, true);
+                    animator.SetBool(isPullingHash, false);
+
+                    //  Events
+                    if (OnPushing != null)
+                        OnPushing();
+                }
+                //  Pushing - LEFT
+                else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
+                {
+                    //  Stop moving if pushpull object collided agianst something.
+                    if (pushpullObject.isColliding)
+                        velocity.x = 0;
+
+                    //  Animation - Pushing
+                    animator.SetBool(isPushingHash, true);
+                    animator.SetBool(isPullingHash, false);
+
+                    //  Events
+                    if (OnPushing != null)
+                        OnPushing();
+                }
+                //  Pulling - RIGHT
+                else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
+                {
+                    //  Animation - pulling
+                    animator.SetBool(isPushingHash, false);
+                    animator.SetBool(isPullingHash, true);
+
+                    //  Events
+                    if (OnPulling != null)
+                        OnPulling();
+                }
+                //  Pulling - LEFT
+                else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
+                {
+                    //  Animation - pulling
+                    animator.SetBool(isPushingHash, false);
+                    animator.SetBool(isPullingHash, true);
+
+                    //  Events
+                    if (OnPulling != null)
+                        OnPulling();
+                }
+
+                //  Correct pushpull object colliding against a wall, still buggy
+                if (Vector3.Distance(transform.position, pushpullObject.transform.position) <= pushpullBreakDistance - 0.05f)
+                {
+                    //velocity.x = 0;
+                    transform.position = new Vector3(transform.position.x - 0.05f, transform.position.y, transform.position.z);
+                    pushpullObject.transform.position = new Vector3(pushpullObject.transform.position.x + 0.05f, pushpullObject.transform.position.y, pushpullObject.transform.position.z);
+                    //CancelPushingPulling();
+
+                    //Debug.Log("can't push any further!");
+                }
             }
             else
             {
                 //  Animation - Idling
                 animator.SetBool(isPushingHash, false);
                 animator.SetBool(isPullingHash, false);
-                if (pushpullsound.isPlaying) //check audio for true value
-                    pushpullsound.loop = false; //stop audio loop if it is
             }
         }
         else
@@ -335,6 +371,7 @@ public class CharacterController2D : MonoBehaviour
 
         //  Return parent of pushing/pulling body
         pushpullObject.transform.SetParent(null);
+        //pushPullRigidBody = null;
         pushpullObject = null;
 
         //  Animation
@@ -342,8 +379,9 @@ public class CharacterController2D : MonoBehaviour
         animator.SetBool(isPullingHash, false);
         animator.SetBool(isPushPullingHash, false);
 
-        if (pushpullsound.isPlaying) //check audio for true value
-            pushpullsound.loop = false; //stop audio loop if it is
+        //  Events
+        if (OnPushPullEnd != null)
+            OnPushPullEnd();
     }
     #endregion
 
@@ -352,11 +390,9 @@ public class CharacterController2D : MonoBehaviour
     {
         //  Get input from y axis.
         float yAxisInput = Input.GetAxisRaw("Vertical");
-        //float xAxisInput = Input.GetAxisRaw("Horizontal");
 
         //  Apply movement vectors
         velocity.y = yAxisInput * ladderClimbSpeed;
-        //velocity.x = xAxisInput * climbSpeed / 2;
 
         //  if player inputs up or down...
         if (yAxisInput > 0)
@@ -364,12 +400,20 @@ public class CharacterController2D : MonoBehaviour
             //  Animation - ClimbLadder up
             animator.SetBool(isClimbingLadderUpHash, true);
             animator.SetBool(isClimbingLadderDownHash, false);
+
+            //  Events
+            if (OnLadderClimbing != null)
+                OnLadderClimbing();
         }
         else if (yAxisInput < 0)
         {
             //  Animation - ClimbLadder down
             animator.SetBool(isClimbingLadderUpHash, false);
             animator.SetBool(isClimbingLadderDownHash, true);
+
+            //  Events
+            if (OnLadderClimbing != null)
+                OnLadderClimbing();
         }
         else
         {
@@ -451,12 +495,20 @@ public class CharacterController2D : MonoBehaviour
                 //  Animation - ClimbLadder up
                 animator.SetBool(isClimbingRopeUpHash, true);
                 animator.SetBool(isClimbingRopeDownHash, false);
+
+                //  Events
+                if (OnRopeClimbing != null)
+                    OnRopeClimbing();
             }
             else if (yAxisInput < 0)
             {
                 //  Animation - ClimbLadder down
                 animator.SetBool(isClimbingRopeUpHash, false);
                 animator.SetBool(isClimbingRopeDownHash, true);
+
+                //  Events
+                if (OnRopeClimbing != null)
+                    OnRopeClimbing();
             }
             else
             {
@@ -496,6 +548,10 @@ public class CharacterController2D : MonoBehaviour
             animator.SetBool(isClimbingLadderUpHash, false);
             animator.SetBool(isClimbingLadderDownHash, false);
             animator.SetBool(isClimbingLadderHash, false);
+
+            //  Events
+            if (OnRopeClimbExit != null)
+                OnRopeClimbExit();
         }
         
         else if (currentState == PlayerState.ClimbingRope)
@@ -509,6 +565,10 @@ public class CharacterController2D : MonoBehaviour
             animator.SetBool(isClimbingRopeUpHash, false);
             animator.SetBool(isClimbingRopeDownHash, false);
             animator.SetBool(isClimbingRopeHash, false);
+
+            //  Events
+            if (OnLadderClimbExit != null)
+                OnLadderClimbExit();
         }
         
         //  Set player state
@@ -547,44 +607,9 @@ public class CharacterController2D : MonoBehaviour
     }
     #endregion
 
-    #region Die()
-    public void Die()
-    {
-        //  Respawn player at GameManager's respawn node
-        transform.position = gameManager.RespawnNode.position;
-
-        Debug.Log("Player died!");
-    }
-    #endregion
-
-    #region ProcessImpact(): Evaluate collision impacts
-    //  called when player impacted by colliding object
-    public void ProcessImpact(Vector3 collisionForce)
-    {
-        //Debug.Log(collisionForce.magnitude);
-
-        //  Evaluate force and see if its enough to kill the player
-        if (collisionForce.magnitude >= impactForceThreshold)
-        {
-            pa.randomizePitch(deathImpact);
-            deathImpact.Play();
-            Die();
-        }
-    }
-    #endregion
-
     //  Called when a collider enters another collider with isTrigger enabled
     void OnTriggerEnter(Collider other)
     {
-        //  If player collides with a trap, perform death function
-        if (other.CompareTag(Tags.Trap))
-        {
-            pa.randomizePitch(deathImpact);
-            deathImpact.Play();
-            Die();
-        }
-            Die();
-
         #region Perform Ledge climbs if within ledge colliders
         if (other.CompareTag(Tags.Ledge))
         {
@@ -656,6 +681,10 @@ public class CharacterController2D : MonoBehaviour
                 // Animation
                 animator.SetBool(isClimbingLadderHash, true);
                 animator.SetFloat(yVelocityHash, 0);
+
+                //  Events
+                if (OnLadderClimbStart != null)
+                    OnLadderClimbStart();
             }
         }
         #endregion
@@ -688,6 +717,10 @@ public class CharacterController2D : MonoBehaviour
                 // Animation
                 animator.SetBool(isClimbingRopeHash, true);
                 animator.SetFloat(yVelocityHash, 0);
+
+                //  Events
+                if (OnRopeClimbStart != null)
+                    OnRopeClimbStart();
             }
         }
         #endregion
@@ -696,33 +729,11 @@ public class CharacterController2D : MonoBehaviour
     //  Must use this because OnCollisionEnter/Exit does not work for character controller
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        float hitVol = hit.controller.velocity.magnitude * velToVol;
-        if (hitVol >= 1f)
-        {
-            if (hit.collider.CompareTag(Tags.Ground) || hit.collider.CompareTag(Tags.Platform))
-            {
-                pa.randomizePitch(grassImpact);
-                grassImpact.volume = hitVol;
-                if(!grassImpact.isPlaying)
-                    grassImpact.Play();
-            }
-            else if (hit.collider.CompareTag(Tags.Box))
-            {
-                pa.randomizePitch(woodImpact);
-                woodImpact.volume = hitVol;
-                if (!woodImpact.isPlaying)
-                    woodImpact.Play();
-            }
-        }
-
-
-
         //  Evaluate what if the object hit is the ground (lowest platform/terrain)
         if (hit.collider.CompareTag(Tags.Ground))
             isTouchingGround = true;
         else
             isTouchingGround = false;
     }
-
 }
 

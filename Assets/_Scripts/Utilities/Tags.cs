@@ -8,8 +8,11 @@
     public const string Ladder = "Ladder";
     public const string Ledge = "Ledge";
     public const string Ground = "Ground";
-    public const string Platform = "Platform";
-    public const string Box = "Box";
-    public const string WeightTrap = "WeightTrap";
     public const string Rope = "Rope";
+    public const string Box = "Box";
+    public const string Platform = "Platform";
+    public const string Door = "Door";
+    public const string Water = "Water";
+    public const string bone_Cape_CTRL = "bone_Cape_CTRL";
+    public const string bone_Cape = "bone_Cape";
 }

@@ -6,7 +6,10 @@ public class StartButton : MonoBehaviour {
   
     public void LoadSceneByIndex(int index)
     {
-        GameManager.manager.CurrentScene++;
+        //  Chad - no reference error. Wrote alternative below
+        //GameManager.manager.CurrentScene++;
+        FindObjectOfType<GameManager>().CurrentScene++;
+
         SceneManager.LoadScene(index);
     }   
 }

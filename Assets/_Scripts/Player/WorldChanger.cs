@@ -7,6 +7,7 @@ using CameraTransitions;
 public class WorldChanger : MonoBehaviour
 {
     [Space(10)]
+    public ProCamera2D MainCamera;
     public Camera PresentCamera;
     public Camera PastCamera;
     public Camera FutureCamera;
@@ -23,40 +24,37 @@ public class WorldChanger : MonoBehaviour
     [HideInInspector] public bool canSwitchFuture = true;
     public float transitionDuration;
     [Range(0, 1)] public float transitionEdgeSmoothness;
+    private LayerMask originalLayer;
 
     public CameraTransition cameraTransition;
-    private CharacterController charController;
-    [HideInInspector] public bool isWorldTransitioning;
-    private AudioSource[] timeSounds;
-    private AudioSource timeWarp;
-    public PlayerAudio pa;
-
+    [HideInInspector] public CharacterController2D charController;
+    private bool isCurrentlyTransitioning = false;
+    
     //  Events
     public delegate void WorldChangeEvent(WorldState worldState);
-    public static event WorldChangeEvent OnWorldChangedState;
+    public static event WorldChangeEvent OnWorldChangeStart;
+    public static event WorldChangeEvent OnWorldChangeComplete;
 
     void Awake()
     {
         //  Find and assign references
         cameraTransition = FindObjectOfType<CameraTransition>();
-        timeSounds = GetComponentsInChildren<AudioSource>();
     }
 
     void Start()
     {
         //  Initial setups
         currentWorldState = WorldState.Present;
+        originalLayer = gameObject.layer;
     }
 
 	// Update is called once per frame
 	void Update ()
     {
-        //  Determine if the world is currently transferring
-        if (cameraTransition != null && cameraTransition.IsRunning)
-            isWorldTransitioning = true;
-        else
-            isWorldTransitioning = false;
-
+        //  If character hasn't been spawned yet, do nothing
+        if (charController == null)
+            return;
+        
         //  Determine which world player can be teleported too if there is open space
         CheckWorldCollisions();
 
@@ -64,48 +62,57 @@ public class WorldChanger : MonoBehaviour
         switch (currentWorldState)
         {
             case WorldState.Present:
-                transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+                charController.transform.position = new Vector3(charController.transform.position.x, charController.transform.position.y, 0);
                 break;
             case WorldState.Past:
-                transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+                charController.transform.position = new Vector3(charController.transform.position.x, charController.transform.position.y, 25);
                 break;
             case WorldState.Future:
-                transform.position = new Vector3(transform.position.x, transform.position.y, 50);
+                charController.transform.position = new Vector3(charController.transform.position.x, charController.transform.position.y, 50);
                 break;
         }
 
         //  If player is allowed to switch & a transition is currently not running...
-        if (!isWorldTransitioning)
+        if (!isCurrentlyTransitioning)
         {
             //  Evaluate input from player. 1-3 selects which world to transition to
             if (Input.GetKeyUp(KeyCode.Alpha1) && currentWorldState != WorldState.Present && isPresentAvaliable && canSwitchPresent)
             {
                 //  Broadcast event delegate
-                if (OnWorldChangedState != null)
-                    OnWorldChangedState(WorldState.Present);
-                timeWarp = pa.randomTimeWarp(timeSounds);
-                timeWarp.Play();
+                if (OnWorldChangeStart != null)
+                    OnWorldChangeStart(WorldState.Present);
+
                 SwitchWorld(1); //  Present
             }
             else if (Input.GetKeyUp(KeyCode.Alpha2) && currentWorldState != WorldState.Past && isPastAvaliable && canSwitchPast)
             {
                 //  Broadcast event delegate
-                if (OnWorldChangedState != null)
-                    OnWorldChangedState(WorldState.Past);
-                timeWarp = pa.randomTimeWarp(timeSounds);
-                timeWarp.Play();
+                if (OnWorldChangeStart != null)
+                    OnWorldChangeStart(WorldState.Past);
+
                 SwitchWorld(2); //  Past
             }
             else if (Input.GetKeyUp(KeyCode.Alpha3) && currentWorldState != WorldState.Future && isFutureAvaliable && canSwitchFuture) 
             {
                 //  Broadcast event delegate
-                if (OnWorldChangedState != null)
-                    OnWorldChangedState(WorldState.Future);
-                timeWarp = pa.randomTimeWarp(timeSounds);
-                timeWarp.Play();
+                if (OnWorldChangeStart != null)
+                    OnWorldChangeStart(WorldState.Future);
+
                 SwitchWorld(3); //  Future
             }
         }
+    }
+
+    //  Do effect when player enters scene
+    public void TransitionCameraEnter()
+    {
+        MainCamera.GetComponent<ProCamera2DTransitionsFX>().TransitionEnter();
+    }
+
+    //  Do effect when player exits the scene
+    public void TransitionCameraExit()
+    {
+        MainCamera.GetComponent<ProCamera2DTransitionsFX>().TransitionExit();
     }
 
     #region SwitchWorld(): Switch world given an ID
@@ -117,8 +124,13 @@ public class WorldChanger : MonoBehaviour
         //  Disable audio listener
         currentCamera.GetComponent<AudioListener>().enabled = false;
 
+        isCurrentlyTransitioning = true;
+
+        //  Update the layer
+        Layers.ChangeLayers(gameObject, Layers.ViewAlways);
+
         //  Cache the player's position in normalized screen space coordinates.
-        Vector2 transitionCenter = currentCamera.WorldToViewportPoint(transform.position);
+        Vector2 transitionCenter = currentCamera.WorldToViewportPoint(charController.transform.position);
 
         //  Determine which world ID to switch to and check if world is already active.
         if (worldID == 1)
@@ -130,7 +142,7 @@ public class WorldChanger : MonoBehaviour
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
             //  Set new Z position for player
-            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+            //charController.transform.position = new Vector3(charController.transform.position.x, transform.position.y, 0);
         }
         else if (worldID == 2)
         {
@@ -141,7 +153,7 @@ public class WorldChanger : MonoBehaviour
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
             //  Set new Z position for player
-            transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+            //transform.position = new Vector3(transform.position.x, transform.position.y, 25);
         }
         else if (worldID == 3)
         {
@@ -152,7 +164,7 @@ public class WorldChanger : MonoBehaviour
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
             //  Set new Z position for player
-            transform.position = new Vector3(transform.position.x, transform.position.y, 50);
+            //transform.position = new Vector3(transform.position.x, transform.position.y, 50);
         }
 
         //  Enable audio listener for new world
@@ -182,7 +194,7 @@ public class WorldChanger : MonoBehaviour
     #region CheckWorldCollisions(): Determine which world player can be teleported too if there is open space
     private void CheckWorldCollisions()
     {
-        Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
+        Vector2 playerPos = new Vector2(charController.transform.position.x, charController.transform.position.y);
         RaycastHit hit;
         Vector3 rayDir;
 
@@ -236,4 +248,15 @@ public class WorldChanger : MonoBehaviour
         }
     }
     #endregion
+
+    public void BroadcastTransitionCompleteEvent()
+    {
+        if (OnWorldChangeComplete != null)
+            OnWorldChangeComplete(currentWorldState);
+
+        isCurrentlyTransitioning = false;
+
+        //  Update the layer
+        Layers.ChangeLayers(gameObject, originalLayer);
+    }
 }

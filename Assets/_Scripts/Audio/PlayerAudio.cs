@@ -1,55 +1,138 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerAudio : MonoBehaviour {
+public class playerAudio : MonoBehaviour
+{
 
-    //variables
-    private float velToVol = 0.2f;
-    private AudioSource[] audioSrcs;                  //Audio components stored into array from the child objects of player
-    private AudioSource grassStep;
-    private AudioSource ladderSound;
+    // variables
+    public AudioClip footsteps;
+    public AudioClip ladder;
+    public AudioClip boxSlide;
+    public AudioClip ropeClimb;
+    public AudioClip ropeSwing;
+    public AudioClip[] timeWarps;
+    new GameObject camera;
+    private AudioSource ambiance;
+    private AudioSource playerSound;
 
-    // Use this for initialization
-    void Awake () {
-        audioSrcs = GetComponentsInChildren<AudioSource>();
-        grassStep = audioSrcs[0];
-        ladderSound = audioSrcs[4];
+    // Initialize audiosource component
+	void Awake()
+    {
+        playerSound = GetComponent<AudioSource>();
     }
 
-    //play audio source for footsteps when player is walking
+    // play footstep audio during animation events
     void grassFootstepAudio()
     {
-        randomizePitch(grassStep);
-        randomizeVolume(grassStep, 0.95f, 1.05f);
-        grassStep.Play();
-
+        randomizePitch(playerSound);
+        playerSound.PlayOneShot(footsteps, randomVolume());
     }
 
-    //Play audio source for climbing ladder
+    // play ladder climbing audio during animation events
     void climbingLadderAudio()
     {
-        randomizePitch(ladderSound);
-        randomizeVolume(ladderSound, 0.15f, 0.25f);
-        ladderSound.Play();
+        randomizePitch(playerSound);
+        playerSound.PlayOneShot(ladder, playerSound.volume * randomVolume());
     }
 
-    // Called to randomize the pitch of certain audio sources so they don't get dull to hear
-    public void randomizePitch(AudioSource audio)
+    // audiosource pitch randomizer
+    public static void randomizePitch(AudioSource audio)
     {
         audio.pitch = Random.Range(0.95f, 1.05f);
     }
 
-    //randomize volume
-    void randomizeVolume(AudioSource audio, float a, float b)
+    // return random volume value in 5% range
+    public static float randomVolume()
     {
-        audio.volume = Random.Range(a, b);
+        return Random.Range(0.95f, 1.05f);
+    }
+    // add audio methods to events
+    void OnEnable()
+    {
+        CharacterController2D.OnPushing += sliding;
+        CharacterController2D.OnPulling += sliding;
+        WorldChanger.OnWorldChangeStart += timeWarpSound;
+        WorldChanger.OnWorldChangeComplete += ambianceChange;
+    }
+    // remove audio methods from events when completed
+    void OnDisable()
+    {
+        CharacterController2D.OnPushing -= sliding;
+        CharacterController2D.OnPulling -= sliding;
+        WorldChanger.OnWorldChangeStart -= timeWarpSound;
+        WorldChanger.OnWorldChangeComplete -= ambianceChange;
+    }
+    // audio for push/pull box
+    public void sliding()
+    {
+        randomizePitch(playerSound);
+        playerSound.PlayOneShot(boxSlide, playerSound.volume * randomVolume());
+    }
+    // audio for animation event of rope climbing
+    void playerRopeClimb()
+    {
+        randomizePitch(playerSound);
+        playerSound.PlayOneShot(ropeClimb, playerSound.volume * randomVolume());
+    }
+    // experimental animation event method for rope swinging audio
+    void playerRopeSwing()
+    {
+        if (playerSound.isPlaying)
+        {
+            playerSound.Stop();
+            randomizePitch(playerSound);
+            playerSound.PlayOneShot(ropeSwing, playerSound.volume * randomVolume());
+        }
+        else
+        {
+            randomizePitch(playerSound);
+            playerSound.PlayOneShot(ropeSwing, playerSound.volume * randomVolume());
+        }
     }
 
-    //randomize which audio clip plays during time warps
-    public AudioSource randomTimeWarp(AudioSource[] clips)
+    // method for time warp event audio
+    void timeWarpSound(WorldChanger.WorldState ws)
     {
-        int randomIndex = Random.Range(6, clips.Length);
-        randomizePitch(clips[randomIndex]);
-        return clips[randomIndex];
+        randomizePitch(playerSound);
+        int randomIndex = Random.Range(0, timeWarps.Length);
+        playerSound.PlayOneShot(timeWarps[randomIndex], playerSound.volume * randomVolume());
+    }
+
+    // start new ambiance in current time
+    void ambianceChange(WorldChanger.WorldState ws)
+    {
+        if (ws == WorldChanger.WorldState.Present)
+        {
+            cameraAudioStop("Past Camera");
+            cameraAudioStop("Future Camera");
+            cameraAudioStart("Present Camera");
+        }
+        else if (ws == WorldChanger.WorldState.Past)
+        {
+            cameraAudioStop("Present Camera");
+            cameraAudioStop("Future Camera");
+            cameraAudioStart("Past Camera");
+        }
+        else if (ws == WorldChanger.WorldState.Future)
+        {
+            cameraAudioStop("Past Camera");
+            cameraAudioStop("Present Camera");
+            cameraAudioStart("Future Camera");
+        }
+    }
+
+    // find target camera and disable audio
+    void cameraAudioStop(string cam)
+    {
+        camera = GameObject.Find(cam);
+        ambiance = camera.GetComponent<AudioSource>();
+        ambiance.Stop();
+    }
+    // find target camera and start audio
+    void cameraAudioStart(string cam)
+    {
+        camera = GameObject.Find(cam);
+        ambiance = camera.GetComponent<AudioSource>();
+        ambiance.Play();
     }
 }

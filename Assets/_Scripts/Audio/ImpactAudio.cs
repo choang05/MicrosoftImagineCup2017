@@ -1,23 +1,32 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class impactAudio : MonoBehaviour {
+public class ImpactAudio : MonoBehaviour
+{
 
     //variables
-    private float velToVol = 0.2f;
     private AudioSource impact;
-    public PlayerAudio pa;
 
     // Use this for initialization
-    void Start () {
+    void Awake()
+    {
         impact = GetComponent<AudioSource>();
-	}
+    }
 
+    //on collision play attached audiosource and calculate volume of impact
     void OnCollisionEnter(Collision hit)
     {
-        pa.randomizePitch(impact);
-        float hitVol = hit.impulse.magnitude * velToVol;
-        impact.volume = hitVol;
+        playerAudio.randomizePitch(impact);
+        impact.volume *= playerAudio.randomVolume();
         impact.Play();
+    }
+
+    // On collision with player play sound
+    public void playerHit(ControllerColliderHit hit)
+    {
+        playerAudio.randomizePitch(impact);
+        impact.volume *= playerAudio.randomVolume();
+        if (!impact.isPlaying)
+            impact.Play();
     }
 }

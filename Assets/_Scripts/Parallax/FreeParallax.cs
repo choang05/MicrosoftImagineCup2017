@@ -434,14 +434,14 @@ public class FreeParallaxElement
         {
             foreach (GameObject obj in GameObjects)
             {
-                obj.transform.Translate(t * SpeedRatio, 0.0f, 0.0f);
+                obj.transform.Translate(t * SpeedRatio * -1, 0.0f, 0.0f);
             }
         }
         else
         {
             foreach (GameObject obj in GameObjects)
             {
-                obj.transform.Translate(0.0f, t * SpeedRatio, 0.0f);
+                obj.transform.Translate(0.0f, t * SpeedRatio * -1, 0.0f);
             }
         }
 

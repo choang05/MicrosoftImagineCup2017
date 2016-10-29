@@ -8,7 +8,10 @@ public class ExitButton : MonoBehaviour
 
     public void SaveAndQuit()
     {
-        GameManager.manager.SaveData();
+
+        //  Chad - this is a error. No reference. Wrote my alternative below
+        //GameManager.manager.SaveData();
+        FindObjectOfType<GameManager>().SaveData();
 
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;

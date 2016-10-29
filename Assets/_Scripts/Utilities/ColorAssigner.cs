@@ -13,9 +13,9 @@ public class ColorAssigner : MonoBehaviour
     [Tooltip("Use a random color. Will override 'NewColor'")]
     public bool RandomColor = false;
     [Tooltip("Should this gameobject be set to the new color?")]
-    public bool ChangeGameobjectColor = false;
+    public bool ChangeGameobjectColor = true;
     [Tooltip("Should this gameobject's children be set to the new color?")]
-    public bool ChangeChildrenColor = false;
+    public bool ChangeChildrenColor = true;
 
     // Use this for initialization
 	void Start ()
