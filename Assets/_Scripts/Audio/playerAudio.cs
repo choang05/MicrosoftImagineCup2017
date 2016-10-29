@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class playerAudio : MonoBehaviour {
+public class playerAudio : MonoBehaviour
+{
 
     // variables
     public AudioClip footsteps;
