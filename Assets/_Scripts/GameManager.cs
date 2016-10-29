@@ -12,7 +12,7 @@ class GameData
 {
     public int resolutionHeight;
     public int resolutionWidth;
-    public int lastPuzzle;
+    public int lastCheckpointID;
     public bool isWindowed;
     public bool isUserNew;
 }
@@ -25,17 +25,17 @@ public class GameManager : MonoBehaviour
     //  User Parameters variables
     public GameObject playerPrefab;
     public int CurrentCheckpointID;
+    //private int lastCheckpoint;
 
     //  Private
     [HideInInspector] public List<Checkpoint> Checkpoints = new List<Checkpoint>();
 
-    //  Settings variables
+    //  UI variables
     private int resolutionHeight;
-    private int lastPuzzle;
-    private bool isWindowed;
     private int resolutionWidth;
-    private bool isUserNew;
+    private bool isWindowed;
     private bool isPaused;
+    private bool isUserNew;
     private int currentScene;
 
     void OnEnable()
@@ -67,13 +67,13 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         // if Esc is pressed, enable panel and pause game
-        if (Input.GetKeyUp(KeyCode.Escape) && CurrentScene != 0 && !isPaused)
+        if (Input.GetKeyUp(KeyCode.Escape) && CurrentScene == 1 && !isPaused)
         {
             GameObject resumePanel = GameObject.Find("MainMenuPanel");
             resumePanel.SetActive(true);
             IsPaused = true;
         }
-        else if (Input.GetKeyUp(KeyCode.Escape) && CurrentScene != 0 && isPaused)
+        else if (Input.GetKeyUp(KeyCode.Escape) && CurrentScene == 1 && isPaused)
         {
             GameObject resumePanel = GameObject.Find("MainMenuPanel");
             resumePanel.SetActive(false);
@@ -94,20 +94,20 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(worldChanger.MainCamera.GetComponent<ProCamera2DTransitionsFX>().DurationExit);
 
         Checkpoints.Clear();
-        SceneManager.LoadScene(0, LoadSceneMode.Single);
+        SceneManager.LoadScene(1, LoadSceneMode.Single);
     }
 
     //  Sets up the scene on master scene loaded
     private void SetUpScene(Scene scene, LoadSceneMode mode)
     {
         //  If the scene loaded was not the master scene, then do nothing.
-        if (scene.buildIndex != 0)
+        if (scene.buildIndex != 1)
             return;
 
         //  Find the current areaID the player is in
         Vector3 currentCheckpointPosition = Vector3.zero;
         for (int i = 0; i < Checkpoints.Count; i++)
-            if (Checkpoints[i].AreaID == CurrentCheckpointID)
+            if (Checkpoints[i].checkpointID == CurrentCheckpointID)
                 currentCheckpointPosition = Checkpoints[i].transform.position;    
 
         //  Instaniate the player at the checkpoint location
@@ -169,16 +169,16 @@ public class GameManager : MonoBehaviour
             resolutionHeight = value;
         }
     }
-    public int LastPuzzle
+    public int lastCheckpointID
     {
         get
         {
-            return lastPuzzle;
+            return CurrentCheckpointID;
         }
 
         set
         {
-            lastPuzzle = value;
+            CurrentCheckpointID = value;
         }
     }
     public bool IsWindowed
@@ -237,7 +237,9 @@ public class GameManager : MonoBehaviour
     {
         IsPaused = false;
     }
+    #endregion
 
+    #region Saving & loading
     public void SaveData()
     {
         BinaryFormatter bf = new BinaryFormatter();
@@ -247,7 +249,7 @@ public class GameManager : MonoBehaviour
         data.isWindowed = IsWindowed;
         data.resolutionHeight = ResolutionHeight;
         data.resolutionWidth = ResolutionWidth;
-        data.lastPuzzle = LastPuzzle;
+        data.lastCheckpointID = lastCheckpointID;
         data.isUserNew = IsUserNew;
 
         bf.Serialize(file, data);
@@ -265,7 +267,7 @@ public class GameManager : MonoBehaviour
             ResolutionHeight = data.resolutionHeight;
             ResolutionWidth = data.resolutionWidth;
             IsWindowed = data.isWindowed;
-            LastPuzzle = data.lastPuzzle;
+            lastCheckpointID = data.lastCheckpointID;
             IsUserNew = data.isUserNew;
         }
         else
@@ -273,7 +275,7 @@ public class GameManager : MonoBehaviour
             ResolutionHeight = 600;
             ResolutionWidth = 800;
             IsWindowed = false;
-            LastPuzzle = 1;
+            lastCheckpointID = 0;
             IsUserNew = true;
         }
     }

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Checkpoint : MonoBehaviour
 {
-    public int AreaID;
+    public int checkpointID;
     
     //  References
     private GameManager gameManager;
@@ -17,6 +17,11 @@ public class Checkpoint : MonoBehaviour
     //  Called when a collider enters another collider with isTrigger enabled
     void OnTriggerEnter(Collider other)
     {
-        gameManager.CurrentCheckpointID = AreaID;     
+        gameManager.CurrentCheckpointID = checkpointID;
+
+        //  Save data
+        gameManager.SaveData();
+
+        if(Application.isEditor) Debug.Log("Game saved at checkpoint: " + gameManager.CurrentCheckpointID); 
     }
 }
