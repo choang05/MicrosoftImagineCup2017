@@ -5,6 +5,7 @@ public class ParallaxHelper : MonoBehaviour
 {
     private FreeParallax parallax;
     private CharacterController2D charController;
+    private Vector3 lastPlayerPosition = Vector3.zero;
 
 	void Start()
     {
@@ -20,7 +21,16 @@ public class ParallaxHelper : MonoBehaviour
         if (charController == null)
             return;
 
-        parallax.Speed = charController.velocity.x * -1;
+        if (charController.transform.position != lastPlayerPosition)
+        {
+
+            parallax.Speed = charController.velocity.x * -1;
+        }
+        else
+            parallax.Speed = 0;
+
+        lastPlayerPosition = charController.transform.position;
+
     }
 
     #region IEnumerator that checks for a indicator panel that may not have been created yet thus we need to keep checking till it exist.
