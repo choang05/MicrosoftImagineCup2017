@@ -80,6 +80,19 @@ public class GameManager : MonoBehaviour
         worldChanger.charController = player.GetComponent<CharacterController2D>();
         worldChanger.TransitionCameraEnter();
 
+        //  Set up the parallax
+        /*FreeParallax[] parallaxes = FindObjectsOfType<FreeParallax>();
+        for (int i = 0; i < parallaxes.Length; i++)
+        {
+            parallaxes[i].transform.position = new Vector3(player.transform.position.x, parallaxes[i].transform.position.y, parallaxes[i].transform.position.z);
+            //parallaxes[i].transform.GetChild(0).position = new Vector3(0, parallaxes[i].transform.GetChild(0).position.y, parallaxes[i].transform.GetChild(0).position.z);
+            //parallaxes[i].Elements[0].GameObjects[0].transform.position = new Vector3(0, parallaxes[i].Elements[0].GameObjects[0].transform.position.y, parallaxes[i].Elements[0].GameObjects[0].transform.position.z);
+            for (int j = 0; j < parallaxes[i].transform.childCount - 3; j++)
+            {
+                //parallaxes[i].transform.GetChild(j).position = new Vector3(0, parallaxes[i].transform.GetChild(j).position.y, parallaxes[i].transform.GetChild(j).position.z);
+            }
+        }*/
+
         //  Set up the cape helper
         CapePhysicsHelper capeHelper = FindObjectOfType<CapePhysicsHelper>();
         capeHelper.transform.position = player.transform.position;
