@@ -17,6 +17,6 @@ public class Checkpoint : MonoBehaviour
     //  Called when a collider enters another collider with isTrigger enabled
     void OnTriggerEnter(Collider other)
     {
-        gameManager.CurrentAreaID = AreaID;     
+        gameManager.CurrentCheckpointID = AreaID;     
     }
 }
