@@ -21,7 +21,6 @@ public class EventBridgeBreaks : MonoBehaviour
 
     IEnumerator CoBreakPlanks()
     {
-
         //  Adjust hinge break force so it breaks off
         BridgePlank1.breakForce = 0;
         BridgePlank1.breakTorque = 0;
