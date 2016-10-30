@@ -371,7 +371,7 @@ public class RopeEditor : Editor
                     currentSegPrefIndex = Random.Range(0, rope.SegmentsPrefabs.Length);
                 }
                 GameObject segment = (Instantiate(rope.SegmentsPrefabs[currentSegPrefIndex]) as SpriteRenderer).gameObject;
-                segment.name = "Segment_" + currentSegment;
+                segment.name = rope.name + currentSegment;
                 segment.transform.parent = rope.transform;
                 segment.transform.localPosition = new Vector3(startX + dx * j, startY + dy * j);
                 segment.transform.localRotation = Quaternion.Euler(0, 0, theta * Mathf.Rad2Deg - 90);

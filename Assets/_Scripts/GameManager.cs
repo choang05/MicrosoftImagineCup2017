@@ -59,9 +59,6 @@ public class GameManager : MonoBehaviour
         else if (control != this)
             Destroy(gameObject);
         #endregion
-
-        LoadData();
-        CurrentScene = 0;
     }
 
     void Update()

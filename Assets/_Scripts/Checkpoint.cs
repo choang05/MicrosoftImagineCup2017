@@ -17,11 +17,14 @@ public class Checkpoint : MonoBehaviour
     //  Called when a collider enters another collider with isTrigger enabled
     void OnTriggerEnter(Collider other)
     {
-        gameManager.CurrentCheckpointID = checkpointID;
+        if (other.CompareTag(Tags.Player) && gameManager.CurrentCheckpointID != checkpointID)
+        {
+            gameManager.CurrentCheckpointID = checkpointID;
 
-        //  Save data
-        gameManager.SaveData();
+            //  Save data
+            gameManager.SaveData();
 
-        if(Application.isEditor) Debug.Log("Game saved at checkpoint: " + gameManager.CurrentCheckpointID); 
+            if(Application.isEditor) Debug.Log("Game saved at checkpoint: " + gameManager.CurrentCheckpointID); 
+        }
     }
 }
