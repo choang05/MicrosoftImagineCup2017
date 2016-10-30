@@ -21,9 +21,8 @@ public class ParallaxHelper : MonoBehaviour
         if (charController == null)
             return;
 
-        if (charController.transform.position != lastPlayerPosition)
+        if (Vector3.Distance(charController.transform.position, lastPlayerPosition) >= 0.01f)
         {
-
             parallax.Speed = charController.velocity.x * -1;
         }
         else

@@ -3,15 +3,19 @@ using System.Collections;
 
 public class Checkpoint : MonoBehaviour
 {
-    public GameObject LevelSegmentGO;
+    public GameObject[] LevelSegmentsGO;
     public int checkpointID;
+    public bool isPastAvaliable;
+    public bool isFutureAvaliable;
     
     //  References
     private GameManager gameManager;
+    private WorldChanger worldChanger;
 
     void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
+        worldChanger = FindObjectOfType<WorldChanger>();
         //gameManager.Checkpoints.Add(this);
     }
 
@@ -31,6 +35,9 @@ public class Checkpoint : MonoBehaviour
             if (checkpointID + 1 <= gameManager.Checkpoints.Length)
                 gameManager.LoadLevelSegment(checkpointID + 1);
 
+            //  Set world changer availibilities
+            worldChanger.isPastAvaliable = isPastAvaliable;
+            worldChanger.isFutureAvaliable = isFutureAvaliable;
 
             //  Save data
             gameManager.SaveData();

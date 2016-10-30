@@ -83,7 +83,8 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < Checkpoints.Length; i++)
             if (Checkpoints[i].checkpointID == checkpointID)
             {
-                Checkpoints[i].LevelSegmentGO.SetActive(false);
+                for (int j = 0; j < Checkpoints[i].LevelSegmentsGO.Length; j++)
+                    Checkpoints[i].LevelSegmentsGO[j].SetActive(false);
                 break;
             }
     }
@@ -94,7 +95,8 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < Checkpoints.Length; i++)
             if (Checkpoints[i].checkpointID == checkpointID)
             {
-                Checkpoints[i].LevelSegmentGO.SetActive(true);
+                for (int j = 0; j < Checkpoints[i].LevelSegmentsGO.Length; j++)
+                    Checkpoints[i].LevelSegmentsGO[j].SetActive(true);
                 break;
             }
     }
@@ -136,14 +138,17 @@ public class GameManager : MonoBehaviour
 
                 //  Load in the level segment previous of the checkpointID
                 if (i - 1 >= 0)
-                    Checkpoints[i - 1].LevelSegmentGO.SetActive(true);
+                    for (int j = 0; j < Checkpoints[i - 1].LevelSegmentsGO.Length; j++)
+                        Checkpoints[i - 1].LevelSegmentsGO[j].SetActive(true);
 
                 //  Load in the level of the checkpoint ID
-                Checkpoints[i].LevelSegmentGO.SetActive(true);
+                for (int j = 0; j < Checkpoints[i].LevelSegmentsGO.Length; j++)
+                    Checkpoints[i].LevelSegmentsGO[j].SetActive(true);
 
                 //  Load the level segment after the checkpoint ID
                 if (i + 1 < Checkpoints.Length)
-                    Checkpoints[i + 1].LevelSegmentGO.SetActive(true);
+                    for (int j = 0; j < Checkpoints[i + 1].LevelSegmentsGO.Length; j++)
+                        Checkpoints[i + 1].LevelSegmentsGO[j].SetActive(true);
 
                 break;
             }
