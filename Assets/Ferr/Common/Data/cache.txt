@@ -9,7 +9,7 @@ Assets/_Prefabs/Ferr2D/Props/Fence.prefab
 Assets/_Prefabs/Ferr2D/Spike.prefab
 Assets/Ferr/2DTerrain/TerrainMaterials/PipeMaterial.prefab
 Assets/_Prefabs/Ferr2D/Platforms/Platform_Stone2.prefab
-Assets/_Prefabs/Ferr2D/Water.prefab
+Assets/_Prefabs/Ferr2D/FX/Water.prefab
 Assets/Ferr/2DTerrain/TerrainMaterials/ForegroundTerrainMaterial.prefab
 Assets/_Prefabs/Ferr2D/Platforms/Platform_Stone.prefab
 Assets/Ferr/2DTerrain/TerrainMaterials/SandTerrainMaterial.prefab
