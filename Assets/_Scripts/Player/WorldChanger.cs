@@ -75,6 +75,14 @@ public class WorldChanger : MonoBehaviour
         //  If player is allowed to switch & a transition is currently not running...
         if (!isCurrentlyTransitioning)
         {
+            //  If the player is in any of these states, do not allow switching
+            if (charController.currentState == CharacterController2D.PlayerState.ClimbingLadder
+                || charController.currentState == CharacterController2D.PlayerState.ClimbingRope
+                || charController.currentState == CharacterController2D.PlayerState.ClimbingLedge)
+            {
+                return;
+            }
+
             //  Evaluate input from player. 1-3 selects which world to transition to
             if (Input.GetKeyUp(KeyCode.Alpha1) && currentWorldState != WorldState.Present && isPresentAvaliable && canSwitchPresent)
             {
@@ -127,7 +135,7 @@ public class WorldChanger : MonoBehaviour
         isCurrentlyTransitioning = true;
 
         //  Update the layer
-        Layers.ChangeLayers(gameObject, Layers.ViewAlways);
+        Layers.ChangeLayers(charController.gameObject, Layers.ViewAlways);
 
         //  Cache the player's position in normalized screen space coordinates.
         Vector2 transitionCenter = currentCamera.WorldToViewportPoint(charController.transform.position);
@@ -257,6 +265,6 @@ public class WorldChanger : MonoBehaviour
         isCurrentlyTransitioning = false;
 
         //  Update the layer
-        Layers.ChangeLayers(gameObject, originalLayer);
+        Layers.ChangeLayers(charController.gameObject, originalLayer);
     }
 }
