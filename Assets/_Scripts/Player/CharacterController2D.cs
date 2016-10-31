@@ -80,8 +80,6 @@ public class CharacterController2D : MonoBehaviour
     public static event PlayerActionEvent OnLadderClimbStart;
     public static event PlayerActionEvent OnLadderClimbExit;
     public static event PlayerActionEvent OnLadderClimbing;
-    public delegate void PlayerCollisionEvent(ControllerColliderHit hit);
-    public static event PlayerCollisionEvent OnCollisionHit;
 
     void Awake ()
     {
