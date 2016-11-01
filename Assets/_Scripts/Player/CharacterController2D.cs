@@ -102,7 +102,7 @@ public class CharacterController2D : MonoBehaviour
             ApplyGravity();
 
         //  Align character to ground
-        if (charController.isGrounded)
+        if (canMove && charController.isGrounded)
             AlignWithGroundNormal();
         else
             transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
