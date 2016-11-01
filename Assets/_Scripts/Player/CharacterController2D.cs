@@ -34,6 +34,7 @@ public class CharacterController2D : MonoBehaviour
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
     [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
+    [HideInInspector] public bool isDead;
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
     private BoxCollider currentLadderBoxCollider;                   //  The BoxCollider of the currently using ladder
@@ -93,6 +94,9 @@ public class CharacterController2D : MonoBehaviour
     #region Update(): check and evaluate input and states every frame
     void Update ()
     {
+        if (isDead)
+            return;
+
         //  Check and update the facing direction of the player
         if (currentState == PlayerState.None)
             UpdateFacingDirection();
@@ -102,7 +106,7 @@ public class CharacterController2D : MonoBehaviour
             ApplyGravity();
 
         //  Align character to ground
-        if (canMove && charController.isGrounded)
+        if (charController.isGrounded)
             AlignWithGroundNormal();
         else
             transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
