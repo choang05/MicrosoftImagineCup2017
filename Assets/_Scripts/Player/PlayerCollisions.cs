@@ -6,6 +6,8 @@ public class PlayerCollisions : MonoBehaviour
     //  Events
     public delegate void PlayerCollisionEvent(ControllerColliderHit hit);
     public static event PlayerCollisionEvent OnCollisionHit;
+    public delegate void PlayerFootCollisionEvent(RaycastHit hit);
+    public static event PlayerFootCollisionEvent OnFootstep;
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
@@ -41,5 +43,26 @@ public class PlayerCollisions : MonoBehaviour
         //  Event
         if (OnCollisionHit != null)
             OnCollisionHit(hit);
+    }
+
+    public void ProcessFootstep()
+    {
+        Ray ray = new Ray(Vector3.zero, Vector3.down);
+        RaycastHit hit;
+
+        ray.origin = transform.position;
+
+        //  Debug ray                                                                                                        
+        //if (Application.isEditor) Debug.DrawRay(ray.origin, ray.direction, Color.blue, 0.01f);
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            //  Broadcast event
+            if (OnFootstep != null)
+                OnFootstep(hit);
+
+            //Debug.Log("Stepped on " + hit.collider.name);
+        }
+
     }
 }

@@ -12,7 +12,7 @@ class GameData
 {
     public int resolutionHeight;
     public int resolutionWidth;
-    public int lastPuzzle;
+    public int lastCheckpointID;
     public bool isWindowed;
     public bool isUserNew;
 }
@@ -27,16 +27,15 @@ public class GameManager : MonoBehaviour
     public int CurrentCheckpointID;
 
     //  Private
-    [HideInInspector] public List<Checkpoint> Checkpoints = new List<Checkpoint>();
+    [HideInInspector] public Checkpoint[] Checkpoints;
 
-    //  Settings variables
+    //  UI variables
     private int resolutionHeight;
-    private int lastPuzzle;
-    private bool isWindowed;
     private int resolutionWidth;
+    private bool isWindowed;
+    //private bool isPaused;
     private bool isUserNew;
-    private bool isPaused;
-    private int currentScene;
+    //private int currentScene;
 
     void OnEnable()
     {
@@ -59,26 +58,30 @@ public class GameManager : MonoBehaviour
         else if (control != this)
             Destroy(gameObject);
         #endregion
-
-        LoadData();
-        CurrentScene = 0;
     }
 
-    void Update()
+    //  Function to unload a level segment given its checkpoint ID
+    public void UnloadLevelSegment(int checkpointID)
     {
-        // if Esc is pressed, enable panel and pause game
-        if (Input.GetKeyUp(KeyCode.Escape) && CurrentScene != 0 && !isPaused)
-        {
-            GameObject resumePanel = GameObject.Find("MainMenuPanel");
-            resumePanel.SetActive(true);
-            IsPaused = true;
-        }
-        else if (Input.GetKeyUp(KeyCode.Escape) && CurrentScene != 0 && isPaused)
-        {
-            GameObject resumePanel = GameObject.Find("MainMenuPanel");
-            resumePanel.SetActive(false);
-            IsPaused = false;
-        }
+        for (int i = 0; i < Checkpoints.Length; i++)
+            if (Checkpoints[i].checkpointID == checkpointID)
+            {
+                for (int j = 0; j < Checkpoints[i].LevelSegmentsGO.Length; j++)
+                    Checkpoints[i].LevelSegmentsGO[j].SetActive(false);
+                break;
+            }
+    }
+
+    //  Function to load in a level segment given its checkpoint ID
+    public void LoadLevelSegment(int checkpointID)
+    {
+        for (int i = 0; i < Checkpoints.Length; i++)
+            if (Checkpoints[i].checkpointID == checkpointID)
+            {
+                for (int j = 0; j < Checkpoints[i].LevelSegmentsGO.Length; j++)
+                    Checkpoints[i].LevelSegmentsGO[j].SetActive(true);
+                break;
+            }
     }
 
     //  Public function to start the coroutine
@@ -93,22 +96,47 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(worldChanger.MainCamera.GetComponent<ProCamera2DTransitionsFX>().DurationExit);
 
-        Checkpoints.Clear();
-        SceneManager.LoadScene(0, LoadSceneMode.Single);
+        SceneManager.LoadScene(1, LoadSceneMode.Single);
     }
 
     //  Sets up the scene on master scene loaded
     private void SetUpScene(Scene scene, LoadSceneMode mode)
     {
         //  If the scene loaded was not the master scene, then do nothing.
-        if (scene.buildIndex != 0)
+        if (scene.buildIndex != 1)
             return;
+
+        //  Fetch & Cache all the checkpoints, then sort by their checkpoint IDs
+        Checkpoints = FindObjectsOfType<Checkpoint>();
+        SortCheckpointsByQuickSort(Checkpoints, 0, Checkpoints.Length-1);
 
         //  Find the current areaID the player is in
         Vector3 currentCheckpointPosition = Vector3.zero;
-        for (int i = 0; i < Checkpoints.Count; i++)
-            if (Checkpoints[i].AreaID == CurrentCheckpointID)
-                currentCheckpointPosition = Checkpoints[i].transform.position;    
+        for (int i = 0; i < Checkpoints.Length; i++)
+        {
+            if (Checkpoints[i].checkpointID == CurrentCheckpointID)
+            {                
+                //  Set the player position of the checkpoint
+                currentCheckpointPosition = Checkpoints[i].transform.position;
+
+                //  Load in the level segment previous of the checkpointID
+                if (i - 1 >= 0)
+                    for (int j = 0; j < Checkpoints[i - 1].LevelSegmentsGO.Length; j++)
+                        Checkpoints[i - 1].LevelSegmentsGO[j].SetActive(true);
+
+                //  Load in the level of the checkpoint ID
+                for (int j = 0; j < Checkpoints[i].LevelSegmentsGO.Length; j++)
+                    Checkpoints[i].LevelSegmentsGO[j].SetActive(true);
+
+                //  Load the level segment after the checkpoint ID
+                if (i + 1 < Checkpoints.Length)
+                    for (int j = 0; j < Checkpoints[i + 1].LevelSegmentsGO.Length; j++)
+                        Checkpoints[i + 1].LevelSegmentsGO[j].SetActive(true);
+
+                break;
+            }
+        }
+
 
         //  Instaniate the player at the checkpoint location
         GameObject player = Instantiate(playerPrefab, currentCheckpointPosition, Quaternion.identity) as GameObject;
@@ -169,16 +197,16 @@ public class GameManager : MonoBehaviour
             resolutionHeight = value;
         }
     }
-    public int LastPuzzle
+    public int lastCheckpointID
     {
         get
         {
-            return lastPuzzle;
+            return CurrentCheckpointID;
         }
 
         set
         {
-            lastPuzzle = value;
+            CurrentCheckpointID = value;
         }
     }
     public bool IsWindowed
@@ -206,38 +234,9 @@ public class GameManager : MonoBehaviour
             isUserNew = value;
         }
     }
+    #endregion
 
-    public bool IsPaused
-    {
-        get
-        {
-            return isPaused;
-        }
-
-        set
-        {
-            isPaused = value;
-        }
-    }
-
-    public int CurrentScene
-    {
-        get
-        {
-            return currentScene;
-        }
-
-        set
-        {
-            currentScene = value;
-        }
-    }
-
-    public void ResumeGame()
-    {
-        IsPaused = false;
-    }
-
+    #region Saving & loading
     public void SaveData()
     {
         BinaryFormatter bf = new BinaryFormatter();
@@ -247,7 +246,7 @@ public class GameManager : MonoBehaviour
         data.isWindowed = IsWindowed;
         data.resolutionHeight = ResolutionHeight;
         data.resolutionWidth = ResolutionWidth;
-        data.lastPuzzle = LastPuzzle;
+        data.lastCheckpointID = lastCheckpointID;
         data.isUserNew = IsUserNew;
 
         bf.Serialize(file, data);
@@ -256,7 +255,7 @@ public class GameManager : MonoBehaviour
 
     public void LoadData()
     {
-        if (File.Exists(Application.persistentDataPath + "settings.dat"))
+        if (File.Exists(Application.persistentDataPath + "/settings.dat"))
         {
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Open(Application.persistentDataPath + "settings.dat", FileMode.Open);
@@ -265,7 +264,7 @@ public class GameManager : MonoBehaviour
             ResolutionHeight = data.resolutionHeight;
             ResolutionWidth = data.resolutionWidth;
             IsWindowed = data.isWindowed;
-            LastPuzzle = data.lastPuzzle;
+            lastCheckpointID = data.lastCheckpointID;
             IsUserNew = data.isUserNew;
         }
         else
@@ -273,9 +272,42 @@ public class GameManager : MonoBehaviour
             ResolutionHeight = 600;
             ResolutionWidth = 800;
             IsWindowed = false;
-            LastPuzzle = 1;
+            lastCheckpointID = 0;
             IsUserNew = true;
         }
+    }
+    #endregion
+
+    #region SortCheckpointsByQuickSort()
+    private void SortCheckpointsByQuickSort(Checkpoint[] checkpoints, int left, int right)
+    {
+        int i = left, j = right;
+        Checkpoint temp;
+        Checkpoint pivot = checkpoints[(left + right) / 2];
+
+        //	Partioning
+        while (i <= j)
+        {
+            while (checkpoints[i].checkpointID < pivot.checkpointID)
+                i++;
+            while (checkpoints[j].checkpointID > pivot.checkpointID)
+                j--;
+
+            if (i <= j)
+            {
+                temp = checkpoints[i];
+                checkpoints[i] = checkpoints[j];
+                checkpoints[j] = temp;
+                i++;
+                j--;
+            }
+        };
+
+        //	Recursion
+        if (left < j)
+            SortCheckpointsByQuickSort(checkpoints, left, j);
+        if (i < right)
+            SortCheckpointsByQuickSort(checkpoints, i, right);
     }
     #endregion
 }
