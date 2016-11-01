@@ -33,9 +33,9 @@ public class GameManager : MonoBehaviour
     private int resolutionHeight;
     private int resolutionWidth;
     private bool isWindowed;
-    private bool isPaused;
+    //private bool isPaused;
     private bool isUserNew;
-    private int currentScene;
+    //private int currentScene;
 
     void OnEnable()
     {
@@ -58,23 +58,6 @@ public class GameManager : MonoBehaviour
         else if (control != this)
             Destroy(gameObject);
         #endregion
-    }
-
-    void Update()
-    {
-        // if Esc is pressed, enable panel and pause game
-        if (Input.GetKeyUp(KeyCode.Escape) && CurrentScene == 1 && !isPaused)
-        {
-            GameObject resumePanel = GameObject.Find("MainMenuPanel");
-            resumePanel.SetActive(true);
-            IsPaused = true;
-        }
-        else if (Input.GetKeyUp(KeyCode.Escape) && CurrentScene == 1 && isPaused)
-        {
-            GameObject resumePanel = GameObject.Find("MainMenuPanel");
-            resumePanel.SetActive(false);
-            IsPaused = false;
-        }
     }
 
     //  Function to unload a level segment given its checkpoint ID
@@ -250,37 +233,6 @@ public class GameManager : MonoBehaviour
         {
             isUserNew = value;
         }
-    }
-
-    public bool IsPaused
-    {
-        get
-        {
-            return isPaused;
-        }
-
-        set
-        {
-            isPaused = value;
-        }
-    }
-
-    public int CurrentScene
-    {
-        get
-        {
-            return currentScene;
-        }
-
-        set
-        {
-            currentScene = value;
-        }
-    }
-
-    public void ResumeGame()
-    {
-        IsPaused = false;
     }
     #endregion
 
