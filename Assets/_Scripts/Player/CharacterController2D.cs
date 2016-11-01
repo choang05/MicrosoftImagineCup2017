@@ -18,7 +18,10 @@ public class CharacterController2D : MonoBehaviour
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
     public bool canPushPull = true;                                 //  is the player allowed to push/pull
-    [HideInInspector] public PlayerState currentState;              //  The current state of the player
+
+    //  Private variables
+    [HideInInspector]
+    public PlayerState currentState;              //  The current state of the player
     public enum PlayerState                                         //  The states the player can have
     {
         None,
@@ -26,9 +29,7 @@ public class CharacterController2D : MonoBehaviour
         ClimbingLadder,
         ClimbingLedge,
         PushingPulling
-    }      
-
-    //  Private variables
+    }
     private FacingDirection facingDirection;                        //  The direction the player is facing
     private enum FacingDirection { Right, Left }                    //  The directions the player can have
     [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
@@ -79,8 +80,6 @@ public class CharacterController2D : MonoBehaviour
     public static event PlayerActionEvent OnLadderClimbStart;
     public static event PlayerActionEvent OnLadderClimbExit;
     public static event PlayerActionEvent OnLadderClimbing;
-    public delegate void PlayerCollisionEvent(ControllerColliderHit hit);
-    public static event PlayerCollisionEvent OnCollisionHit;
 
     void Awake ()
     {
@@ -101,6 +100,12 @@ public class CharacterController2D : MonoBehaviour
         //  Apply gravity
         if (currentState == PlayerState.None)
             ApplyGravity();
+
+        //  Align character to ground
+        if (charController.isGrounded)
+            AlignWithGroundNormal();
+        else
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 
         //  Check Push/Pull, else perform push/pull
         if (Input.GetKeyDown(KeyCode.E) && charController.isGrounded)
@@ -192,6 +197,26 @@ public class CharacterController2D : MonoBehaviour
             facingDirection = FacingDirection.Left;
             //  Flip the global control rig
             puppet2DGlobalControl.flip = true;
+        }
+    }
+    #endregion
+
+    #region AlignWithGroundNormal(): raycasts the ground and rotates the character to match the hit's normal
+    private void AlignWithGroundNormal()
+    {
+        Ray ray = new Ray(Vector3.zero, Vector3.down);
+        RaycastHit hit;
+
+        ray.origin = transform.position;
+
+        //  Debug ray                                                                                                        
+        //if (Application.isEditor) Debug.DrawRay(ray.origin, ray.direction, Color.blue, 0.01f);
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+            //puppet2DGlobalControl.transform.localRotation = new Quaternion(puppet2DGlobalControl.transform.localRotation.x, puppet2DGlobalControl.transform.localRotation.y, 0);
+            puppet2DGlobalControl.transform.localEulerAngles = new Vector3(puppet2DGlobalControl.transform.localEulerAngles.x, puppet2DGlobalControl.transform.localEulerAngles.y, 0);
         }
     }
     #endregion
