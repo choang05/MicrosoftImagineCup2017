@@ -5,7 +5,8 @@ public class playerAudio : MonoBehaviour
 {
 
     // variables
-    public AudioClip footsteps;
+    public AudioClip grassfootsteps;
+    public AudioClip woodfootsteps;
     public AudioClip ladder;
     public AudioClip boxSlide;
     public AudioClip ropeClimb;
@@ -22,10 +23,22 @@ public class playerAudio : MonoBehaviour
     }
 
     // play footstep audio during animation events
-    void grassFootstepAudio()
+    void FootstepAudio(RaycastHit hit)
     {
-        randomizePitch(playerSound);
-        playerSound.PlayOneShot(footsteps, randomVolume());
+        ObjectMaterial obMat = hit.collider.GetComponent<ObjectMaterial>();
+        if (obMat != null)
+        {
+            if (obMat.Material == ObjectMaterial.MaterialType.grass)
+            {
+                randomizePitch(playerSound);
+                playerSound.PlayOneShot(grassfootsteps, randomVolume());
+            }
+            else if(obMat.Material == ObjectMaterial.MaterialType.wood)
+            {
+                randomizePitch(playerSound);
+                playerSound.PlayOneShot(woodfootsteps, randomVolume());
+            }
+        }
     }
 
     // play ladder climbing audio during animation events
@@ -53,6 +66,7 @@ public class playerAudio : MonoBehaviour
         CharacterController2D.OnPulling += sliding;
         WorldChanger.OnWorldChangeStart += timeWarpSound;
         WorldChanger.OnWorldChangeComplete += ambianceChange;
+        PlayerCollisions.OnFootstep += FootstepAudio;
     }
     // remove audio methods from events when completed
     void OnDisable()
@@ -61,6 +75,7 @@ public class playerAudio : MonoBehaviour
         CharacterController2D.OnPulling -= sliding;
         WorldChanger.OnWorldChangeStart -= timeWarpSound;
         WorldChanger.OnWorldChangeComplete -= ambianceChange;
+        PlayerCollisions.OnFootstep -= FootstepAudio;
     }
     // audio for push/pull box
     public void sliding()
