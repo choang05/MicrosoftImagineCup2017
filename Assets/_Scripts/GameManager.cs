@@ -303,7 +303,7 @@ public class GameManager : MonoBehaviour
 
     public void LoadData()
     {
-        if (File.Exists(Application.persistentDataPath + "settings.dat"))
+        if (File.Exists(Application.persistentDataPath + "/settings.dat"))
         {
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Open(Application.persistentDataPath + "settings.dat", FileMode.Open);

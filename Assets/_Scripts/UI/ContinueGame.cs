@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.IO;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class ContinueGame : MonoBehaviour
 {
@@ -15,6 +19,15 @@ public class ContinueGame : MonoBehaviour
             gameObject.SetActive(false);
         else gameObject.SetActive(true);
         */
+    }
+
+    void Start()
+    {
+        //  Determine at start if a save file exist, if so, the continue button should be enabled
+        if (!File.Exists(Application.persistentDataPath + "/settings.dat"))
+            gameObject.SetActive(false);
+        else
+            gameObject.SetActive(true);
     }
 
     public void LoadLastScene()
