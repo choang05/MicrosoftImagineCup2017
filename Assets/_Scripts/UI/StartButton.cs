@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using Com.LuisPedroFonseca.ProCamera2D;
 
 public class StartButton : MonoBehaviour
 {
@@ -13,11 +14,22 @@ public class StartButton : MonoBehaviour
 
     public void LoadSceneByIndex(int index)
     {
-        //  Chad - no reference error. Wrote alternative below
-        //GameManager.manager.CurrentScene++;
-
         gameManager.CurrentCheckpointID = 0;
 
-        SceneManager.LoadScene(index);
-    }   
+        //  Perform the transition coroutine to the master scene
+        StartCoroutine(CoTransitionToMasterScene(index));
+    }
+
+    IEnumerator CoTransitionToMasterScene(int sceneIndex)
+    {
+        //  Perform the exit transition
+        ProCamera2D.Instance.GetComponent<ProCamera2DTransitionsFX>().TransitionExit();
+
+        //  Delay until exit transition is complete
+        float delay = ProCamera2D.Instance.GetComponent<ProCamera2DTransitionsFX>().DurationExit;
+        yield return new WaitForSeconds(delay);
+
+        //  Load the Master Scene
+        SceneManager.LoadScene(sceneIndex);
+    }
 }

@@ -240,7 +240,7 @@ public class GameManager : MonoBehaviour
     public void SaveData()
     {
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "/settings.dat");
+        FileStream file = File.Create(Application.persistentDataPath + "settings.dat");
 
         GameData data = new GameData();
         data.isWindowed = IsWindowed;
@@ -255,7 +255,7 @@ public class GameManager : MonoBehaviour
 
     public void LoadData()
     {
-        if (File.Exists(Application.persistentDataPath + "/settings.dat"))
+        if (File.Exists(Application.persistentDataPath + "settings.dat"))
         {
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Open(Application.persistentDataPath + "settings.dat", FileMode.Open);

@@ -25,7 +25,8 @@ public class PlayerDeath : MonoBehaviour
     public void DieByWater()
     {
         //  Stop player from moving
-        charController.canMove = false;
+        //charController.canMove = false;
+        charController.isDead = true;
         
         //  Animation
         animator.SetTrigger(drownTriggerHash);
@@ -37,6 +38,8 @@ public class PlayerDeath : MonoBehaviour
     #region DieByImpact()
     public void DieByImpact()
     {
+        charController.isDead = true;
+
         ProcessRespawn();
 
         Debug.Log("Player died by impact!");

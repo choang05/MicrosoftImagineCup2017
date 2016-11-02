@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
+using Com.LuisPedroFonseca.ProCamera2D;
 
 public class ContinueGame : MonoBehaviour
 {
@@ -24,7 +25,7 @@ public class ContinueGame : MonoBehaviour
     void Start()
     {
         //  Determine at start if a save file exist, if so, the continue button should be enabled
-        if (!File.Exists(Application.persistentDataPath + "/settings.dat"))
+        if (!File.Exists(Application.persistentDataPath + "settings.dat"))
             gameObject.SetActive(false);
         else
             gameObject.SetActive(true);
@@ -32,15 +33,23 @@ public class ContinueGame : MonoBehaviour
 
     public void LoadLastScene()
     {
-        //  Chad - always load the master scene which is index 0
-        //  Chad - Save the last AreaID the player was in. Assign that value in the GameManager and that will be determine the continue checkpoint
-
         //  Load in the save file
         gameManager.LoadData();
 
-        //  Start the Master Scene
-        SceneManager.LoadScene(1);
+        //  Perform the transition coroutine to the master scene
+        StartCoroutine(CoTransitionToMasterScene(1));
+    }
 
-        //SceneManager.LoadScene(GameManager.manager.LastPuzzle);
+    IEnumerator CoTransitionToMasterScene(int sceneIndex)
+    {
+        //  Perform the exit transition
+        ProCamera2D.Instance.GetComponent<ProCamera2DTransitionsFX>().TransitionExit();
+
+        //  Delay until exit transition is complete
+        float delay = ProCamera2D.Instance.GetComponent<ProCamera2DTransitionsFX>().DurationExit;
+        yield return new WaitForSeconds(delay);
+
+        //  Load the Master Scene
+        SceneManager.LoadScene(sceneIndex);
     }
 }
