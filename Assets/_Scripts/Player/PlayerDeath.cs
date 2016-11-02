@@ -68,12 +68,12 @@ public class PlayerDeath : MonoBehaviour
     #endregion
 
     //  Called when a collider enters another collider with isTrigger enabled
-    void OnTriggerEnter(Collider other)
+    /*void OnTriggerEnter(Collider other)
     {
         //  If player collides with a trap, perform death function
         if (other.CompareTag(Tags.Trap))
             DieByImpact();
         else if (other.CompareTag(Tags.Water))
             DieByWater();
-    }
+    }*/
 }
