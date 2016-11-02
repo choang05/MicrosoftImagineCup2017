@@ -380,6 +380,10 @@ public class RopeEditor : Editor
                     Rigidbody segRigidbody = segment.GetComponent<Rigidbody>();
                     if (segRigidbody == null)
                         segRigidbody = segment.AddComponent<Rigidbody>();
+
+                    //  Chad
+                    segRigidbody.drag = rope.drag;
+
                     //if not the first segment, make a joint
                     if (currentSegment != 0)
                     {

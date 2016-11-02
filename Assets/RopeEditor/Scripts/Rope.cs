@@ -38,7 +38,7 @@ public class Rope : MonoBehaviour {
     public float overlapFactor;
     public List<Vector3> nodes = new List<Vector3>(new Vector3[] {new Vector3(-3,0,0),new Vector3(3,0,0) });
     public float drag;
-    public Vector3 HingeAxis;
+    public Vector3 HingeAxis = new Vector3(0, 0, 1);
     public bool WithPhysics=true;
     public bool Use3DColliders = true;
     // Use this for initialization
