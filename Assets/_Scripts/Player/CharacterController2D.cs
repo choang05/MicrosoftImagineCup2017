@@ -98,7 +98,7 @@ public class CharacterController2D : MonoBehaviour
             return;
 
         //  Check and update the facing direction of the player
-        if (currentState == PlayerState.None)
+        if (currentState == PlayerState.None && canMove)
             UpdateFacingDirection();
         
         //  Apply gravity
@@ -106,13 +106,11 @@ public class CharacterController2D : MonoBehaviour
             ApplyGravity();
 
         //  Align character to ground
-        if (charController.isGrounded)
+        if (currentState == PlayerState.None)
             AlignWithGroundNormal();
-        else
-            transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 
         //  Check Push/Pull, else perform push/pull
-        if (Input.GetKeyDown(KeyCode.E) && charController.isGrounded)
+        if (Input.GetButtonDown("Interact") && charController.isGrounded)
             CheckPushPull();
         else if (currentState == PlayerState.PushingPulling)
             PushingPulling();
@@ -218,9 +216,18 @@ public class CharacterController2D : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
-            transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
-            //puppet2DGlobalControl.transform.localRotation = new Quaternion(puppet2DGlobalControl.transform.localRotation.x, puppet2DGlobalControl.transform.localRotation.y, 0);
-            puppet2DGlobalControl.transform.localEulerAngles = new Vector3(puppet2DGlobalControl.transform.localEulerAngles.x, puppet2DGlobalControl.transform.localEulerAngles.y, 0);
+            //Debug.Log(Mathf.Abs(Vector3.Angle(Vector3.up, hit.normal)));
+            if (charController.isGrounded && Mathf.Abs(Vector3.Angle(Vector3.up, hit.normal)) < charController.slopeLimit)
+            {
+                transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+                //puppet2DGlobalControl.transform.localRotation = new Quaternion(puppet2DGlobalControl.transform.localRotation.x, puppet2DGlobalControl.transform.localRotation.y, 0);
+                puppet2DGlobalControl.transform.localEulerAngles = new Vector3(puppet2DGlobalControl.transform.localEulerAngles.x, puppet2DGlobalControl.transform.localEulerAngles.y, 0);
+
+            }
+            else
+            {
+                transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
+            }
         }
     }
     #endregion
