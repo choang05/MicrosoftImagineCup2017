@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BridgeWater : MonoBehaviour
+public class OnBridgeWaterCollision : MonoBehaviour
 {
     public GameObject SplashFX;
 
