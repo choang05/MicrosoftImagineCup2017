@@ -12,20 +12,13 @@ public class ContinueGame : MonoBehaviour
 
     void Awake()
     {
-        //  Chad - if its a new game, set the AreaID to 0 in the GameManager script
-
         gameManager = FindObjectOfType<GameManager>();
-
-        /*if (GameManager.manager.IsUserNew)
-            gameObject.SetActive(false);
-        else gameObject.SetActive(true);
-        */
     }
 
     void Start()
     {
         //  Determine at start if a save file exist, if so, the continue button should be enabled
-        if (!File.Exists(Application.persistentDataPath + "settings.dat"))
+        if (!File.Exists(Application.persistentDataPath + "PlayerSave1.dat"))
             gameObject.SetActive(false);
         else
             gameObject.SetActive(true);
@@ -34,7 +27,7 @@ public class ContinueGame : MonoBehaviour
     public void LoadLastScene()
     {
         //  Load in the save file
-        gameManager.LoadData();
+        gameManager.LoadPlayerData();
 
         //  Perform the transition coroutine to the master scene
         StartCoroutine(CoTransitionToMasterScene(1));

@@ -42,7 +42,7 @@ public class Checkpoint : MonoBehaviour
                     gameManager.LoadLevelSegment(checkpointID + 1);
 
                 //  Save data
-                gameManager.SaveData();
+                gameManager.SavePlayerData();
 
                 if(Application.isEditor) Debug.Log("Game saved at checkpoint: " + gameManager.CurrentCheckpointID); 
             }

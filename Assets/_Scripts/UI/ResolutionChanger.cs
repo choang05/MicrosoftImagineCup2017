@@ -30,28 +30,24 @@ public class ResolutionChanger : MonoBehaviour
 
     public void ChangeResolution()
     {
-        //  Chad - No reference error. Wrote my alternative below
-        //GameManager.manager.IsWindowed = fullScreenToggle.isOn;
+        SettingsManager settingsManager = FindObjectOfType<SettingsManager>();
 
-        GameManager gameManager = FindObjectOfType<GameManager>();
-
-        gameManager.IsWindowed = fullScreenToggle.isOn;
+        settingsManager.IsWindowed = fullScreenToggle.isOn;
 
         switch ((int)slider.value)
         {
             
             case 1:
-                Screen.SetResolution(800, 600, !gameManager.IsWindowed);
-                
+                Screen.SetResolution(800, 600, !settingsManager.IsWindowed);
                 break;
             case 2:
-                Screen.SetResolution(1024, 768, !gameManager.IsWindowed);
+                Screen.SetResolution(1024, 768, !settingsManager.IsWindowed);
                 break;
             case 3:
-                Screen.SetResolution(1280, 768, !gameManager.IsWindowed);
+                Screen.SetResolution(1280, 768, !settingsManager.IsWindowed);
                 break;
             case 4:
-                Screen.SetResolution(1366, 768, !gameManager.IsWindowed);
+                Screen.SetResolution(1366, 768, !settingsManager.IsWindowed);
                 break;
         }
         

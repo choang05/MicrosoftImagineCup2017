@@ -8,13 +8,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Com.LuisPedroFonseca.ProCamera2D;
 
 [Serializable]
-class GameData
+class PlayerData
 {
-    public int resolutionHeight;
-    public int resolutionWidth;
-    public int lastCheckpointID;
-    public bool isWindowed;
-    public bool isUserNew;
+    public int playerSaveID;
+    public int lastCheckpointID;  
 }
 
 public class GameManager : MonoBehaviour
@@ -28,14 +25,6 @@ public class GameManager : MonoBehaviour
 
     //  Private
     [HideInInspector] public Checkpoint[] Checkpoints;
-
-    //  UI variables
-    private int resolutionHeight;
-    private int resolutionWidth;
-    private bool isWindowed;
-    //private bool isPaused;
-    private bool isUserNew;
-    //private int currentScene;
 
     void OnEnable()
     {
@@ -167,108 +156,33 @@ public class GameManager : MonoBehaviour
         capeHelper.GetComponent<DistanceJoint2D>().connectedBody = GameObject.FindGameObjectWithTag(Tags.bone_Cape).GetComponent<Rigidbody2D>();
     }
 
-    #region Sagar - UI
-    public int ResolutionWidth
-    {
-        get
-        {
-            return resolutionWidth;
-        }
-
-        set
-        {
-            resolutionWidth = value;
-        }
-    }
-    public int ResolutionHeight
-    {
-        get
-        {
-            return resolutionHeight;
-        }
-
-        set
-        {
-            resolutionHeight = value;
-        }
-    }
-    public int lastCheckpointID
-    {
-        get
-        {
-            return CurrentCheckpointID;
-        }
-
-        set
-        {
-            CurrentCheckpointID = value;
-        }
-    }
-    public bool IsWindowed
-    {
-        get
-        {
-            return isWindowed;
-        }
-
-        set
-        {
-            isWindowed = value;
-        }
-    }
-
-    public bool IsUserNew
-    {
-        get
-        {
-            return isUserNew;
-        }
-
-        set
-        {
-            isUserNew = value;
-        }
-    }
-    #endregion
-
     #region Saving & loading
-    public void SaveData()
+    public void SavePlayerData()
     {
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "settings.dat");
+        FileStream file = File.Create(Application.persistentDataPath + "/playerSave1.dat");
 
-        GameData data = new GameData();
-        data.isWindowed = IsWindowed;
-        data.resolutionHeight = ResolutionHeight;
-        data.resolutionWidth = ResolutionWidth;
-        data.lastCheckpointID = lastCheckpointID;
-        data.isUserNew = IsUserNew;
+        PlayerData data = new PlayerData();
+        data.lastCheckpointID = CurrentCheckpointID;
 
         bf.Serialize(file, data);
         file.Close();
     }
 
-    public void LoadData()
+    public void LoadPlayerData()
     {
-        if (File.Exists(Application.persistentDataPath + "settings.dat"))
+        if (File.Exists(Application.persistentDataPath + "/playerSave1.dat"))
         {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "settings.dat", FileMode.Open);
-            GameData data = (GameData)bf.Deserialize(file);
+            FileStream file = File.Open(Application.persistentDataPath + "/playerSave1.dat", FileMode.Open);
 
-            ResolutionHeight = data.resolutionHeight;
-            ResolutionWidth = data.resolutionWidth;
-            IsWindowed = data.isWindowed;
-            lastCheckpointID = data.lastCheckpointID;
-            IsUserNew = data.isUserNew;
+            PlayerData data = (PlayerData)bf.Deserialize(file);
+
+            CurrentCheckpointID = data.lastCheckpointID;
         }
         else
         {
-            ResolutionHeight = 600;
-            ResolutionWidth = 800;
-            IsWindowed = false;
-            lastCheckpointID = 0;
-            IsUserNew = true;
+            CurrentCheckpointID = 0;
         }
     }
     #endregion

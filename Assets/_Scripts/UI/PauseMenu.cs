@@ -7,48 +7,39 @@ public class PauseMenu : MonoBehaviour
     public GameObject PauseMainMenu;
 
     private bool isPaused;
-    private int currentScene;
 
-    //  References
-    private GameManager gameManager;
+    private SettingsManager settingsManger;
 
-    void Awake()
+    void AWake()
     {
-        gameManager = FindObjectOfType<GameManager>();
+        settingsManger = FindObjectOfType<SettingsManager>();
     }
 
-    // Use this for initialization
-    void Start ()
+    void Start()
     {
-	
-	}
+        PauseMainMenu.SetActive(false);
+    }
 
     void Update()
     {
         // if Esc is pressed and scene is master scene... 
         if (Input.GetKeyUp(KeyCode.Escape) && SceneManager.GetActiveScene().buildIndex == 1)
         {
+
             //  if the game is not paused... then pause it
             if (!isPaused)
             {
-                PauseMainMenu.SetActive(true);
-                IsPaused = true;
-
-                //  Freeze the time so nothing moves
-                Time.timeScale = 0;
+                PauseGame();
             }
             //  Else unpause the game
             else
             {
-                PauseMainMenu.SetActive(false);
-                IsPaused = false;
-
-                //  Revert game timescale back to normal
-                Time.timeScale = 1;
+                ResumeGame();
             }
         }
     }
 
+    #region Properties for fields
     public bool IsPaused
     {
         get
@@ -62,8 +53,22 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+    public void PauseGame()
+    {
+        PauseMainMenu.SetActive(true);
+        IsPaused = true;
+
+        //  Freeze the time so nothing moves
+        Time.timeScale = 0;
+    }
+
     public void ResumeGame()
     {
+        PauseMainMenu.SetActive(false);
         IsPaused = false;
+
+        //  Revert game timescale back to normal
+        Time.timeScale = 1;
     }
+    #endregion
 }

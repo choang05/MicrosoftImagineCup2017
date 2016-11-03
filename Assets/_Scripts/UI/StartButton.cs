@@ -16,6 +16,8 @@ public class StartButton : MonoBehaviour
     {
         gameManager.CurrentCheckpointID = 0;
 
+        Time.timeScale = 1;
+
         //  Perform the transition coroutine to the master scene
         StartCoroutine(CoTransitionToMasterScene(index));
     }
