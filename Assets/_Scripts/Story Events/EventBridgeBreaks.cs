@@ -6,6 +6,12 @@ public class EventBridgeBreaks : MonoBehaviour
     public HingeJoint BridgePlank1;
     public HingeJoint BridgePlank2;
     public HingeJoint[] BridgePlank2RopeSupports;
+    private AudioSource BridgePlankBreakSound;
+
+    void Awake()
+    {
+        BridgePlankBreakSound = GetComponent<AudioSource>();
+    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -16,6 +22,11 @@ public class EventBridgeBreaks : MonoBehaviour
 
             //  Start the bridge break coroutine
             StartCoroutine(CoBreakPlanks());
+
+            // Play wood breaking sound
+            playerAudio.randomizePitch(BridgePlankBreakSound);
+            BridgePlankBreakSound.volume *= playerAudio.randomVolume();
+            BridgePlankBreakSound.Play();
         }
     }
 
