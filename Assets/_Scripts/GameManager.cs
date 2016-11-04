@@ -10,7 +10,6 @@ using Com.LuisPedroFonseca.ProCamera2D;
 [Serializable]
 class PlayerData
 {
-    public int playerSaveID;
     public int lastCheckpointID;  
 }
 

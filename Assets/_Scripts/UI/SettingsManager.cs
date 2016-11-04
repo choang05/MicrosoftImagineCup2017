@@ -41,7 +41,6 @@ public class SettingsManager : MonoBehaviour
     }
 
     #region Properties for fields
-
     public int ResolutionHeight
     {
         get
@@ -86,7 +85,7 @@ public class SettingsManager : MonoBehaviour
     {
         BinaryFormatter bf = new BinaryFormatter();
 
-        FileStream file = File.Create(Application.persistentDataPath + "settings.dat");
+        FileStream file = File.Create(Application.persistentDataPath + "/settings.dat");
 
         SettingsData data = new SettingsData();
         data.isWindowed = IsWindowed;
@@ -99,19 +98,19 @@ public class SettingsManager : MonoBehaviour
     }
     public void LoadSettings()
     {
-        if (File.Exists(Application.persistentDataPath + "settings.dat"))
+        if (File.Exists(Application.persistentDataPath + "/settings.dat"))
         {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "settings.dat", FileMode.Open);
+            FileStream file = File.Open(Application.persistentDataPath + "/settings.dat", FileMode.Open);
             SettingsData data = (SettingsData)bf.Deserialize(file);
-            ResolutionHeight = data.resolutionHeight;
             ResolutionWidth = data.resolutionWidth;
+            ResolutionHeight = data.resolutionHeight;
             IsWindowed = data.isWindowed;
         }
         else
         {
-            ResolutionHeight = 600;
             ResolutionWidth = 800;
+            ResolutionHeight = 600;
             IsWindowed = false;
         }
 
