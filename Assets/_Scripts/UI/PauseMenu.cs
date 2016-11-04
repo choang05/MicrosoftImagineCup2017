@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.UI;
+using UnityEngine.Audio;
 
 public class PauseMenu : MonoBehaviour
 {
     public GameObject PauseMainMenu;
+    public AudioMixerSnapshot paused;
+    public AudioMixerSnapshot unpaused;
 
     private bool isPaused;
 
@@ -39,6 +43,14 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+    void Lowpass()
+    {
+        if (Time.timeScale == 0)
+            paused.TransitionTo(.01f);
+        else
+            unpaused.TransitionTo(.01f);
+    }
+
     #region Properties for fields
     public bool IsPaused
     {
@@ -60,6 +72,7 @@ public class PauseMenu : MonoBehaviour
 
         //  Freeze the time so nothing moves
         Time.timeScale = 0;
+        Lowpass();
     }
 
     public void ResumeGame()
@@ -69,6 +82,7 @@ public class PauseMenu : MonoBehaviour
 
         //  Revert game timescale back to normal
         Time.timeScale = 1;
+        Lowpass();
     }
     #endregion
 }

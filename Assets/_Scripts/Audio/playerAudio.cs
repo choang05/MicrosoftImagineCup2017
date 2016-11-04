@@ -8,7 +8,6 @@ public class playerAudio : MonoBehaviour
     public AudioClip grassfootsteps;
     public AudioClip woodfootsteps;
     public AudioClip ladder;
-    public AudioClip boxSlide;
     public AudioClip ropeClimb;
     public AudioClip ropeSwing;
     public AudioClip[] timeWarps;
@@ -62,8 +61,6 @@ public class playerAudio : MonoBehaviour
     // add audio methods to events
     void OnEnable()
     {
-        CharacterController2D.OnPushing += sliding;
-        CharacterController2D.OnPulling += sliding;
         WorldChanger.OnWorldChangeStart += timeWarpSound;
         WorldChanger.OnWorldChangeComplete += ambianceChange;
         PlayerCollisions.OnFootstep += FootstepAudio;
@@ -71,18 +68,11 @@ public class playerAudio : MonoBehaviour
     // remove audio methods from events when completed
     void OnDisable()
     {
-        CharacterController2D.OnPushing -= sliding;
-        CharacterController2D.OnPulling -= sliding;
         WorldChanger.OnWorldChangeStart -= timeWarpSound;
         WorldChanger.OnWorldChangeComplete -= ambianceChange;
         PlayerCollisions.OnFootstep -= FootstepAudio;
     }
-    // audio for push/pull box
-    public void sliding()
-    {
-        randomizePitch(playerSound);
-        playerSound.PlayOneShot(boxSlide, playerSound.volume * randomVolume());
-    }
+    
     // audio for animation event of rope climbing
     void playerRopeClimb()
     {
@@ -137,14 +127,14 @@ public class playerAudio : MonoBehaviour
     }
 
     // find target camera and disable audio
-    void cameraAudioStop(string cam)
+    public void cameraAudioStop(string cam)
     {
         camera = GameObject.Find(cam);
         ambiance = camera.GetComponent<AudioSource>();
         ambiance.Stop();
     }
     // find target camera and start audio
-    void cameraAudioStart(string cam)
+    public void cameraAudioStart(string cam)
     {
         camera = GameObject.Find(cam);
         ambiance = camera.GetComponent<AudioSource>();
