@@ -1,15 +1,10 @@
 fileFormatVersion: 2
 guid: 860c29367ce3ddc4cbfceff6576f85d6
-timeCreated: 1478039610
+timeCreated: 1478218162
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences:
-  - footsteps: {fileID: 8300000, guid: f4dfd5af614320f429a70df00f7492a8, type: 3}
-  - ladder: {fileID: 8300000, guid: b336c8a6479da5f488f7c29243cc823e, type: 3}
-  - boxSlide: {fileID: 8300000, guid: f1540010cc57e9b46a5b585b15c0cc2a, type: 3}
-  - ropeClimb: {fileID: 8300000, guid: 04d5b5f3aa51507488f1f5c220a832f0, type: 3}
-  - ropeSwing: {fileID: 8300000, guid: b117b7d93c1ea21498e3de159b797cea, type: 3}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

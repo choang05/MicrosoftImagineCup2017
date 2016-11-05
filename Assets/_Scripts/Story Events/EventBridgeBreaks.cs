@@ -6,6 +6,12 @@ public class EventBridgeBreaks : MonoBehaviour
     public HingeJoint BridgePlank1;
     public HingeJoint BridgePlank2;
     public HingeJoint[] BridgePlank2RopeSupports;
+    private AudioSource BridgePlankBreakSound;
+
+    void Awake()
+    {
+        BridgePlankBreakSound = GetComponent<AudioSource>();
+    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -16,6 +22,11 @@ public class EventBridgeBreaks : MonoBehaviour
 
             //  Start the bridge break coroutine
             StartCoroutine(CoBreakPlanks());
+
+            // Play wood breaking sound
+            playerAudio.randomizePitch(BridgePlankBreakSound);
+            BridgePlankBreakSound.volume *= playerAudio.randomVolume();
+            BridgePlankBreakSound.Play();
         }
     }
 
@@ -24,6 +35,7 @@ public class EventBridgeBreaks : MonoBehaviour
         //  Adjust hinge break force so it breaks off
         BridgePlank1.breakForce = 0;
         BridgePlank1.breakTorque = 0;
+        BridgePlank2.useLimits = false;
         yield return new WaitForSeconds(.25f);
         BridgePlank2.breakForce = 0;
         BridgePlank2.breakTorque = 0;
@@ -36,6 +48,8 @@ public class EventBridgeBreaks : MonoBehaviour
         //  Remove limiter on rope supports to make them swing realisticly
         for (int i = 0; i < BridgePlank2RopeSupports.Length; i++)
             BridgePlank2RopeSupports[i].useLimits = false;
+
+        BridgePlank2RopeSupports[BridgePlank2RopeSupports.Length - 1].GetComponent<Rigidbody>().AddForce(Vector2.left * 500);
 
         yield return new WaitForSeconds(5);
 
