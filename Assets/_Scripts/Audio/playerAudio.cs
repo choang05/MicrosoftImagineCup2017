@@ -7,6 +7,8 @@ public class playerAudio : MonoBehaviour
     // variables
     public AudioClip grassfootsteps;
     public AudioClip woodfootsteps;
+    public AudioClip stonefootsteps;
+    public AudioClip waterfootsteps;
     public AudioClip ladder;
     public AudioClip ropeClimb;
     public AudioClip ropeSwing;
@@ -36,6 +38,16 @@ public class playerAudio : MonoBehaviour
             {
                 randomizePitch(playerSound);
                 playerSound.PlayOneShot(woodfootsteps, randomVolume());
+            }
+            else if (obMat.Material == ObjectMaterial.MaterialType.stone)
+            {
+                randomizePitch(playerSound);
+                playerSound.PlayOneShot(stonefootsteps, randomVolume());
+            }
+            else if (obMat.Material == ObjectMaterial.MaterialType.water)
+            {
+                randomizePitch(playerSound);
+                playerSound.PlayOneShot(waterfootsteps, randomVolume());
             }
         }
     }
