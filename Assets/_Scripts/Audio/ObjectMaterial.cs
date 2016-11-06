@@ -5,7 +5,7 @@ public class ObjectMaterial : MonoBehaviour {
 
 	public enum MaterialType
     {
-        wood, grass
+        wood, grass, stone, water
     }
 
     public MaterialType Material;
