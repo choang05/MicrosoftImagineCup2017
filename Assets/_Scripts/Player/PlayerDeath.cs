@@ -26,7 +26,7 @@ public class PlayerDeath : MonoBehaviour
     {
         //  Stop player from moving
         //charController.canMove = false;
-        charController.isDead = true;
+        charController.isControllable = true;
         
         //  Animation
         animator.SetTrigger(drownTriggerHash);
@@ -38,7 +38,7 @@ public class PlayerDeath : MonoBehaviour
     #region DieByImpact()
     public void DieByImpact()
     {
-        charController.isDead = true;
+        charController.isControllable = true;
 
         ProcessRespawn();
 
