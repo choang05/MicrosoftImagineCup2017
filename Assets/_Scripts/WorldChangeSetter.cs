@@ -22,7 +22,7 @@ public class WorldChangeSetter : MonoBehaviour
         {
             //  Set world changer availibilities
             worldChanger.isPresentAvaliable = isPastAvaliable;
-            worldChanger.isPastAvaliable = isFutureAvaliable;
+            worldChanger.isPastAvaliable = isPastAvaliable;
             worldChanger.isFutureAvaliable = isFutureAvaliable;
         }
     }

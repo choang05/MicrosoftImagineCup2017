@@ -98,7 +98,7 @@ public class PushPullObject : MonoBehaviour
             playerController.CancelPushingPulling();
 
         //  If the object interation type is Always Transferable, evaluate
-        if (interactType == InteractableType.AlwaysTransferable && CheckWorldCollisions(worldState))
+        if (interactType == InteractableType.AlwaysTransferable && CheckWorldCollisions(worldState) && playerController != null)
         {
             //  if player is currently pushing/pulling this object... cancel the player push/pull interaction
             if (playerController.pushpullObject != this)
