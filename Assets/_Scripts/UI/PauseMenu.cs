@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Audio;
 using Com.LuisPedroFonseca.ProCamera2D;
+using System.Collections.Generic;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -15,9 +16,12 @@ public class PauseMenu : MonoBehaviour
 
     private SettingsManager settingsManger;
 
-    void AWake()
+    private LinkedList<GameObject> navigation;
+
+    void Awake()
     {
         settingsManger = FindObjectOfType<SettingsManager>();
+        navigation = new LinkedList<GameObject>();
     }
 
     void Start()
@@ -34,12 +38,23 @@ public class PauseMenu : MonoBehaviour
             //  if the game is not paused... then pause it
             if (!isPaused)
             {
+                navigation.AddLast(PauseMainMenu);
                 PauseGame();
+
             }
             //  Else unpause the game
             else
             {
-                ResumeGame();
+                if(navigation.Count != 1)
+                {
+                    navigation.Last.Value.SetActive(false);
+                    navigation.Last.Previous.Value.SetActive(true);
+                    navigation.RemoveLast();
+                }
+                else
+                {
+                    ResumeGame();
+                }
             }
         }
     }
@@ -58,6 +73,11 @@ public class PauseMenu : MonoBehaviour
 
         //  Perform the transition coroutine to the master scene
         StartCoroutine(CoTransitionToMasterScene(0));
+    }
+
+    public void AddNavigation(GameObject panel)
+    {
+        navigation.AddLast(panel);
     }
 
     public void ReloadToLastCheckpoint()
@@ -93,7 +113,9 @@ public class PauseMenu : MonoBehaviour
         {
             isPaused = value;
         }
+
     }
+    #endregion
 
     public void PauseGame()
     {
@@ -114,5 +136,4 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1;
         Lowpass();
     }
-    #endregion
 }

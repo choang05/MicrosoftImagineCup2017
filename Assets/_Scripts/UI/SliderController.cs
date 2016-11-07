@@ -1,41 +1,36 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class SliderController : MonoBehaviour {
 
-    public volumeChanger changer;
-    public enum SoundGroup { Master, SFX, Music };
-    public SoundGroup group;
-    public UnityEngine.UI.Slider slider;
-    public AudioSource source;
-
+    private UnityEngine.UI.Slider slider;
+    public enum SoundGroup {Master, SFX, Music };
+    public SoundGroup Group;
+    void OnEnable()
+    {
+        SettingsManager.OnSettingsLoaded += UpdateSlider;
+    }
+    void OnDisable()
+    {
+        SettingsManager.OnSettingsLoaded -= UpdateSlider;
+    }
     void Awake()
     {
-        source = GetComponent<AudioSource>();
-        
+        slider = GetComponent<UnityEngine.UI.Slider>();
     }
-    public void UpdateValue()
+    public void UpdateSlider(SettingsData data)
     {
-        int value = (int)slider.value;
-
-        if(group == SoundGroup.Master)
-        {
-            changer.SetMasterLvl(value);
-        }
-        else if(group == SoundGroup.SFX)
-        {
-            changer.SetSfxLvl(value);
-        }
-        else if(group == SoundGroup.Music)
-        {
-            changer.SetMusicLvl(value);
-        }
-
-    }
-    
-    public void PlaySound()
-    {
-        source.PlayOneShot(source.clip);
         
+        switch(Group)
+        {
+            case SoundGroup.Master:
+                slider.value = data.masterVol;
+                break;
+            case SoundGroup.SFX:
+                slider.value = data.sfxVol;
+                break;
+            case SoundGroup.Music:
+                slider.value = data.musicVol;
+                break;
+        }
     }
 }
