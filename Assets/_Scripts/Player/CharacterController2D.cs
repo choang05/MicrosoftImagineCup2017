@@ -30,8 +30,8 @@ public class CharacterController2D : MonoBehaviour
         ClimbingLedge,
         PushingPulling
     }
-    private FacingDirection facingDirection;                        //  The direction the player is facing
-    private enum FacingDirection { Right, Left }                    //  The directions the player can have
+    [HideInInspector] public FacingDirection facingDirection;       //  The direction the player is facing
+    public enum FacingDirection { Right, Left }                     //  The directions the player can have
     [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
     [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
     [HideInInspector] public bool isDead;
@@ -44,7 +44,6 @@ public class CharacterController2D : MonoBehaviour
 
     //  References variables
     private CharacterController charController;
-    //private GameManager gameManager;
     private Puppet2D_GlobalControl puppet2DGlobalControl;
 
     //  Animation variables
