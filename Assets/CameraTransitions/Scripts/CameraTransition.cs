@@ -1108,10 +1108,8 @@ namespace CameraTransitions
       //fromCamera.gameObject.SetActive(false);
       //toCamera.gameObject.SetActive(true);
 
-        fromCamera.GetComponent<AudioListener>().enabled = false;
         fromCamera.enabled = false;
         toCamera.enabled = true;
-        toCamera.GetComponent<AudioListener>().enabled = true;
 
       FromCamera = null;
       ToCamera = null;

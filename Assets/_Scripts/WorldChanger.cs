@@ -129,9 +129,6 @@ public class WorldChanger : MonoBehaviour
         //  Get the current world camera
         Camera currentCamera = GetCurrentWorldCamera();
 
-        //  Disable audio listener
-        currentCamera.GetComponent<AudioListener>().enabled = false;
-
         isCurrentlyTransitioning = true;
 
         //  Update the layer
@@ -175,8 +172,6 @@ public class WorldChanger : MonoBehaviour
             //transform.position = new Vector3(transform.position.x, transform.position.y, 50);
         }
 
-        //  Enable audio listener for new world
-        GetCurrentWorldCamera().GetComponent<AudioListener>().enabled = true;
     }
     #endregion
 
