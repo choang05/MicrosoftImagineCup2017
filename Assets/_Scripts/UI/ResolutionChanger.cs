@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class ResolutionChanger : MonoBehaviour
 {
@@ -22,6 +21,7 @@ public class ResolutionChanger : MonoBehaviour
         else if (settingsManager.ResolutionWidth == 1366 && settingsManager.ResolutionHeight == 768)
             slider.value = 4;
         fullScreenToggle.isOn = settingsManager.IsWindowed;
+
     }
 
     void Awake()

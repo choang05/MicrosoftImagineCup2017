@@ -10,13 +10,27 @@ public class SliderController : MonoBehaviour {
     {
         slider = GetComponent<UnityEngine.UI.Slider>();
         settings = FindObjectOfType<SettingsManager>();
+        
+        switch (group)
+        {
+            case SoundGroup.Master:
+                slider.onValueChanged.AddListener((float f) => { settings.MasterVol = f; });
+                break;
+            case SoundGroup.SFX:
+                slider.onValueChanged.AddListener((float f) => { settings.SfxVol = f; });
+                break;
+            case SoundGroup.Music:
+                slider.onValueChanged.AddListener((float f) => { settings.MusicVol = f; });
+                break;
+        }
+
     }
     void OnEnable()
     {
         switch(group)
         {
             case SoundGroup.Master:
-                slider.value = settings.MasterVol;
+                slider.value = settings.MasterVol;               
                 break;
             case SoundGroup.SFX:
                 slider.value = settings.SfxVol;
