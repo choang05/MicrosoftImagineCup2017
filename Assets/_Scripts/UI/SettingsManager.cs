@@ -24,6 +24,8 @@ public class SettingsManager : MonoBehaviour
     private float masterVol;
     private float sfxVol;
     private float musicVol;
+    private float ambianceVol;
+    private float uiVol;
     //  References
     private static SettingsManager control;
 
@@ -118,6 +120,32 @@ public class SettingsManager : MonoBehaviour
         set
         {
             musicVol = value;
+        }
+    }
+
+    public float AmbianceVol
+    {
+        get
+        {
+            return ambianceVol;
+        }
+
+        set
+        {
+            ambianceVol = value;
+        }
+    }
+
+    public float UiVol
+    {
+        get
+        {
+            return uiVol;
+        }
+
+        set
+        {
+            uiVol = value;
         }
     }
     #endregion

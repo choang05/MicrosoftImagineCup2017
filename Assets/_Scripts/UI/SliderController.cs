@@ -3,10 +3,10 @@
 public class SliderController : MonoBehaviour
 {
     private UnityEngine.UI.Slider slider;
-    public SettingsManager settings;
-    public enum SoundGroup { Master, SFX, Music }
+    private SettingsManager settings;
+    public enum SoundGroup { Master, SFX, Music, Ambiance, UI}
     public SoundGroup group;
-    /*void Awake()
+    void Awake()
     {
         slider = GetComponent<UnityEngine.UI.Slider>();
         settings = FindObjectOfType<SettingsManager>();
@@ -21,6 +21,12 @@ public class SliderController : MonoBehaviour
                 break;
             case SoundGroup.Music:
                 slider.onValueChanged.AddListener((float f) => { settings.MusicVol = f; });
+                break;
+            case SoundGroup.Ambiance:
+                slider.onValueChanged.AddListener((float f) => { settings.AmbianceVol = f; });
+                break;
+            case SoundGroup.UI:
+                slider.onValueChanged.AddListener((float f) => { settings.UiVol = f; });
                 break;
         }
 
@@ -38,6 +44,12 @@ public class SliderController : MonoBehaviour
             case SoundGroup.Music:
                 slider.value = settings.MusicVol;
                 break;
+            case SoundGroup.Ambiance:
+                slider.value = settings.AmbianceVol;
+                break;
+            case SoundGroup.UI:
+                slider.value = settings.UiVol;
+                break;
         }
-    }*/
+    }
 }

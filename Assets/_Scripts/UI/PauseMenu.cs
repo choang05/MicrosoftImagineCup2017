@@ -122,6 +122,11 @@ public class PauseMenu : MonoBehaviour
     }
     #endregion
 
+    public void SaveAudio()
+    {
+        settingsManger.SaveSettings();
+    }
+
     public void PauseGame()
     {
         PauseMainMenu.SetActive(true);
