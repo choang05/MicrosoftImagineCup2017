@@ -18,7 +18,7 @@ public class ContinueGame : MonoBehaviour
     void Start()
     {
         //  Determine at start if a save file exist, if so, the continue button should be enabled
-        if (!File.Exists(Application.persistentDataPath + "/PlayerSave1.dat"))
+        if (!File.Exists(Application.persistentDataPath + "/playerSave1.dat"))
             gameObject.SetActive(false);
         else
             gameObject.SetActive(true);
