@@ -3,6 +3,7 @@
 public class SliderController : MonoBehaviour {
 
     private UnityEngine.UI.Slider slider;
+    public SettingsManager settings;
     public enum SoundGroup { Master, SFX, Music }
     public SoundGroup group;
     void Awake()
