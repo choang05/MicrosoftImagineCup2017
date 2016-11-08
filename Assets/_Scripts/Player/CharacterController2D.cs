@@ -286,7 +286,6 @@ public class CharacterController2D : MonoBehaviour
                 pushpullBreakDistance = Vector3.Distance(pushpullObject.transform.position, transform.position);
 
                 //  Process interaction event to the push/pull object
-                pushpullObject.playerController = this;
                 pushpullObject.OnPushPullStart();
 
                 //  Animation
