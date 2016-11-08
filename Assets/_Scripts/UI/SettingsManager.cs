@@ -26,7 +26,6 @@ public class SettingsManager : MonoBehaviour
 
     void Awake()
     {
-
         #region Dont Destroy On Load
         if (control == null)
         {

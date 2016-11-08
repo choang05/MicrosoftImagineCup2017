@@ -18,6 +18,7 @@ public class CharacterController2D : MonoBehaviour
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
     public bool canPushPull = true;                                 //  is the player allowed to push/pull
+    public bool isControllable = true;
 
     //  Private variables
     [HideInInspector]
@@ -34,7 +35,6 @@ public class CharacterController2D : MonoBehaviour
     public enum FacingDirection { Right, Left }                     //  The directions the player can have
     [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
     [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
-    [HideInInspector] public bool isDead;
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
     private BoxCollider currentLadderBoxCollider;                   //  The BoxCollider of the currently using ladder
@@ -47,7 +47,7 @@ public class CharacterController2D : MonoBehaviour
     private Puppet2D_GlobalControl puppet2DGlobalControl;
 
     //  Animation variables
-    private Animator animator;
+    [HideInInspector] public Animator animator;
     int xVelocityHash = Animator.StringToHash("xVelocity");
     int yVelocityHash = Animator.StringToHash("yVelocity");
     int isGroundedHash = Animator.StringToHash("isGrounded");
@@ -93,7 +93,7 @@ public class CharacterController2D : MonoBehaviour
     #region Update(): check and evaluate input and states every frame
     void Update ()
     {
-        if (isDead)
+        if (!isControllable)
             return;
 
         //  Check and update the facing direction of the player

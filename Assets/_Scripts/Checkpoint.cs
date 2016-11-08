@@ -5,17 +5,13 @@ public class Checkpoint : MonoBehaviour
 {
     public GameObject LevelSegmentsGO;
     public int checkpointID;
-    public bool isPastAvaliable;
-    public bool isFutureAvaliable;
     
     //  References
     private GameManager gameManager;
-    private WorldChanger worldChanger;
 
     void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
-        worldChanger = FindObjectOfType<WorldChanger>();
         //gameManager.Checkpoints.Add(this);
     }
 
@@ -24,10 +20,6 @@ public class Checkpoint : MonoBehaviour
     {
         if (other.CompareTag(Tags.Player))
         {
-            //  Set world changer availibilities
-            worldChanger.isPastAvaliable = isPastAvaliable;
-            worldChanger.isFutureAvaliable = isFutureAvaliable;
-
             if (gameManager.CurrentCheckpointID != checkpointID)
             {
                 //  Set new checkpoint to gamemanager

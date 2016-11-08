@@ -3,6 +3,8 @@ using System.Collections;
 
 public class WispFollow : MonoBehaviour
 {
+    public int minimumCheckpointIDToEnable;
+    
     //  User-Assigned
     public Transform wisp1;
     public float minDistanceFromPlayer;
@@ -23,9 +25,13 @@ public class WispFollow : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
+        if (FindObjectOfType<GameManager>().CurrentCheckpointID < minimumCheckpointIDToEnable)
+        {
+            gameObject.SetActive(false);
+        }
+
         while(playerTransform == null)
             playerTransform = FindObjectOfType<CharacterController2D>().transform;
-
 
         transform.position = new Vector3(playerTransform.position.x, playerTransform.position.y, transform.position.z);
         //wisp1.position = Vector3.zero;

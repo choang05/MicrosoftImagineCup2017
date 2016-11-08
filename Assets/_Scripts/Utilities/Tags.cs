@@ -9,7 +9,7 @@
     public const string Ledge = "Ledge";
     public const string Ground = "Ground";
     public const string Rope = "Rope";
-    public const string Box = "Box";
+    public const string PushPullable = "PushPullable";
     public const string Platform = "Platform";
     public const string Door = "Door";
     public const string Water = "Water";
