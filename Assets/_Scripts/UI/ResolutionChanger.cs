@@ -11,6 +11,19 @@ public class ResolutionChanger : MonoBehaviour
 
     private SettingsManager settingsManager;
 
+    void OnEnable()
+    {
+        if (settingsManager.ResolutionWidth == 800 && settingsManager.ResolutionHeight == 600)
+            slider.value = 1;
+        else if (settingsManager.ResolutionWidth == 1024 && settingsManager.ResolutionHeight == 768)
+            slider.value = 2;
+        else if (settingsManager.ResolutionWidth == 1280 && settingsManager.ResolutionHeight == 768)
+            slider.value = 3;
+        else if (settingsManager.ResolutionWidth == 1366 && settingsManager.ResolutionHeight == 768)
+            slider.value = 4;
+        fullScreenToggle.isOn = settingsManager.IsWindowed;
+    }
+
     void Awake()
     {
         settingsManager = FindObjectOfType<SettingsManager>();

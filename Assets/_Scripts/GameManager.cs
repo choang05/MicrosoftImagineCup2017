@@ -89,10 +89,6 @@ public class GameManager : MonoBehaviour
     //  Sets up the scene on master scene loaded
     private void SetUpScene(Scene scene, LoadSceneMode mode)
     {
-        //  Instaniate the player at the checkpoint location
-        playerPrefab = GameObject.FindGameObjectWithTag("Player");
-        GameObject player = Instantiate(playerPrefab, currentCheckpointPosition, Quaternion.identity) as GameObject;
-
         //  If the scene loaded was not the master scene, then do nothing.
         if (scene.buildIndex != 1)
             return;
@@ -126,6 +122,8 @@ public class GameManager : MonoBehaviour
         }
 
 
+        //  Instaniate the player at the checkpoint location
+        GameObject player = Instantiate(playerPrefab, currentCheckpointPosition, Quaternion.identity) as GameObject;
 
         //  Set up camera
         ProCamera2D camera = ProCamera2D.Instance;

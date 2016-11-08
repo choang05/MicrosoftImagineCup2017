@@ -2,14 +2,11 @@
 
 public class TextChanger : MonoBehaviour
 {
-    UnityEngine.UI.Text text;
-    void Awake()
-    {
-        text = GetComponent<UnityEngine.UI.Text>();
-
-    }
+    private UnityEngine.UI.Text text;
+    
     public void ChangeSliderText(float sliderVal)
     {
+        text = GetComponent<UnityEngine.UI.Text>();
         text.text = ((int)(sliderVal*100)).ToString();
     }
         

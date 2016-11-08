@@ -6,11 +6,14 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
 [Serializable]
-class SettingsData
+public class SettingsData
 {
     public int resolutionHeight;
     public int resolutionWidth;
     public bool isWindowed;
+    public float masterVol;
+    public float sfxVol;
+    public float musicVol;
 }
 
 public class SettingsManager : MonoBehaviour
@@ -18,9 +21,9 @@ public class SettingsManager : MonoBehaviour
     private int resolutionHeight;
     private int resolutionWidth;
     private bool isWindowed;
-
-    private int currentScene;
-
+    private float masterVol;
+    private float sfxVol;
+    private float musicVol;
     //  References
     private static SettingsManager control;
 
@@ -79,6 +82,45 @@ public class SettingsManager : MonoBehaviour
             isWindowed = value;
         }
     }
+
+    public float MasterVol
+    {
+        get
+        {
+            return masterVol;
+        }
+
+        set
+        {
+            masterVol = value;
+        }
+    }
+
+    public float SfxVol
+    {
+        get
+        {
+            return sfxVol;
+        }
+
+        set
+        {
+            sfxVol = value;
+        }
+    }
+
+    public float MusicVol
+    {
+        get
+        {
+            return musicVol;
+        }
+
+        set
+        {
+            musicVol = value;
+        }
+    }
     #endregion
 
     public void SaveSettings()
@@ -91,13 +133,16 @@ public class SettingsManager : MonoBehaviour
         data.isWindowed = IsWindowed;
         data.resolutionHeight = ResolutionHeight;
         data.resolutionWidth = ResolutionWidth;
-
+        data.masterVol = MasterVol;
+        data.sfxVol = SfxVol;
+        data.musicVol = MusicVol;
         bf.Serialize(file, data);
         file.Close();
 
     }
     public void LoadSettings()
     {
+        volumeChanger changer = FindObjectOfType<volumeChanger>();
         if (File.Exists(Application.persistentDataPath + "/settings.dat"))
         {
             BinaryFormatter bf = new BinaryFormatter();
@@ -106,13 +151,21 @@ public class SettingsManager : MonoBehaviour
             ResolutionWidth = data.resolutionWidth;
             ResolutionHeight = data.resolutionHeight;
             IsWindowed = data.isWindowed;
+            MasterVol = data.masterVol;
+            SfxVol = data.sfxVol;
+            MusicVol = data.musicVol;
         }
-        else
+        else // assign defaults
         {
             ResolutionWidth = 800;
             ResolutionHeight = 600;
             IsWindowed = false;
+            MasterVol = 0.5F;
+            SfxVol = 0.5F;
+            MusicVol = 0.5F;
         }
-
+        changer.SetMasterLvl(MasterVol);
+        changer.SetSfxLvl(SfxVol);
+        changer.SetMusicLvl(MusicVol);
     }
 }

@@ -53,6 +53,7 @@ public class PauseMenu : MonoBehaviour
                 }
                 else
                 {
+                    navigation.RemoveLast();
                     ResumeGame();
                 }
             }
@@ -78,6 +79,10 @@ public class PauseMenu : MonoBehaviour
     public void AddNavigation(GameObject panel)
     {
         navigation.AddLast(panel);
+    }
+    public void RemoveNavigation()
+    {
+        navigation.RemoveLast();
     }
 
     public void ReloadToLastCheckpoint()
