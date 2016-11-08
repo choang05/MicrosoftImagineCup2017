@@ -159,13 +159,26 @@ public class GameManager : MonoBehaviour
     public void SavePlayerData()
     {
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "/playerSave1.dat");
+        if (File.Exists(Application.persistentDataPath + "/playerSave1.dat"))
+        {
+            FileStream file = File.Open(Application.persistentDataPath + "/playerSave1.dat", FileMode.Open);
+            PlayerData data = (PlayerData)bf.Deserialize(file);
 
-        PlayerData data = new PlayerData();
-        data.lastCheckpointID = CurrentCheckpointID;
+            data.lastCheckpointID = CurrentCheckpointID;
 
-        bf.Serialize(file, data);
-        file.Close();
+            bf.Serialize(file, data);
+            file.Close();
+        }
+        else
+        {
+            FileStream file = File.Create(Application.persistentDataPath + "/playerSave1.dat");
+            PlayerData data = new PlayerData();
+
+            data.lastCheckpointID = CurrentCheckpointID;
+
+            bf.Serialize(file, data);
+            file.Close();
+        }
     }
 
     public void LoadPlayerData()

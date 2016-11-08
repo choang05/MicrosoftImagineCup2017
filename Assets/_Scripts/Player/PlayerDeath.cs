@@ -26,7 +26,7 @@ public class PlayerDeath : MonoBehaviour
     {
         //  Stop player from moving
         //charController.canMove = false;
-        charController.isControllable = true;
+        charController.isControllable = false;
         
         //  Animation
         animator.SetTrigger(drownTriggerHash);

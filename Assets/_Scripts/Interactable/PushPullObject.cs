@@ -13,7 +13,7 @@ public class PushPullObject : MonoBehaviour
     private LayerMask originalLayer;
     private Rigidbody rigidBody;
     [HideInInspector] public bool isColliding;
-    [HideInInspector] public CharacterController2D playerController;
+    private CharacterController2D playerController;
     WorldChanger worldChanger;
 
     void OnEnable()
@@ -37,6 +37,10 @@ public class PushPullObject : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
+        playerController = FindObjectOfType<CharacterController2D>();
+        while (playerController == null)
+            playerController = FindObjectOfType<CharacterController2D>();
+        
         //  Assign the original layer of this game object
         originalLayer = gameObject.layer;
 	}
@@ -98,9 +102,9 @@ public class PushPullObject : MonoBehaviour
             playerController.CancelPushingPulling();
 
         //  If the object interation type is Always Transferable, evaluate
-        if (interactType == InteractableType.AlwaysTransferable && CheckWorldCollisions(worldState) && playerController != null)
+        if (interactType == InteractableType.AlwaysTransferable && CheckWorldCollisions(worldState))
         {
-            //  if player is currently pushing/pulling this object... cancel the player push/pull interaction
+            //  if player is currently pushing/pulling this object...
             if (playerController.pushpullObject != this)
             {
                 //  Set layer to ViewAlways so it always displays
