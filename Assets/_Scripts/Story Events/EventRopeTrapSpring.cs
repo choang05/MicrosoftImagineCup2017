@@ -17,17 +17,15 @@ public class EventRopeTrapSpring : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        playerAudio.randomizePitch(trapSound);
+        trapSound.PlayOneShot(trapSound.clip, playerAudio.randomVolume());
+
         if (other.CompareTag(Tags.Player))
         {
-            playerAudio.randomizePitch(trapSound);
-            trapSound.PlayOneShot(trapSound.clip, playerAudio.randomVolume());
-
             StartCoroutine(CoSpringPlayerTrap(other.GetComponent<CharacterController2D>()));
         }
         else if (other.CompareTag(Tags.PushPullable))
         {
-            playerAudio.randomizePitch(trapSound);
-            trapSound.PlayOneShot(trapSound.clip, playerAudio.randomVolume());
 
             StartCoroutine(CoSpringTrap(other.GetComponent<Rigidbody>()));
         }
@@ -47,7 +45,7 @@ public class EventRopeTrapSpring : MonoBehaviour
 
         charController.GetComponent<PlayerDeath>().ProcessRespawn();
 
-        Destroy(gameObject);
+        Destroy(GetComponent<BoxCollider>());
     }
 
     IEnumerator CoSpringTrap(Rigidbody rigidBody)
@@ -65,6 +63,7 @@ public class EventRopeTrapSpring : MonoBehaviour
 
         yield return null;
 
-        Destroy(gameObject);
+        Destroy(GetComponent<BoxCollider>());
+
     }
 }
