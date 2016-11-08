@@ -6,11 +6,20 @@ public class EventRopeTrapSpring : MonoBehaviour
     public HingeJoint mainRope;
     public Rope bottomRope;
     public Transform hookRopeSegment;
+    private AudioSource trapSound;
 
     public int yPullTarget;
 
+    void Awake()
+    {
+        trapSound = GetComponent<AudioSource>();
+    }
+
     void OnTriggerEnter(Collider other)
     {
+        playerAudio.randomizePitch(trapSound);
+        trapSound.PlayOneShot(trapSound.clip, playerAudio.randomVolume());
+
         if (other.CompareTag(Tags.Player))
         {
             StartCoroutine(CoSpringPlayerTrap(other.GetComponent<CharacterController2D>()));
