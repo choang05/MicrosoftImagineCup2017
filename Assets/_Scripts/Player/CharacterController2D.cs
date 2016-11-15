@@ -14,6 +14,7 @@ public class CharacterController2D : MonoBehaviour
     public float terminalVelocity;                                  //  The max speed that is added to the player's y velocity 
     public float verticalJumpForce;                                 //  The amount of vertical force applied to jumps
     public float horizontalJumpForce;                               //  The amount of horizontal force applied to jumps
+    public float maxSlopeAngle;                                     //  The max angle the player is allowed to stand towards
     public bool canMove = true;	                                    //  is the player allowed to move?
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
@@ -37,13 +38,15 @@ public class CharacterController2D : MonoBehaviour
     [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
     private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
+    private bool isGrounded;
     private BoxCollider currentLadderBoxCollider;                   //  The BoxCollider of the currently using ladder
     private Rigidbody currentRopeRigidBody;
     private bool canSwingRight;
     private bool canSwingLeft;
+    private CapsuleCollider capCollider;
 
     //  References variables
-    private CharacterController charController;
+    private Rigidbody rigidBody;
     private Puppet2D_GlobalControl puppet2DGlobalControl;
 
     //  Animation variables
@@ -84,24 +87,30 @@ public class CharacterController2D : MonoBehaviour
     void Awake ()
     {
         //  Find and assign references
-        charController = GetComponent<CharacterController> ();
-        //gameManager = FindObjectOfType<GameManager>();
+        rigidBody = GetComponent<Rigidbody>();
+        capCollider = GetComponent<CapsuleCollider>();
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
 	}
 
-    #region Update(): check and evaluate input and states every frame
+    #region FixedUpdate(): check and evaluate input and states every frame
     void Update ()
     {
         if (!isControllable)
+        {
+            rigidBody.isKinematic = true;
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
             return;
+        }
 
+        UpdateIsGrounded();
+        
         //  Check and update the facing direction of the player
         if (currentState == PlayerState.None && canMove)
             UpdateFacingDirection();
         
         //  Apply gravity
-        if (currentState == PlayerState.None)
+        //if (currentState == PlayerState.None)
             ApplyGravity();
 
         //  Align character to ground
@@ -109,7 +118,7 @@ public class CharacterController2D : MonoBehaviour
             AlignWithGroundNormal();
 
         //  Check Push/Pull, else perform push/pull
-        if (Input.GetButtonDown("Interact") && charController.isGrounded)
+        if (Input.GetButtonDown("Interact") && isGrounded)
             CheckPushPull();
         else if (currentState == PlayerState.PushingPulling)
             PushingPulling();
@@ -129,7 +138,7 @@ public class CharacterController2D : MonoBehaviour
             float xAxis = Input.GetAxis("Horizontal");
 
             //  if player is on the ground... add run speed multiplier
-            if (charController.isGrounded)
+            if (isGrounded)
                 velocity.x = xAxis * runSpeed;
             //  else... add horizontal jump multiplier when player is in air
             else
@@ -140,7 +149,7 @@ public class CharacterController2D : MonoBehaviour
         }
 
         //  Jumping
-        if (Input.GetButtonDown("Jump") && canJump && ((charController.isGrounded && currentState == PlayerState.None) 
+        if (Input.GetButtonDown("Jump") && canJump && ((isGrounded && currentState == PlayerState.None) 
             || currentState == PlayerState.ClimbingLadder 
             || currentState == PlayerState.ClimbingRope))
         {
@@ -153,15 +162,18 @@ public class CharacterController2D : MonoBehaviour
 
         //  Move
         if (canMove && currentState != PlayerState.ClimbingRope)
-            charController.Move(velocity * Time.deltaTime);
+        {
+            rigidBody.MovePosition(transform.position + velocity);
+            //rigidBody.velocity = velocity;
+        }
 
         //  Animation
-        animator.SetBool(isGroundedHash, charController.isGrounded);
+        animator.SetBool(isGroundedHash, isGrounded);
 
         //Debug.Log(currentState);
-        //Debug.Log(charController.isGrounded);
+        //Debug.Log(isGrounded);
         //Debug.Log(isTouchingGround);
-        //Debug.Log(velocity);
+        Debug.Log(rigidBody.velocity);
     }
     #endregion
 
@@ -169,16 +181,24 @@ public class CharacterController2D : MonoBehaviour
     private void ApplyGravity()
     {
         //  If the character is not grounded...
-        if (!charController.isGrounded)
+        if (!isGrounded)
         {
             //  If the falling velocity has not reached the terminal velocity cap... 
             if (velocity.y >= terminalVelocity)
-                velocity += Physics.gravity * gravity * Time.deltaTime;
+                velocity += Physics.gravity * gravity;
         }
 
         //  Animation
         animator.SetFloat(yVelocityHash, velocity.y);
 
+    }
+    #endregion
+
+    #region UpdateIsGrounded()
+    private void UpdateIsGrounded()
+    {
+        //collider.bounds are the bounds collider relative to the world. I wanted a 0.1 margin.
+        isGrounded = Physics.CheckCapsule(capCollider.bounds.center, new Vector3(capCollider.bounds.center.x, capCollider.bounds.min.y + .25f, capCollider.bounds.center.z), capCollider.radius, gameObject.layer);
     }
     #endregion
 
@@ -216,12 +236,11 @@ public class CharacterController2D : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             //Debug.Log(Mathf.Abs(Vector3.Angle(Vector3.up, hit.normal)));
-            if (charController.isGrounded && Mathf.Abs(Vector3.Angle(Vector3.up, hit.normal)) < charController.slopeLimit)
+            if (isGrounded && Mathf.Abs(Vector3.Angle(Vector3.up, hit.normal)) < maxSlopeAngle)
             {
                 transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
                 //puppet2DGlobalControl.transform.localRotation = new Quaternion(puppet2DGlobalControl.transform.localRotation.x, puppet2DGlobalControl.transform.localRotation.y, 0);
                 puppet2DGlobalControl.transform.localEulerAngles = new Vector3(puppet2DGlobalControl.transform.localEulerAngles.x, puppet2DGlobalControl.transform.localEulerAngles.y, 0);
-
             }
             else
             {
@@ -303,7 +322,7 @@ public class CharacterController2D : MonoBehaviour
     void PushingPulling()
     {
         //  Check if object is within the PushPull break distance... if not, cancel the push/pull interaction
-        if (charController.isGrounded && Vector3.Distance(transform.position, pushpullObject.transform.position) <= pushpullBreakDistance + 0.15f)
+        if (isGrounded && Vector3.Distance(transform.position, pushpullObject.transform.position) <= pushpullBreakDistance + 0.15f)
         {
             if (Application.isEditor) Debug.DrawLine(transform.position, pushpullObject.transform.position, Color.yellow, 0.05f);
 
@@ -457,7 +476,7 @@ public class CharacterController2D : MonoBehaviour
         }
 
         //  Cancels climbing when touching the ground at the bottom of ladder
-        if (isTouchingGround && charController.isGrounded)
+        if (isTouchingGround && isGrounded)
             CancelClimbing();
 
         //  Cancels climb when distance between ladder length and player is too far. Using this method over OnTriggerExit due to bugs
