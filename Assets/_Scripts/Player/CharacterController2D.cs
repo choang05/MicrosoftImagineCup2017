@@ -111,7 +111,7 @@ public class CharacterController2D : MonoBehaviour
         
         //  Apply gravity
         //if (currentState == PlayerState.None)
-            ApplyGravity();
+        //    ApplyGravity();
 
         //  Align character to ground
         if (currentState == PlayerState.None)
@@ -159,12 +159,14 @@ public class CharacterController2D : MonoBehaviour
             //  Animation
             animator.SetTrigger(jumpTriggerHash);
         }
+        Debug.Log(rigidBody.velocity);
 
         //  Move
         if (canMove && currentState != PlayerState.ClimbingRope)
         {
-            rigidBody.MovePosition(transform.position + velocity);
-            //rigidBody.velocity = velocity;
+            //rigidBody.MovePosition(transform.position + velocity);
+            rigidBody.velocity = velocity;
+            //rigidBody.AddForce(velocity, ForceMode.VelocityChange);
         }
 
         //  Animation
@@ -173,7 +175,6 @@ public class CharacterController2D : MonoBehaviour
         //Debug.Log(currentState);
         //Debug.Log(isGrounded);
         //Debug.Log(isTouchingGround);
-        Debug.Log(rigidBody.velocity);
     }
     #endregion
 
