@@ -104,7 +104,7 @@ public class CharacterController2D : MonoBehaviour
         }
 
         UpdateIsGrounded();
-        
+
         //  Check and update the facing direction of the player
         if (currentState == PlayerState.None && canMove)
             UpdateFacingDirection();
@@ -159,19 +159,20 @@ public class CharacterController2D : MonoBehaviour
             //  Animation
             animator.SetTrigger(jumpTriggerHash);
         }
-        Debug.Log(rigidBody.velocity);
 
         //  Move
         if (canMove && currentState != PlayerState.ClimbingRope)
         {
             //rigidBody.MovePosition(transform.position + velocity);
-            rigidBody.velocity = velocity;
+            rigidBody.velocity = new Vector3(velocity.x, rigidBody.velocity.y, velocity.z);
             //rigidBody.AddForce(velocity, ForceMode.VelocityChange);
         }
 
         //  Animation
         animator.SetBool(isGroundedHash, isGrounded);
+        animator.SetFloat(yVelocityHash, rigidBody.velocity.y);
 
+        //Debug.Log(rigidBody.velocity);
         //Debug.Log(currentState);
         //Debug.Log(isGrounded);
         //Debug.Log(isTouchingGround);
@@ -199,7 +200,7 @@ public class CharacterController2D : MonoBehaviour
     private void UpdateIsGrounded()
     {
         //collider.bounds are the bounds collider relative to the world. I wanted a 0.1 margin.
-        isGrounded = Physics.CheckCapsule(capCollider.bounds.center, new Vector3(capCollider.bounds.center.x, capCollider.bounds.min.y + .25f, capCollider.bounds.center.z), capCollider.radius, gameObject.layer);
+        isGrounded = Physics.CheckCapsule(capCollider.bounds.center, new Vector3(capCollider.bounds.center.x, capCollider.bounds.min.y + .2f, capCollider.bounds.center.z), capCollider.radius, gameObject.layer);
     }
     #endregion
 
@@ -255,7 +256,8 @@ public class CharacterController2D : MonoBehaviour
     public void Jump()		
 	{
         //  Set vertical velocity
-        velocity.y = verticalJumpForce;
+        //velocity.y = verticalJumpForce;
+        rigidBody.velocity = new Vector3(rigidBody.velocity.x, verticalJumpForce, rigidBody.velocity.z);
 
         //  Animation
         //animator.SetTrigger(jumpTriggerHash);
