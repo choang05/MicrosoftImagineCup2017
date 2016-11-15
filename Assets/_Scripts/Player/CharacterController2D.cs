@@ -200,7 +200,7 @@ public class CharacterController2D : MonoBehaviour
     private void UpdateIsGrounded()
     {
         //collider.bounds are the bounds collider relative to the world. I wanted a 0.1 margin.
-        isGrounded = Physics.CheckCapsule(capCollider.bounds.center, new Vector3(capCollider.bounds.center.x, capCollider.bounds.min.y + .2f, capCollider.bounds.center.z), capCollider.radius, gameObject.layer);
+        isGrounded = Physics.CheckCapsule(capCollider.bounds.center, new Vector3(capCollider.bounds.center.x, capCollider.bounds.min.y, capCollider.bounds.center.z), capCollider.radius, gameObject.layer);
     }
     #endregion
 
