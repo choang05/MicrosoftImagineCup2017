@@ -42,7 +42,11 @@ public class MainMenuChanger : MonoBehaviour
 
         PanelObjects[CameraIndex].SetActive(true);
 
-        cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, Cameras[currentCameraIndex], Cameras[CameraIndex], transitionDuration, new object[] { false, transitionEdgeSmoothness });
+        //  Cache the button position in normalized screen space coordinates.
+        Vector2 transitionCenter = Cameras[currentCameraIndex].ScreenToViewportPoint(Input.mousePosition);
+        
+        //  Perform the transition
+        cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, Cameras[currentCameraIndex], Cameras[CameraIndex], transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
         currentCameraIndex = CameraIndex;
     }
