@@ -42,9 +42,7 @@ public class MainMenuController : MonoBehaviour
 
         //  Disable all menu objects at start
         for (int i = 1; i < PanelObjects.Length; i++)
-        {
             PanelObjects[i].SetActive(false);
-        }
 
         //  Set up visual stuff
 
