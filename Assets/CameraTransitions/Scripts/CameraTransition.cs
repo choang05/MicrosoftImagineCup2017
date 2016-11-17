@@ -30,7 +30,7 @@ namespace CameraTransitions
   {
         //  CHAD STUFF
         WorldChanger worldChanger;
-        MainMenuChanger mainMenuChanger;
+        MainMenuController mainMenuController;
         
         /// <summary>
         /// The current transition type.
@@ -619,7 +619,7 @@ namespace CameraTransitions
     {
         //  CHAD's STUFF
         worldChanger = FindObjectOfType<WorldChanger>();
-            mainMenuChanger = FindObjectOfType<MainMenuChanger>();
+            mainMenuController = FindObjectOfType<MainMenuController>();
 
       if (fromCamera != null)
       {
@@ -1125,8 +1125,8 @@ namespace CameraTransitions
 
             if (worldChanger != null)
                 worldChanger.BroadcastTransitionCompleteEvent();
-            if (mainMenuChanger != null)
-                mainMenuChanger.BroadcastTransitionCompleteEvent();
+            if (mainMenuController != null)
+                mainMenuController.BroadcastTransitionCompleteEvent();
             //Debug.Log("camera transition end");
 
         }

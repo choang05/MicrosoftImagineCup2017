@@ -14,15 +14,16 @@ public class CharacterController2D : MonoBehaviour
     public float terminalVelocity;                                  //  The max speed that is added to the player's y velocity 
     public float verticalJumpForce;                                 //  The amount of vertical force applied to jumps
     public float horizontalJumpForce;                               //  The amount of horizontal force applied to jumps
+    public bool useGravity;
+    public bool isControllable = true;
     public bool canMove = true;	                                    //  is the player allowed to move?
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
     public bool canPushPull = true;                                 //  is the player allowed to push/pull
-    public bool isControllable = true;
 
     //  Private variables
     [HideInInspector]
-    public PlayerState currentState;              //  The current state of the player
+    public PlayerState currentState;                                //  The current state of the player
     public enum PlayerState                                         //  The states the player can have
     {
         None,
@@ -85,7 +86,6 @@ public class CharacterController2D : MonoBehaviour
     {
         //  Find and assign references
         charController = GetComponent<CharacterController> ();
-        //gameManager = FindObjectOfType<GameManager>();
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
 	}
@@ -93,15 +93,12 @@ public class CharacterController2D : MonoBehaviour
     #region Update(): check and evaluate input and states every frame
     void Update ()
     {
-        if (!isControllable)
-            return;
-
         //  Check and update the facing direction of the player
         if (currentState == PlayerState.None && canMove)
             UpdateFacingDirection();
         
         //  Apply gravity
-        if (currentState == PlayerState.None)
+        if (useGravity && currentState == PlayerState.None)
             ApplyGravity();
 
         //  Align character to ground
@@ -109,21 +106,24 @@ public class CharacterController2D : MonoBehaviour
             AlignWithGroundNormal();
 
         //  Check Push/Pull, else perform push/pull
-        if (Input.GetButtonDown("Interact") && charController.isGrounded)
-            CheckPushPull();
-        else if (currentState == PlayerState.PushingPulling)
-            PushingPulling();
+        if (isControllable)
+        {
+            if (Input.GetButtonDown("Interact") && charController.isGrounded)
+                CheckPushPull();
+            else if (currentState == PlayerState.PushingPulling)
+                PushingPulling();
+        }
 
         //  Climbing Ladders
-        if (currentState == PlayerState.ClimbingLadder)
+        if (isControllable && currentState == PlayerState.ClimbingLadder)
             ClimbLadder();
 
         //  Climbing Ropes
-        if (currentState == PlayerState.ClimbingRope)
+        if (isControllable && currentState == PlayerState.ClimbingRope)
             ClimbRope();
 
         //  Moving Horizontally
-        if (currentState == PlayerState.None)
+        if (isControllable && currentState == PlayerState.None)
         {
             //  Get input from x axis
             float xAxis = Input.GetAxis("Horizontal");
@@ -140,7 +140,7 @@ public class CharacterController2D : MonoBehaviour
         }
 
         //  Jumping
-        if (Input.GetButtonDown("Jump") && canJump && ((charController.isGrounded && currentState == PlayerState.None) 
+        if (isControllable && Input.GetButtonDown("Jump") && canJump && ((charController.isGrounded && currentState == PlayerState.None) 
             || currentState == PlayerState.ClimbingLadder 
             || currentState == PlayerState.ClimbingRope))
         {
