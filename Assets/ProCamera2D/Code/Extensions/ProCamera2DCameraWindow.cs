@@ -2,6 +2,9 @@
 
 namespace Com.LuisPedroFonseca.ProCamera2D
 {
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/extension-camera-window/")]
+    #endif
     public class ProCamera2DCameraWindow : BasePC2D, IPositionDeltaChanger
     {
         public static string ExtensionName = "Camera Window";

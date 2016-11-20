@@ -14,9 +14,9 @@ public class CharacterController2D : MonoBehaviour
     public float terminalVelocity;                                  //  The max speed that is added to the player's y velocity 
     public float verticalJumpForce;                                 //  The amount of vertical force applied to jumps
     public float horizontalJumpForce;                               //  The amount of horizontal force applied to jumps
-    public bool useGravity;
+    public bool isEnabled = true;
+    public bool useGravity = true;
     public bool isControllable = true;
-    public bool canMove = true;	                                    //  is the player allowed to move?
 	public bool canJump = true; 	                                //  is the player allowed to jump?
     public bool canClimb = true;                                    //  is the player allowed to climb?
     public bool canPushPull = true;                                 //  is the player allowed to push/pull
@@ -93,8 +93,11 @@ public class CharacterController2D : MonoBehaviour
     #region Update(): check and evaluate input and states every frame
     void Update ()
     {
+        if (!isEnabled)
+            return;
+        
         //  Check and update the facing direction of the player
-        if (currentState == PlayerState.None && canMove)
+        if (currentState == PlayerState.None)
             UpdateFacingDirection();
         
         //  Apply gravity
@@ -152,7 +155,7 @@ public class CharacterController2D : MonoBehaviour
         }
 
         //  Move
-        if (canMove && currentState != PlayerState.ClimbingRope)
+        if (currentState != PlayerState.ClimbingRope)
             charController.Move(velocity * Time.deltaTime);
 
         //  Animation

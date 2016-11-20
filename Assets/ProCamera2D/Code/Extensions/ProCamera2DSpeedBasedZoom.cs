@@ -2,6 +2,9 @@
 
 namespace Com.LuisPedroFonseca.ProCamera2D
 {
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/extension-speed-based-zoom/")]
+    #endif
     public class ProCamera2DSpeedBasedZoom : BasePC2D, ISizeDeltaChanger
     {
         public static string ExtensionName = "Speed Based Zoom";
@@ -35,8 +38,6 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
         Vector3 _previousCameraPosition;
 
-        float _prevZoomAmount;
-
         [HideInInspector]
         public float CurrentVelocity;
 
@@ -51,8 +52,6 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             _previousCamSize = _initialCamSize;
 
             _previousCameraPosition = VectorHV(Vector3H(ProCamera2D.LocalPosition), Vector3V(ProCamera2D.LocalPosition));
-
-            _prevZoomAmount = 0;
 
             ProCamera2D.AddSizeDeltaChanger(this);
         }
@@ -71,12 +70,9 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             if (!enabled)
                 return originalDelta;
 
-            var newZoomAmount = 0f;
-
             // If the camera is bounded, reset the easing
             if (_previousCamSize == ProCamera2D.ScreenSizeInWorldCoordinates.y)
             {
-                _prevZoomAmount = 0f;
                 _zoomVelocity = 0f;
             }
 
@@ -84,40 +80,40 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             CurrentVelocity = (_previousCameraPosition - VectorHV(Vector3H(ProCamera2D.LocalPosition), Vector3V(ProCamera2D.LocalPosition))).magnitude / deltaTime;
             _previousCameraPosition = VectorHV(Vector3H(ProCamera2D.LocalPosition), Vector3V(ProCamera2D.LocalPosition));
 
+            var currentSize = ProCamera2D.ScreenSizeInWorldCoordinates.y * 0.5f;
+            var targetSize = currentSize;
+
             // Zoom out
             if (CurrentVelocity > CamVelocityForZoomIn)
             {
                 var speedPercentage = (CurrentVelocity - CamVelocityForZoomIn) / (CamVelocityForZoomOut - CamVelocityForZoomIn);
+                var newSize = _initialCamSize * (1 + MaxZoomOutAmount - 1) * Mathf.Clamp01(speedPercentage);
 
-                newZoomAmount = ZoomOutSpeed * Mathf.Clamp01(speedPercentage);
+                if (newSize > currentSize)
+                    targetSize = newSize;
             }
             // Zoom in
             else
             {
-                var speedPercentage = (1 - (CurrentVelocity / CamVelocityForZoomIn));
+                var speedPercentage = (1 - (CurrentVelocity / CamVelocityForZoomIn)).Remap(0.0f, 1.0f, 0.5f, 1.0f);
+                var newSize = _initialCamSize / (MaxZoomInAmount * speedPercentage);
 
-                newZoomAmount = -ZoomInSpeed * Mathf.Clamp01(speedPercentage);
+                if (newSize < currentSize)
+                    targetSize = newSize;
             }
 
-            // Smooth
-            var zoomAmount = Mathf.SmoothDamp(_prevZoomAmount, newZoomAmount * deltaTime, ref _zoomVelocity, CurrentVelocity > CamVelocityForZoomIn ? ZoomOutSmoothness : ZoomInSmoothness);
+            if (Mathf.Abs(currentSize - targetSize) > .0001f)
+            {
+                float smoothness = (targetSize < currentSize) ? ZoomInSmoothness : ZoomOutSmoothness;
+                targetSize = Mathf.SmoothDamp(currentSize, targetSize, ref _zoomVelocity, smoothness, Mathf.Infinity, deltaTime);
+            }
 
-            // Clamp zoom amount
-            var targetSize = (ProCamera2D.ScreenSizeInWorldCoordinates.y / 2) + zoomAmount;
-            var minScreenSize = _initialCamSize / MaxZoomInAmount;
-            var maxScreenSize = MaxZoomOutAmount * _initialCamSize;
-            if (targetSize < minScreenSize)
-                zoomAmount -= targetSize - minScreenSize;
-            else if (targetSize > maxScreenSize)
-                zoomAmount -= targetSize - maxScreenSize;
-
-            // Save the previous zoom amount for easing purposes
-            _prevZoomAmount = zoomAmount;
+            var zoomAmount = targetSize - (ProCamera2D.ScreenSizeInWorldCoordinates.y / 2);
 
             // Detect if the camera size is bounded
             _previousCamSize = ProCamera2D.ScreenSizeInWorldCoordinates.y;
 
-            // Return the zoom delta
+            // Return the zoom delta - delta already factored in by SmoothDamp
             return originalDelta + zoomAmount;
         }
 
@@ -131,7 +127,6 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         {
             _previousCamSize = _initialCamSize;
             _previousCameraPosition = VectorHV(Vector3H(ProCamera2D.LocalPosition), Vector3V(ProCamera2D.LocalPosition));
-            _prevZoomAmount = 0;
             _zoomVelocity = 0;
         }
     }

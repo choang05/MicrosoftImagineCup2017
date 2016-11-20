@@ -18,6 +18,9 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         public bool IgnoreTimeScale;
     }
 
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/extension-shake/")]
+    #endif
     public class ProCamera2DShake : BasePC2D
     {
         public static string ExtensionName = "Shake";
@@ -315,13 +318,13 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             while (_shakePositions.Count > 0 || _shakeParent.localPosition != _influencesSum || _transform.localRotation != _originalRotation)
             {
                 var newShakePosition = Utils.GetVectorsSum(_shakePositions) + _influencesSum;
-                var newShakePositionSmoothed = _shakeParent.localPosition;
 
+                var newShakePositionSmoothed = Vector3.zero;
                 if (ignoreTimeScale)
                     newShakePositionSmoothed = Vector3.SmoothDamp(_shakeParent.localPosition, newShakePosition, ref _shakeVelocity, smoothness, float.MaxValue, Time.unscaledDeltaTime);
                 else if (ProCamera2D.DeltaTime > 0)
                     newShakePositionSmoothed = Vector3.SmoothDamp(_shakeParent.localPosition, newShakePosition, ref _shakeVelocity, smoothness);
-                
+
                 _shakeParent.localPosition = newShakePositionSmoothed;
                 _shakePositions.Clear();
 
@@ -337,8 +340,6 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
                 yield return ProCamera2D.GetYield();
             }
-
-            _shakeCoroutine = null;
         }
 
         IEnumerator ApplyShakesTimedRoutine(IList<Vector2> shakes, IList<Quaternion> rotations, float[] durations, bool ignoreTimeScale = false)
@@ -351,6 +352,10 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
                 yield return StartCoroutine(ApplyShakeTimedRoutine(shakes[count], rotations[count], duration, ignoreTimeScale));
             }
+
+            _shakeParent.localPosition = _influencesSum;
+            _transform.localRotation = _originalRotation;
+            _shakeCoroutine = null;
 
             if (OnShakeCompleted != null)
                 OnShakeCompleted();

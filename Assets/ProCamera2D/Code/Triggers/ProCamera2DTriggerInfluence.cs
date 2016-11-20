@@ -3,6 +3,9 @@ using System.Collections;
 
 namespace Com.LuisPedroFonseca.ProCamera2D
 {
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/trigger-influence/")]
+    #endif
     public class ProCamera2DTriggerInfluence : BaseTrigger
     {
         public static string TriggerName = "Influence Trigger";
@@ -67,7 +70,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                     if (previousDistancePercentage == 0)
                         _influence = new Vector2(Vector3H(ProCamera2D.CameraTargetPositionSmoothed), Vector3V(ProCamera2D.CameraTargetPositionSmoothed)) - new Vector2(Vector3H(ProCamera2D.TargetsMidPoint) + Vector3H(ProCamera2D.TargetsMidPoint) - Vector3H(ProCamera2D.PreviousTargetsMidPoint), Vector3V(ProCamera2D.TargetsMidPoint) + Vector3V(ProCamera2D.TargetsMidPoint) - Vector3V(ProCamera2D.PreviousTargetsMidPoint)) + new Vector2(Vector3H(ProCamera2D.ParentPosition), Vector3V(ProCamera2D.ParentPosition));
 
-                    _influence = Vector2.SmoothDamp(_influence, -vectorFromPointToFocus * (1 - distancePercentage), ref _velocity, InfluenceSmoothness);
+                    _influence = Vector2.SmoothDamp(_influence, -vectorFromPointToFocus * (1 - distancePercentage), ref _velocity, InfluenceSmoothness, Mathf.Infinity, Time.deltaTime);
                     ProCamera2D.ApplyInfluence(_influence);
                     _tempExclusivePoint = VectorHV(Vector3H(ProCamera2D.CameraTargetPosition), Vector3V(ProCamera2D.CameraTargetPosition)) + VectorHV(Vector3H(ProCamera2D.ParentPosition), Vector3V(ProCamera2D.ParentPosition));
                 }
@@ -84,7 +87,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
             while (!_insideTrigger && _influence != Vector2.zero)
             {
-                _influence = Vector2.SmoothDamp(_influence, Vector2.zero, ref _velocity, InfluenceSmoothness);
+                _influence = Vector2.SmoothDamp(_influence, Vector2.zero, ref _velocity, InfluenceSmoothness, Mathf.Infinity, Time.deltaTime);
                 ProCamera2D.ApplyInfluence(_influence);
 
                 yield return ProCamera2D.GetYield();

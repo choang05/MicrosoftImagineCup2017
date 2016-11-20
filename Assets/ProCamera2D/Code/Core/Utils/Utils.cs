@@ -15,6 +15,8 @@ namespace Com.LuisPedroFonseca.ProCamera2D
     {
         public static float EaseFromTo(float start, float end, float value, EaseType type = EaseType.EaseInOut)
         {
+            value = Mathf.Clamp01(value);
+
             switch (type)
             {
                 case EaseType.EaseInOut:
@@ -138,6 +140,22 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         public static float AlignToGrid(float input, float gridSize)
         {
             return Mathf.Round((Mathf.Ceil(input / gridSize) * gridSize) / gridSize) * gridSize;
+        }
+
+        public static bool IsInsideRectangle(float x, float y, float width, float height, float pointX, float pointY)
+        {
+            if (pointX >= x - width * .5f &&
+                pointX <= x + width * .5f &&
+                pointY >= y - height * .5f &&
+                pointY <= y + height * .5f)
+                return true;
+
+            return false;
+        }
+
+        public static bool IsInsideCircle(float x, float y, float radius, float pointX, float pointY)
+        {
+            return (pointX - x) * (pointX - x) + (pointY - y) * (pointY - y) < radius * radius;
         }
     }
 }

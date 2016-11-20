@@ -10,6 +10,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         static Color[] _procamera2DGizmosColors;
         readonly static string[] _procamera2DGizmosKeys = new string[]
         {
+            PrefsData.RoomsColorKey,
         	PrefsData.NumericBoundariesColorKey, 
         	PrefsData.TargetsMidPointColorKey,
         	PrefsData.InfluencesColorKey,
@@ -35,10 +36,11 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
             PrefsData.ZoomTriggerColorKey,
 
-            PrefsData.TriggerShapeColorKey,
+            PrefsData.TriggerShapeColorKey
         };
         readonly static Color[] _procamera2DGizmosValues = new Color[]
         {
+            PrefsData.RoomsColorValue,
         	PrefsData.NumericBoundariesColorValue, 
         	PrefsData.TargetsMidPointColorValue,
         	PrefsData.InfluencesColorValue,
@@ -64,7 +66,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
             PrefsData.ZoomTriggerColorValue,
 
-            PrefsData.TriggerShapeColorValue,
+            PrefsData.TriggerShapeColorValue
         };
 
         static Vector2 _scrollPos;
@@ -95,13 +97,13 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             	if(i == 9)
             	{
             		EditorGUILayout.Space();
-            		GUILayout.Label("Plugins", EditorStyles.boldLabel);
+            		GUILayout.Label("Extensions", EditorStyles.boldLabel);
             	}
 
-                if(i == 13)
+                if(i == 14)
                 {
                     EditorGUILayout.Space();
-                    GUILayout.Label("Helpers", EditorStyles.boldLabel);
+                    GUILayout.Label("Triggers", EditorStyles.boldLabel);
                 }
             }
 
@@ -110,6 +112,12 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             EditorGUILayout.Space();
             GUILayout.Label("Rails Snapping", EditorStyles.boldLabel);
             EditorPrefs.SetFloat("RailsSnapping", EditorGUILayout.Slider(EditorPrefs.GetFloat("RailsSnapping"), .1f, 10f));
+
+            // Rooms snapping
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            GUILayout.Label("Rooms Snapping", EditorStyles.boldLabel);
+            EditorPrefs.SetFloat("RoomsSnapping", EditorGUILayout.Slider(EditorPrefs.GetFloat("RoomsSnapping"), .01f, 10f));
 
             // Reset defaults
             EditorGUILayout.Space();

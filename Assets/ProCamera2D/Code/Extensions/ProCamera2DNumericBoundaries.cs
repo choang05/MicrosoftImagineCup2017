@@ -3,9 +3,56 @@ using System;
 
 namespace Com.LuisPedroFonseca.ProCamera2D
 {
+    public struct NumericBoundariesSettings
+    {
+        public bool UseNumericBoundaries;
+        public bool UseTopBoundary;
+        public float TopBoundary;
+        public bool UseBottomBoundary;
+        public float BottomBoundary;
+        public bool UseLeftBoundary;
+        public float LeftBoundary;
+        public bool UseRightBoundary;
+        public float RightBoundary;
+    }
+
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/extension-numeric-boundaries/")]
+    #endif
     public class ProCamera2DNumericBoundaries : BasePC2D, IPositionDeltaChanger, ISizeOverrider
     {
         public static string ExtensionName = "Numeric Boundaries";
+
+        public NumericBoundariesSettings Settings
+        {
+            get
+            {
+                return new NumericBoundariesSettings()
+                { 
+                    UseNumericBoundaries = UseNumericBoundaries,
+                    UseTopBoundary = UseTopBoundary,
+                    TopBoundary = TopBoundary,
+                    UseBottomBoundary = UseBottomBoundary,
+                    BottomBoundary = BottomBoundary,
+                    UseLeftBoundary = UseLeftBoundary,
+                    LeftBoundary = LeftBoundary,
+                    UseRightBoundary = UseRightBoundary,
+                    RightBoundary = RightBoundary
+                };
+            }
+            set
+            {
+                UseNumericBoundaries = value.UseNumericBoundaries;
+                UseTopBoundary = value.UseTopBoundary;
+                TopBoundary = value.TopBoundary;
+                UseBottomBoundary = value.UseBottomBoundary;
+                BottomBoundary = value.BottomBoundary;
+                UseLeftBoundary = value.UseLeftBoundary;
+                LeftBoundary = value.LeftBoundary;
+                UseRightBoundary = value.UseRightBoundary;
+                RightBoundary = value.RightBoundary;
+            }
+        }
 
         public Action OnBoundariesTransitionStarted;
         public Action OnBoundariesTransitionFinished;
@@ -205,19 +252,21 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             if (!UseNumericBoundaries)
                 return originalSize;
 
+            var newSize = originalSize;
+
             // Set new size if outside boundaries
             var cameraMaxSize = new Vector2(RightBoundary - LeftBoundary, TopBoundary - BottomBoundary);
             if (UseRightBoundary && UseLeftBoundary && originalSize * ProCamera2D.GameCamera.aspect * 2f > cameraMaxSize.x)
             {
-                return cameraMaxSize.x / ProCamera2D.GameCamera.aspect / 2f;
+                newSize = cameraMaxSize.x / ProCamera2D.GameCamera.aspect / 2f;
             }
 
-            if (UseTopBoundary && UseBottomBoundary && originalSize * 2f > cameraMaxSize.y)
+            if (UseTopBoundary && UseBottomBoundary && newSize * 2f > cameraMaxSize.y)
             {
-                return cameraMaxSize.y / 2f;
+                newSize = cameraMaxSize.y / 2f;
             }
 
-            return originalSize;
+            return newSize;
         }
 
         public int SOOrder { get { return _soOrder; } set { _soOrder = value; } }

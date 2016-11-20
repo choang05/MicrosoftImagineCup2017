@@ -18,6 +18,9 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         public string SendMessageParam;
     }
 
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/extension-cinematics/")]
+    #endif
     public class ProCamera2DCinematics : BasePC2D, IPositionOverrider, ISizeOverrider
     {
         public static string ExtensionName = "Cinematics";
@@ -302,7 +305,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                         if (UseNumericBoundaries)
                             LimitToNumericBoundaries(ref newPosH, ref newPosV);
 
-                        _newPos = VectorHVD(newPosH, newPosV, Vector3D(ProCamera2D.LocalPosition));
+                        _newPos = VectorHVD(newPosH, newPosV, 0);
 
                         _newSize = Utils.EaseFromTo(currentCameraSize, _initialCameraSize / cinematicTarget.Zoom, t, cinematicTarget.EaseType);
 
@@ -317,7 +320,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             {
                 var newPosH = Vector3H(cinematicTarget.TargetTransform.position) - Vector3H(ProCamera2D.ParentPosition);
                 var newPosV = Vector3V(cinematicTarget.TargetTransform.position) - Vector3V(ProCamera2D.ParentPosition);
-                _newPos = VectorHVD(newPosH, newPosV, Vector3D(ProCamera2D.LocalPosition));
+                _newPos = VectorHVD(newPosH, newPosV, 0);
 
                 _newSize = _initialCameraSize / cinematicTarget.Zoom;
             }
@@ -346,7 +349,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                     if (UseNumericBoundaries)
                         LimitToNumericBoundaries(ref newPosH, ref newPosV);
 
-                    _newPos = VectorHVD(newPosH, newPosV, Vector3D(ProCamera2D.LocalPosition));
+                    _newPos = VectorHVD(newPosH, newPosV, 0);
 
                     if (_skipTarget)
                         yield break;
@@ -390,7 +393,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                     if (UseNumericBoundaries)
                         LimitToNumericBoundaries(ref newPosH, ref newPosV);
 
-                    _newPos = VectorHVD(newPosH, newPosV, Vector3D(ProCamera2D.LocalPosition));
+                    _newPos = VectorHVD(newPosH, newPosV, 0);
 
                     _newSize = Utils.EaseFromTo(currentCameraSize, _initialCameraSize, t, EndEaseType);
                 }

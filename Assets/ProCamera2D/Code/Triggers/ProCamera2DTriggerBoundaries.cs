@@ -3,6 +3,9 @@ using System.Collections;
 
 namespace Com.LuisPedroFonseca.ProCamera2D
 {
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/trigger-boundaries/")]
+    #endif
     public class ProCamera2DTriggerBoundaries : BaseTrigger, IPositionOverrider
     {
         public static string TriggerName = "Boundaries Trigger";
@@ -264,7 +267,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             var initialCamPosH = Vector3H(ProCamera2D.LocalPosition);
             var initialCamPosV = Vector3V(ProCamera2D.LocalPosition);
 
-            _newPos = VectorHVD(initialCamPosH, initialCamPosV, Vector3D(ProCamera2D.LocalPosition));
+            _newPos = VectorHVD(initialCamPosH, initialCamPosV, 0);
             _transitioning = true;
 
             var t = 0f;
@@ -277,7 +280,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
                 LimitToNumericBoundaries(ref newPosH, ref newPosV);
 
-                _newPos = VectorHVD(newPosH, newPosV, Vector3D(ProCamera2D.LocalPosition));
+                _newPos = VectorHVD(newPosH, newPosV, 0);
 
                 yield return ProCamera2D.GetYield();
             }

@@ -92,7 +92,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                 triggerPos = TriggerTarget.position;
 
             if (TriggerShape == TriggerShape.RECTANGLE &&
-                IsInsideRectangle(
+                Utils.IsInsideRectangle(
                     Vector3H(_transform.position), 
                     Vector3V(_transform.position), 
                     Vector3H(_transform.localScale), 
@@ -104,7 +104,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                     EnteredTrigger();
             }
             else if (TriggerShape == TriggerShape.CIRCLE &&
-                IsInsideCircle(
+                Utils.IsInsideCircle(
                     Vector3H(_transform.position), 
                     Vector3V(_transform.position), 
                     (Vector3H(_transform.localScale) + Vector3V(_transform.localScale)) * .25f, 
@@ -164,22 +164,6 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             	var distancePercentage = (_vectorFromPointToCenter.magnitude / ((Vector3H(_transform.localScale) + Vector3V(_transform.localScale)) * .25f)).Remap(_exclusiveInfluencePercentage, 1, 0, 1);
             	return distancePercentage;
             }
-        }
-
-        bool IsInsideRectangle(float x, float y, float width, float height, float pointX, float pointY)
-        {
-            if (pointX >= x - width * .5f &&
-                pointX <= x + width * .5f &&
-                pointY >= y - height * .5f &&
-                pointY <= y + height * .5f)
-                return true;
-
-            return false;
-        }
-
-        bool IsInsideCircle(float x, float y, float radius, float pointX, float pointY)
-        {
-            return (pointX - x) * (pointX - x) + (pointY - y) * (pointY - y) < radius * radius;
         }
 
         #if UNITY_EDITOR

@@ -68,5 +68,11 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         // Pan Edges
         public static string PanEdgesColorKey = "Pan Edges";
         public static Color PanEdgesColorValue = Color.red;
+
+        // Rooms
+        public static string RoomsColorKey = "Rooms";
+        public static Color RoomsColorValue = Color.red;
+
+        public static float RoomsSnapping = .1f;
     }
 }

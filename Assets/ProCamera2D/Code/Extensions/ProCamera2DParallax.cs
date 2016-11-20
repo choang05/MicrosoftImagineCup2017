@@ -22,6 +22,9 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         public Transform CameraTransform;
     }
 
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/extension-parallax/")]
+    #endif
     [ExecuteInEditMode]
     public class ProCamera2DParallax : BasePC2D, IPostMover
     {
@@ -45,33 +48,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                 return;
 
             if (Application.isPlaying)
-            {
-                // Find all parallax objects
-                var parallaxObjs = FindObjectsOfType<ProCamera2DParallaxObject>();
-
-                // Create dictionary that links Unity layers to ProCamera2D parallax layers
-                var layersDic = new Dictionary<int, ProCamera2DParallaxLayer>();
-                for (int i = 0; i <= 31; i++)
-                {
-                    foreach (var parallaxLayer in ParallaxLayers)
-                    {
-                        if (parallaxLayer.LayerMask == (parallaxLayer.LayerMask | (1 << i)))
-                        {
-                            layersDic[i] = parallaxLayer;
-                        }
-                    }
-                }
-
-                // Apply offset to parallax objects according to the parallax layer they're part of
-                for (int i = 0; i < parallaxObjs.Length; i++)
-                {
-                    // Position
-                    Vector3 parallaxObjPosition = parallaxObjs[i].transform.position - RootPosition;
-                    float x = Vector3H(parallaxObjPosition) * layersDic[parallaxObjs[i].gameObject.layer].Speed;
-                    float y = Vector3V(parallaxObjPosition) * layersDic[parallaxObjs[i].gameObject.layer].Speed;
-                    parallaxObjs[i].transform.position = VectorHVD(x, y, Vector3D(parallaxObjPosition)) + RootPosition;
-                }
-            }
+                CalculateParallaxObjectsOffset();
 
             foreach (var layer in ParallaxLayers)
             {
@@ -88,6 +65,8 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                 _initialSpeeds[i] = ParallaxLayers[i].Speed;
             }
 
+
+            // Disable the extension if the camera is not in orthographic projection
             if (ProCamera2D.GameCamera != null)
             {
                 _initialOrtographicSize = ProCamera2D.GameCamera.orthographicSize;
@@ -138,9 +117,38 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         }
         #endif
 
+        public void CalculateParallaxObjectsOffset()
+        {
+            // Find all parallax objects
+            var parallaxObjs = FindObjectsOfType<ProCamera2DParallaxObject>();
+
+            // Create dictionary that links Unity layers to ProCamera2D parallax layers
+            var layersDic = new Dictionary<int, ProCamera2DParallaxLayer>();
+            for (int i = 0; i <= 31; i++)
+            {
+                foreach (var parallaxLayer in ParallaxLayers)
+                {
+                    if (parallaxLayer.LayerMask == (parallaxLayer.LayerMask | (1 << i)))
+                    {
+                        layersDic[i] = parallaxLayer;
+                    }
+                }
+            }
+
+            // Apply offset to parallax objects according to the parallax layer they're part of
+            for (int i = 0; i < parallaxObjs.Length; i++)
+            {
+                // Position
+                Vector3 parallaxObjPosition = parallaxObjs[i].transform.position - RootPosition;
+                float x = Vector3H(parallaxObjPosition) * layersDic[parallaxObjs[i].gameObject.layer].Speed;
+                float y = Vector3V(parallaxObjPosition) * layersDic[parallaxObjs[i].gameObject.layer].Speed;
+                parallaxObjs[i].transform.position = VectorHVD(x, y, Vector3D(parallaxObjPosition)) + RootPosition;
+            }
+        }
+
         void Move()
         {
-            Vector3 rootOffset = transform.position - RootPosition;
+            Vector3 rootOffset = _transform.position - RootPosition;
 
             for (int i = 0; i < ParallaxLayers.Count; i++)
             {
@@ -149,7 +157,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                     // Position
                     float x = ParallaxHorizontal ? Vector3H(rootOffset) * ParallaxLayers[i].Speed : Vector3H(rootOffset);
                     float y = ParallaxVertical ? Vector3V(rootOffset) * ParallaxLayers[i].Speed : Vector3V(rootOffset);
-                    ParallaxLayers[i].CameraTransform.position = RootPosition + VectorHVD(x, y, Vector3D(transform.position));
+                    ParallaxLayers[i].CameraTransform.position = RootPosition + VectorHVD(x, y, Vector3D(_transform.position));
 
                     // Zoom
                     ParallaxLayers[i].ParallaxCamera.orthographicSize = _initialOrtographicSize + (ProCamera2D.GameCamera.orthographicSize - _initialOrtographicSize) * ParallaxLayers[i].Speed;
@@ -161,6 +169,12 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             }
         }
 
+        /// <summary>
+        /// Enable or disable parallaxing.
+        /// </summary>
+        /// <param name="value">On or off</param>
+        /// <param name="duration">Duration.</param>
+        /// <param name="easeType">Ease type.</param>
         public void ToggleParallax(bool value, float duration = 2f, EaseType easeType = EaseType.EaseInOut)
         {
             if (_initialSpeeds == null)

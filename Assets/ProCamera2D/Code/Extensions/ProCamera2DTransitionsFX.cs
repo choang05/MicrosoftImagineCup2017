@@ -29,6 +29,9 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         Vertical = 1
     }
 
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/extension-transitions-fx/")]
+    #endif
     public class ProCamera2DTransitionsFX : BasePC2D
     {
         public static string ExtensionName = "TransitionsFX";
@@ -111,6 +114,8 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         protected override void Awake()
         {
             base.Awake();
+
+            _instance = this;
 
             _material_StepID = Shader.PropertyToID("_Step");
             _material_BackgroundColorID = Shader.PropertyToID("_BackgroundColor");

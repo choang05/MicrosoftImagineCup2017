@@ -33,7 +33,7 @@ public class EventRopeTrapSpring : MonoBehaviour
 
     IEnumerator CoSpringPlayerTrap(CharacterController2D charController)
     {
-        charController.isControllable = false;
+        charController.isEnabled = false;
         charController.animator.SetBool(Animator.StringToHash("isGrounded"), false);
         charController.transform.SetParent(hookRopeSegment);
         charController.transform.localPosition = new Vector3(0, 1.5f, 0);
