@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+#if UNITY_5_5_OR_NEWER
+using UnityEngine.AI;
+#endif
+
 namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
 {
     public class EnemyWander : MonoBehaviour
@@ -57,7 +61,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
 
         void GoToWaypoint()
         {
-            NavMeshPath path = new NavMeshPath();
+            var path = new NavMeshPath();
             Vector3 newLocation = Vector3.zero;
             while (path.status == NavMeshPathStatus.PathPartial || path.status == NavMeshPathStatus.PathInvalid)
             {

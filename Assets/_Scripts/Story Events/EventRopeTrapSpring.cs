@@ -26,13 +26,14 @@ public class EventRopeTrapSpring : MonoBehaviour
         }
         else if (other.CompareTag(Tags.PushPullable))
         {
+
             StartCoroutine(CoSpringTrap(other.GetComponent<Rigidbody>()));
         }
     }
 
     IEnumerator CoSpringPlayerTrap(CharacterController2D charController)
     {
-        charController.isControllable = false;
+        charController.isEnabled = false;
         charController.animator.SetBool(Animator.StringToHash("isGrounded"), false);
         charController.transform.SetParent(hookRopeSegment);
         charController.transform.localPosition = new Vector3(0, 1.5f, 0);
@@ -44,7 +45,7 @@ public class EventRopeTrapSpring : MonoBehaviour
 
         charController.GetComponent<PlayerDeath>().ProcessRespawn();
 
-        Destroy(gameObject);
+        Destroy(GetComponent<BoxCollider>());
     }
 
     IEnumerator CoSpringTrap(Rigidbody rigidBody)
@@ -62,6 +63,7 @@ public class EventRopeTrapSpring : MonoBehaviour
 
         yield return null;
 
-        Destroy(gameObject);
+        Destroy(GetComponent<BoxCollider>());
+
     }
 }

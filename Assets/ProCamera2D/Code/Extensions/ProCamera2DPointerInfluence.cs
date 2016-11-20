@@ -2,6 +2,9 @@
 
 namespace Com.LuisPedroFonseca.ProCamera2D
 {
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/extension-pointer-influence/")]
+    #endif
     public class ProCamera2DPointerInfluence : BasePC2D, IPreMover
     {
         public static string ExtensionName = "Pointer Influence";
@@ -39,7 +42,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         public void PreMove(float deltaTime)
         {
             if(enabled)
-                ApplyInfluence();
+                ApplyInfluence(deltaTime);
         }
 
         public int PrMOrder { get { return _prmOrder; } set { _prmOrder = value; } }
@@ -48,7 +51,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
         #endregion
 
-        void ApplyInfluence()
+        void ApplyInfluence(float deltaTime)
         {
             var mousePosViewport = ProCamera2D.GameCamera.ScreenToViewportPoint(Input.mousePosition);
 
@@ -58,7 +61,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             var hInfluence = mousePosViewportH * MaxHorizontalInfluence;
             var vInfluence = mousePosViewportV * MaxVerticalInfluence;
 
-            _influence = Vector2.SmoothDamp(_influence, new Vector2(hInfluence, vInfluence), ref _velocity, InfluenceSmoothness);
+            _influence = Vector2.SmoothDamp(_influence, new Vector2(hInfluence, vInfluence), ref _velocity, InfluenceSmoothness, Mathf.Infinity, deltaTime);
 
             ProCamera2D.ApplyInfluence(_influence);
         }

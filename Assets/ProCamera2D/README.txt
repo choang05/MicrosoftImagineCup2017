@@ -37,6 +37,36 @@ Twitter - http://www.twitter.com/lpfonseca
 
 ## CHANGELOG ##
 
+2.2.2
+- Core - Added a Dolly Zoom (Hitchcock effect) method. Created an example scene for it
+- Rooms - Added a method to set the default numeric boundaries settings for when leaving all rooms
+- PanAndZoom - Prevented unintentional pans when outside of the GameView on the editor
+
+2.2.1
+- Core - Greatly improved rendering performance of the editor
+- PanAndZoom - Fixed an issue that prevented zooming after toggling the component
+- Rooms - Added an ID property that can be used to identify each room
+- Rooms - OnStartedTransition and OnFinishedTransition now send the previous room too
+- Rooms - Editor tweaks
+
+2.2.0
+- New extension - Rooms! Easily create and manage multiple rooms on your scene
+- Parallax extension - Added a new method (CalculateParallaxObjectsOffset) to manually recalculate parallax objects offset if needed
+- PanAndZoom extension - Added a boolean (ResetPrevPanPoint) to prevent movement jumps after toggling the component
+- Added links to documentation on core, extensions and triggers' editor windows
+- Fixed an issue with the SpeedBasedZoom extension that caused an hard stop when reaching the maximum and minimum zoom values
+
+2.1.5
+- NumericBoundaries extension editor tweaks
+- Fixed PanAndZoom extension bug when on the XZ or YZ axis
+- Fixed shake not stopping to correct position when using the PixelPerfect extension
+- Support for Unity 5.5
+
+2.1.4
+- The values on the EaseFromTo method are now automatically clamped to prevent overshooting
+- Fixed missing static instance of the TransitionsFX extension on scene change
+- Fixed typo on the AdjustCameraTargetInfluence core method
+
 2.1.3
 - Fixed PanAndZoom bug on touch devices that slowed down pan speed
 

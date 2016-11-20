@@ -10,6 +10,9 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         VerticalAxis
     }
 
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/extension-rails/")]
+    #endif
     public class ProCamera2DRails : BasePC2D, IPreMover
     {
         public static string ExtensionName = "Rails";

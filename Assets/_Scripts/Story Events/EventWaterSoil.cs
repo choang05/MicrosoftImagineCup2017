@@ -28,7 +28,7 @@ public class EventWaterSoil : MonoBehaviour
     {
         other.DropItemAnimationStart();
 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
 
         PresentTree.SetActive(true);
         FutureTree.SetActive(true);

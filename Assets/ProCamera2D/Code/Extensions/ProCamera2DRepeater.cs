@@ -5,6 +5,9 @@ using System;
 
 namespace Com.LuisPedroFonseca.ProCamera2D
 {
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/extension-repeater/")]
+    #endif
     public class ProCamera2DRepeater : BasePC2D, IPostMover
     {
         public static string ExtensionName = "Repeater";
@@ -90,7 +93,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                 return;
             
             // Get screen size at the object depth
-            var cameraSize = Utils.GetScreenSizeInWorldCoords(CameraToUse, ProCamera2D.CameraDepthPos - Vector3D(_objStartPosition));
+            var cameraSize = Utils.GetScreenSizeInWorldCoords(CameraToUse, Vector3D(ProCamera2D.LocalPosition - _objStartPosition));
 
             // Find indices
             var cameraPos = _cameraToUseTransform.position;

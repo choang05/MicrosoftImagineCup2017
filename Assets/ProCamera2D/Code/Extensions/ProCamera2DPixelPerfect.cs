@@ -10,6 +10,9 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         Round
     }
 
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/extension-pixel-perfect/")]
+    #endif
     public class ProCamera2DPixelPerfect : BasePC2D, IPositionOverrider
     {
         public static string ExtensionName = "Pixel Perfect";
@@ -88,12 +91,17 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             if (!enabled)
                 return originalPosition;
 
-            // If shaking
+            // We do this so we can have the camera movement not snapping to the grid, while the sprites are
+            var cameraPixelStep = _pixelStep; 
+            if (SnapMovementToGrid && !SnapCameraToGrid) 
+                cameraPixelStep = 1f / (PixelsPerUnit * _viewportScale * Zoom); 
+
+            // If shaking, align the shake parent position to pixel-perfect
             _parent = _transform.parent;
             if (_parent != null && _parent.position != Vector3.zero)
-                _parent.position = VectorHVD(Utils.AlignToGrid(Vector3H(_parent.position), _pixelStep), Utils.AlignToGrid(Vector3V(_parent.position), _pixelStep), Vector3D(_parent.position));
+                _parent.position = VectorHVD(Utils.AlignToGrid(Vector3H(_parent.position), cameraPixelStep), Utils.AlignToGrid(Vector3V(_parent.position), cameraPixelStep), Vector3D(_parent.position));
 
-            return VectorHVD(Utils.AlignToGrid(Vector3H(originalPosition), _pixelStep), Utils.AlignToGrid(Vector3V(originalPosition), _pixelStep), Vector3D(originalPosition));
+            return VectorHVD(Utils.AlignToGrid(Vector3H(originalPosition), cameraPixelStep), Utils.AlignToGrid(Vector3V(originalPosition), cameraPixelStep), 0);
         }
 
         public int POOrder { get { return _poOrder; } set { _poOrder = value; } }
@@ -116,7 +124,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         {
             _viewportScale = CalculateViewportScale();
 
-            CalculatePixelStep(_viewportScale);
+            _pixelStep = CalculatePixelStep(_viewportScale);
 
             var newSize = ((ProCamera2D.GameCamera.pixelHeight * .5f) * (1f / PixelsPerUnit)) / (Zoom * _viewportScale);
 
@@ -154,26 +162,9 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             return viewportScale;
         }
 
-        void CalculatePixelStep(float viewportScale)
+        float CalculatePixelStep(float viewportScale)
         {
-            _pixelStep = SnapMovementToGrid ? 1f / PixelsPerUnit : 1f / (PixelsPerUnit * viewportScale * Zoom);
-        }
-
-        void AlignPositionToPixelPerfect()
-        {
-            var cameraPixelStep = _pixelStep;
-
-            if (SnapMovementToGrid && !SnapCameraToGrid)
-            {
-                cameraPixelStep = 1f / (PixelsPerUnit * _viewportScale * Zoom);
-            }
-
-            // If shaking
-            _parent = _transform.parent;
-            if (_parent != null && _parent.position != Vector3.zero)
-                _parent.position = VectorHVD(Utils.AlignToGrid(Vector3H(_parent.position), cameraPixelStep), Utils.AlignToGrid(Vector3V(_parent.position), cameraPixelStep), Vector3D(_parent.position));
-            
-            _transform.localPosition = VectorHVD(Utils.AlignToGrid(Vector3H(_transform.localPosition), cameraPixelStep), Utils.AlignToGrid(Vector3V(_transform.localPosition), cameraPixelStep), Vector3D(_transform.localPosition));
+            return SnapMovementToGrid ? 1f / PixelsPerUnit : 1f / (PixelsPerUnit * viewportScale * Zoom);
         }
 
         #if UNITY_EDITOR

@@ -2,6 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
+#if UNITY_5_5_OR_NEWER
+using UnityEngine.AI;
+#endif
+
 namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
 {
     public class EnemyPatrol : MonoBehaviour

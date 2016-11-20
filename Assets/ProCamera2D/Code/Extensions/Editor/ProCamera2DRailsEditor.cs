@@ -293,7 +293,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             }
 
             // Snap value
-            var pointSnap = Vector3.one * EditorPrefs.GetFloat("RailsSnapping", .1f);
+            var pointSnap = Vector3.one * EditorPrefs.GetFloat("RailsSnapping", PrefsData.RailsSnapping);
 
             // Draw a handle for each node
             for (int i = 0; i < nodesCount; i++)

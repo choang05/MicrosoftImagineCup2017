@@ -36,14 +36,14 @@ public class PlayerItem : MonoBehaviour
 
     public void PickUpAnimationStart()
     {
-        charController.canMove = false;
+        charController.isControllable = false;
 
         animator.SetTrigger(pickUpTriggerHash);    
     }
 
     public void PickUpAnimationComplete()
     {
-        charController.canMove = true;
+        charController.isControllable = true;
 
         //  Set item parent to player hand
         hasItem = true;
@@ -53,14 +53,14 @@ public class PlayerItem : MonoBehaviour
 
     public void DropItemAnimationStart()
     {
-        charController.canMove = false;
+        charController.isControllable = false;
 
         animator.SetTrigger(dropItemTriggerHash);
     }
 
     public void DropItemAnimationComplete()
     {
-        charController.canMove = true;
+        charController.isControllable = true;
 
         DropItem();
     }

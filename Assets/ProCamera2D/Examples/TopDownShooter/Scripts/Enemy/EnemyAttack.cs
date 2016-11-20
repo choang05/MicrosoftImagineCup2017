@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+#if UNITY_5_5_OR_NEWER
+using UnityEngine.AI;
+#endif
+
 namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
 {
     public class EnemyAttack : MonoBehaviour

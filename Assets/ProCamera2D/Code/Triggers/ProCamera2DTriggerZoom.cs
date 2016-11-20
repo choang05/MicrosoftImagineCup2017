@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Com.LuisPedroFonseca.ProCamera2D
 {
+    #if UNITY_5_3_OR_NEWER
+    [HelpURL("http://www.procamera2d.com/user-guide/trigger-zoom/")]
+    #endif
     public class ProCamera2DTriggerZoom : BaseTrigger
     {
         public static string TriggerName = "Zoom Trigger";
@@ -38,7 +41,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             _targetCamSize = _startCamSize;
             _targetCamSizeSmoothed = _startCamSize;
 
-            _initialCamDepth = ProCamera2D.CameraDepthPos;
+            _initialCamDepth = Vector3D(ProCamera2D.LocalPosition);
         }
 
         protected override void EnteredTrigger()

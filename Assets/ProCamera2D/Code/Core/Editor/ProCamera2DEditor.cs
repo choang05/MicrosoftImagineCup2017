@@ -10,6 +10,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
     {
         public string ExtName;
         public System.Type ExtType;
+        public BasePC2D Component;
     }
 
     public class PC2DEditorTrigger
@@ -157,7 +158,8 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                         var ext = new PC2DEditorExtension()
                         {
                             ExtName = extensionName.GetValue(null) as string,
-                            ExtType = scriptClass
+                            ExtType = scriptClass,
+                            Component = proCamera2D.GetComponent(scriptClass) as BasePC2D
                         };
                         
                         _extensions.Add(ext);
@@ -436,16 +438,14 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             {
                 EditorGUILayout.BeginHorizontal();
 
-                var ext = proCamera2D.GetComponent(_extensions[i].ExtType) as BasePC2D;
-
                 EditorGUILayout.LabelField(_extensions[i].ExtName);
-                if (ext == null)
+                if (_extensions[i].Component == null)
                 {
                     GUI.color = Color.green;
                     if (GUILayout.Button("Enable"))
                     {
-                        ext = proCamera2D.gameObject.AddComponent(_extensions[i].ExtType) as BasePC2D;
-                        ext.ProCamera2D = proCamera2D;
+                        _extensions[i].Component = proCamera2D.gameObject.AddComponent(_extensions[i].ExtType) as BasePC2D;
+                        _extensions[i].Component.ProCamera2D = proCamera2D;
                     }
                 }
                 else
@@ -455,7 +455,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                     {
                         if (EditorUtility.DisplayDialog("Warning!", "Are you sure you want to remove this plugin?", "Yes", "No"))
                         {
-                            DestroyImmediate(ext);
+                            DestroyImmediate(_extensions[i].Component);
                             EditorGUIUtility.ExitGUI();
                         }
                     }
