@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class MainMenu : MonoBehaviour {
 
     public GameObject menu;
+    private SettingsManager settings;
     private LinkedList<GameObject> navigation;
     void Awake()
     {

@@ -27,25 +27,12 @@ public class ResolutionChanger : MonoBehaviour
     void Awake()
     {
         settingsManager = FindObjectOfType<SettingsManager>();
+        slider.maxValue = Screen.resolutions.Length;
     }
 
     public void UpdateResolutionText()
     {
-        switch((int)slider.value)
-        {
-            case 1:
-                resolutionText.text = "800 x 600";
-                break;
-            case 2:
-                resolutionText.text = "1024 x 768";
-                break;
-            case 3:
-                resolutionText.text = "1280 x 768";
-                break;
-            case 4:
-                resolutionText.text = "1366 x 768";
-                break;
-        }
+        resolutionText.text = Screen.resolutions[(int)(slider.value - 1)].ToString();
     }
 
     public void ChangeResolution()
