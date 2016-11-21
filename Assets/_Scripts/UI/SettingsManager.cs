@@ -184,8 +184,8 @@ public class SettingsManager : MonoBehaviour
         }
         else // assign defaults
         {
-            ResolutionWidth = 800;
-            ResolutionHeight = 600;
+            ResolutionWidth = Screen.resolutions[0].width;
+            ResolutionHeight = Screen.resolutions[0].height;
             IsWindowed = false;
             MasterVol = 0.5F;
             SfxVol = 0.5F;
