@@ -24,7 +24,6 @@ public class ResolutionChanger : MonoBehaviour
         if (!isScreenSame)
             slider.value = 1;
         fullScreenToggle.isOn = settingsManager.IsWindowed;
-
     }
 
     void Awake()
@@ -44,9 +43,9 @@ public class ResolutionChanger : MonoBehaviour
         settingsManager.ResolutionWidth = Screen.resolutions[(int)(slider.value - 1)].width;
         settingsManager.ResolutionHeight = Screen.resolutions[(int)(slider.value - 1)].height;
 
-        Screen.SetResolution(settingsManager.ResolutionWidth, settingsManager.ResolutionHeight, settingsManager.IsWindowed);
+        Screen.SetResolution(settingsManager.ResolutionWidth, settingsManager.ResolutionHeight, !settingsManager.IsWindowed);
 
         //  Save the new resolution in settings manager
-        settingsManager.SaveSettings();
+        settingsManager.SaveSettings(); 
     }
 }

@@ -169,7 +169,8 @@ public class SettingsManager : MonoBehaviour
     }
     public void LoadSettings()
     {
-        volumeChanger changer = FindObjectOfType<volumeChanger>();
+        volumeChanger volChanger = FindObjectOfType<volumeChanger>();
+        ResolutionChanger resChanger = FindObjectOfType<ResolutionChanger>();
         if (File.Exists(Application.persistentDataPath + "/settings.dat"))
         {
             BinaryFormatter bf = new BinaryFormatter();
@@ -191,8 +192,9 @@ public class SettingsManager : MonoBehaviour
             SfxVol = 0.5F;
             MusicVol = 0.5F;
         }
-        changer.SetMasterLvl(MasterVol);
-        changer.SetSfxLvl(SfxVol);
-        changer.SetMusicLvl(MusicVol);
+        volChanger.SetMasterLvl(MasterVol);
+        volChanger.SetSfxLvl(SfxVol);
+        volChanger.SetMusicLvl(MusicVol);
+        resChanger.ChangeResolution();
     }
 }
