@@ -19,11 +19,17 @@ public class PlayerItem : MonoBehaviour
     int pickUpTriggerHash = Animator.StringToHash("pickUpTrigger");
     int dropItemTriggerHash = Animator.StringToHash("dropItemTrigger");
 
+    // Audio
+    GameObject bucket;
+    BucketSound bSound;
+
     void Awake()
     {
         charController = GetComponent<CharacterController2D>();
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+        bucket = GameObject.Find("WaterBucket");
+        bSound = bucket.GetComponent<BucketSound>();
     }
 
     void Update()
@@ -38,6 +44,11 @@ public class PlayerItem : MonoBehaviour
     {
         charController.isControllable = false;
 
+        //play audio for bucket pickup
+        if (heldItem.CompareTag("Bucket"))
+        {
+            bSound.playClothMovement();
+        }
         animator.SetTrigger(pickUpTriggerHash);    
     }
 
