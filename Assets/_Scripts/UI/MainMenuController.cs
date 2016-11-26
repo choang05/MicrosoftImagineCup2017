@@ -27,12 +27,16 @@ public class MainMenuController : MonoBehaviour
     private FreeParallax[] parallaxes;
     private CharacterController2D charController;
 
+    public AudioClip[] timeWarps;
+    private AudioSource menuSound;
+
     void Awake()
     {
         //  Find and assign references
         cameraTransition = FindObjectOfType<CameraTransition>();
         charController = FindObjectOfType<CharacterController2D>();
         parallaxes = FindObjectsOfType<FreeParallax>();
+        menuSound = GetComponent<AudioSource>();
     }
 
     void Start()
@@ -72,7 +76,11 @@ public class MainMenuController : MonoBehaviour
 
         //  Cache the button position in normalized screen space coordinates.
         Vector2 transitionCenter = Cameras[currentCameraIndex].ScreenToViewportPoint(Input.mousePosition);
-        
+
+        playerAudio.randomizePitch(menuSound);
+        int randomIndex = Random.Range(0, timeWarps.Length);
+        menuSound.PlayOneShot(timeWarps[randomIndex], menuSound.volume * playerAudio.randomVolume());
+
         //  Perform the transition
         cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, Cameras[currentCameraIndex], Cameras[CameraIndex], transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
 
