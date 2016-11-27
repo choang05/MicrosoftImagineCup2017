@@ -45,7 +45,7 @@ public class PlayerItem : MonoBehaviour
         charController.isControllable = false;
 
         //play audio for bucket pickup
-        if (heldItem.CompareTag("Bucket"))
+        if (heldItem.CompareTag("Bucket") || heldItem.CompareTag("Basket"))
         {
             bSound.playClothMovement();
         }
