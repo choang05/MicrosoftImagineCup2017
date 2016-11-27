@@ -4,7 +4,7 @@ using System.Collections;
 public class BucketSound : MonoBehaviour {
 
     public AudioClip scoop;
-    public AudioClip clothigMovement;
+    public AudioClip clothingMovement;
     public AudioClip pouring;
     private AudioSource bucketSound;
 
@@ -20,7 +20,7 @@ public class BucketSound : MonoBehaviour {
 
     public void playClothMovement()
     {
-        bucketSound.PlayOneShot(clothigMovement);
+        bucketSound.PlayOneShot(clothingMovement);
     }
 
     public void playPouringSound()

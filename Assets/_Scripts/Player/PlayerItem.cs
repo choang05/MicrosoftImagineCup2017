@@ -22,6 +22,8 @@ public class PlayerItem : MonoBehaviour
     // Audio
     GameObject bucket;
     BucketSound bSound;
+    GameObject bucketAudioSource;
+    AudioObjectDestroy dstroy;
 
     void Awake()
     {
@@ -30,6 +32,8 @@ public class PlayerItem : MonoBehaviour
         animator = GetComponent<Animator>();
         bucket = GameObject.Find("WaterBucket");
         bSound = bucket.GetComponent<BucketSound>();
+        bucketAudioSource = GameObject.Find("BucketAudioSource");
+        dstroy = bucketAudioSource.GetComponent<AudioObjectDestroy>();
     }
 
     void Update()
@@ -77,7 +81,11 @@ public class PlayerItem : MonoBehaviour
         if (obMat != null && obMat.Material == ObjectMaterial.MaterialType.water)
             bSound.playWaterScoop();
         else if (obMat != null && obMat.Material == ObjectMaterial.MaterialType.soil)
+        {
             bSound.playPouringSound();
+            dstroy.destroyAudioObject();
+        }
+        
 
         animator.SetTrigger(dropItemTriggerHash);
     }
