@@ -43,7 +43,7 @@ public class PlayerItem : MonoBehaviour
     public void PickUpAnimationStart()
     {
         charController.isControllable = false;
-
+       
         //play audio for bucket pickup
         if (heldItem.CompareTag("Bucket") || heldItem.CompareTag("Basket"))
         {
@@ -65,6 +65,19 @@ public class PlayerItem : MonoBehaviour
     public void DropItemAnimationStart()
     {
         charController.isControllable = false;
+
+        Ray ray = new Ray(Vector3.zero, Vector3.down);
+        RaycastHit hit;
+
+        ray.origin = transform.position;
+
+        Physics.Raycast(ray, out hit);
+        ObjectMaterial obMat = hit.collider.GetComponent<ObjectMaterial>();
+
+        if (obMat != null && obMat.Material == ObjectMaterial.MaterialType.water)
+            bSound.playWaterScoop();
+        else if (obMat != null && obMat.Material == ObjectMaterial.MaterialType.soil)
+            bSound.playPouringSound();
 
         animator.SetTrigger(dropItemTriggerHash);
     }
