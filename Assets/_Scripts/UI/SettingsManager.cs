@@ -170,7 +170,7 @@ public class SettingsManager : MonoBehaviour
     public void LoadSettings()
     {
         volumeChanger volChanger = FindObjectOfType<volumeChanger>();
-        ResolutionChanger resChanger = FindObjectOfType<ResolutionChanger>();
+        
         if (File.Exists(Application.persistentDataPath + "/settings.dat"))
         {
             BinaryFormatter bf = new BinaryFormatter();
@@ -195,6 +195,6 @@ public class SettingsManager : MonoBehaviour
         volChanger.SetMasterLvl(MasterVol);
         volChanger.SetSfxLvl(SfxVol);
         volChanger.SetMusicLvl(MusicVol);
-        resChanger.ChangeResolution();
+        Screen.SetResolution(ResolutionWidth, ResolutionHeight, !IsWindowed);
     }
 }

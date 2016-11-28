@@ -13,12 +13,13 @@ public class ResolutionChanger : MonoBehaviour
     void OnEnable()
     {
         bool isScreenSame = false;
-        for(int i = 0; i<Screen.resolutions.Length - 1; i++)
+        for(int i = 0; i<Screen.resolutions.Length; i++)
         {
             if (Screen.resolutions[i].width == settingsManager.ResolutionWidth && Screen.resolutions[i].height == settingsManager.ResolutionHeight)
             {
-                slider.value = i;
+                slider.value = i + 1;
                 isScreenSame = true;
+                break;
             }
         }
         if (!isScreenSame)
@@ -29,23 +30,18 @@ public class ResolutionChanger : MonoBehaviour
     void Awake()
     {
         settingsManager = FindObjectOfType<SettingsManager>();
+        slider.onValueChanged.AddListener((float f) => { settingsManager.ResolutionWidth = Screen.resolutions[(int)(slider.value) - 1].width; settingsManager.ResolutionHeight = Screen.resolutions[(int)(slider.value) - 1].height; });
         slider.maxValue = Screen.resolutions.Length;
+
     }
 
     public void UpdateResolutionText()
     {
-        resolutionText.text = Screen.resolutions[(int)(slider.value - 1)].ToString();
+        resolutionText.text = Screen.resolutions[(int)slider.value - 1].ToString();
     }
 
     public void ChangeResolution()
     {
-        settingsManager.IsWindowed = fullScreenToggle.isOn;
-        settingsManager.ResolutionWidth = Screen.resolutions[(int)(slider.value - 1)].width;
-        settingsManager.ResolutionHeight = Screen.resolutions[(int)(slider.value - 1)].height;
-
         Screen.SetResolution(settingsManager.ResolutionWidth, settingsManager.ResolutionHeight, !settingsManager.IsWindowed);
-
-        //  Save the new resolution in settings manager
-        settingsManager.SaveSettings(); 
     }
 }
