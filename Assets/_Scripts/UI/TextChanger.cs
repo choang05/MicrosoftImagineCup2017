@@ -7,7 +7,7 @@ public class TextChanger : MonoBehaviour
     public void ChangeSliderText(float sliderVal)
     {
         text = GetComponent<UnityEngine.UI.Text>();
-        text.text = ((int)(sliderVal*100)).ToString();
+        text.text = ((int)(sliderVal+80)).ToString();
     }
         
 }

@@ -12,73 +12,36 @@ public class ResolutionChanger : MonoBehaviour
 
     void OnEnable()
     {
-        if (settingsManager.ResolutionWidth == 800 && settingsManager.ResolutionHeight == 600)
+        bool isScreenSame = false;
+        for(int i = 0; i<Screen.resolutions.Length; i++)
+        {
+            if (Screen.resolutions[i].width == settingsManager.ResolutionWidth && Screen.resolutions[i].height == settingsManager.ResolutionHeight)
+            {
+                slider.value = i + 1;
+                isScreenSame = true;
+                break;
+            }
+        }
+        if (!isScreenSame)
             slider.value = 1;
-        else if (settingsManager.ResolutionWidth == 1024 && settingsManager.ResolutionHeight == 768)
-            slider.value = 2;
-        else if (settingsManager.ResolutionWidth == 1280 && settingsManager.ResolutionHeight == 768)
-            slider.value = 3;
-        else if (settingsManager.ResolutionWidth == 1366 && settingsManager.ResolutionHeight == 768)
-            slider.value = 4;
         fullScreenToggle.isOn = settingsManager.IsWindowed;
-
     }
 
     void Awake()
     {
         settingsManager = FindObjectOfType<SettingsManager>();
+        slider.onValueChanged.AddListener((float f) => { settingsManager.ResolutionWidth = Screen.resolutions[(int)(slider.value) - 1].width; settingsManager.ResolutionHeight = Screen.resolutions[(int)(slider.value) - 1].height; });
+        slider.maxValue = Screen.resolutions.Length;
+
     }
 
     public void UpdateResolutionText()
     {
-        switch((int)slider.value)
-        {
-            case 1:
-                resolutionText.text = "800 x 600";
-                break;
-            case 2:
-                resolutionText.text = "1024 x 768";
-                break;
-            case 3:
-                resolutionText.text = "1280 x 768";
-                break;
-            case 4:
-                resolutionText.text = "1366 x 768";
-                break;
-        }
+        resolutionText.text = Screen.resolutions[(int)slider.value - 1].ToString();
     }
 
     public void ChangeResolution()
     {
-        settingsManager.IsWindowed = fullScreenToggle.isOn;
-
-        switch ((int)slider.value)
-        {
-            
-            case 1:
-                Screen.SetResolution(800, 600, !settingsManager.IsWindowed);
-                settingsManager.ResolutionWidth = 800;
-                settingsManager.ResolutionHeight = 600;
-                break;
-            case 2:
-                Screen.SetResolution(1024, 768, !settingsManager.IsWindowed);
-                settingsManager.ResolutionWidth = 1024;
-                settingsManager.ResolutionHeight = 768;
-                break;
-            case 3:
-                Screen.SetResolution(1280, 768, !settingsManager.IsWindowed);
-                settingsManager.ResolutionWidth = 1280;
-                settingsManager.ResolutionHeight = 768;
-                break;
-            case 4:
-                Screen.SetResolution(1366, 768, !settingsManager.IsWindowed);
-                settingsManager.ResolutionWidth = 1366;
-                settingsManager.ResolutionHeight = 768;
-                break;
-        }
-        
-
-        //  Save the new resolution in settings
-        settingsManager.SaveSettings();
+        Screen.SetResolution(settingsManager.ResolutionWidth, settingsManager.ResolutionHeight, !settingsManager.IsWindowed);
     }
 }
