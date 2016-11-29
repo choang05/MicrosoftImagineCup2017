@@ -24,6 +24,8 @@ public class SettingsManager : MonoBehaviour
     private float masterVol;
     private float sfxVol;
     private float musicVol;
+    private float ambianceVol;
+    private float uiVol;
     //  References
     private static SettingsManager control;
 
@@ -120,6 +122,32 @@ public class SettingsManager : MonoBehaviour
             musicVol = value;
         }
     }
+
+    public float AmbianceVol
+    {
+        get
+        {
+            return ambianceVol;
+        }
+
+        set
+        {
+            ambianceVol = value;
+        }
+    }
+
+    public float UiVol
+    {
+        get
+        {
+            return uiVol;
+        }
+
+        set
+        {
+            uiVol = value;
+        }
+    }
     #endregion
 
     public void SaveSettings()
@@ -141,7 +169,8 @@ public class SettingsManager : MonoBehaviour
     }
     public void LoadSettings()
     {
-        volumeChanger changer = FindObjectOfType<volumeChanger>();
+        volumeChanger volChanger = FindObjectOfType<volumeChanger>();
+        
         if (File.Exists(Application.persistentDataPath + "/settings.dat"))
         {
             BinaryFormatter bf = new BinaryFormatter();
@@ -156,15 +185,16 @@ public class SettingsManager : MonoBehaviour
         }
         else // assign defaults
         {
-            ResolutionWidth = 800;
-            ResolutionHeight = 600;
+            ResolutionWidth = Screen.resolutions[0].width;
+            ResolutionHeight = Screen.resolutions[0].height;
             IsWindowed = false;
             MasterVol = 0.5F;
             SfxVol = 0.5F;
             MusicVol = 0.5F;
         }
-        changer.SetMasterLvl(MasterVol);
-        changer.SetSfxLvl(SfxVol);
-        changer.SetMusicLvl(MusicVol);
+        volChanger.SetMasterLvl(MasterVol);
+        volChanger.SetSfxLvl(SfxVol);
+        volChanger.SetMusicLvl(MusicVol);
+        Screen.SetResolution(ResolutionWidth, ResolutionHeight, !IsWindowed);
     }
 }
