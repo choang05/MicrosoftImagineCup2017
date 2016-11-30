@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0f511852bd5b07e4b8c32504358c1ab4
+timeCreated: 1480223404
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - scoop: {fileID: 8300000, guid: 94f3a88d760f2b5458db3ed9e6220da7, type: 3}
+  - clothigMovement: {fileID: 8300000, guid: 01f60bdd11c951d48bb5f5bd4c79be44, type: 3}
+  - pouring: {fileID: 8300000, guid: 5fe608086bb249e4d950ffdde5e3b568, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -6,7 +6,11 @@ public class EventWaterSoil : MonoBehaviour
     public GameObject PresentTree;
     public GameObject FutureTree;
 
+    //  Event variables
+    public bool isAcornPlanted = false;
+
     WaterBucket waterBucket;
+
 
     void OnTriggerStay(Collider other)
     {
@@ -16,7 +20,7 @@ public class EventWaterSoil : MonoBehaviour
             if (playerItem.hasItem)
             {
                 waterBucket = playerItem.heldItem.GetComponent<WaterBucket>();
-                if (waterBucket != null && waterBucket.hasWater)
+                if (waterBucket != null && waterBucket.hasWater && isAcornPlanted)
                 {
                     StartCoroutine(CoWaterSoil(playerItem));
                 }
