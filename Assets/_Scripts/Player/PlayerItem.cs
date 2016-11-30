@@ -20,16 +20,17 @@ public class PlayerItem : MonoBehaviour
     int dropItemTriggerHash = Animator.StringToHash("dropItemTrigger");
 
     // Audio
-    GameObject bucket;
-    BucketSound bSound;
+    public GameObject clothe;
+    public GameObject scoop;
+    public GameObject pour;
 
     void Awake()
     {
         charController = GetComponent<CharacterController2D>();
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
-        bucket = GameObject.Find("WaterBucket");
-        bSound = bucket.GetComponent<BucketSound>();
+        //bSound = bucket.GetComponent<BucketSound>();
+        //dstroy = bucket.GetComponent<AudioObjectDestroy>();
     }
 
     void Update()
@@ -47,7 +48,7 @@ public class PlayerItem : MonoBehaviour
         //play audio for bucket pickup
         if (heldItem.CompareTag("Bucket") || heldItem.CompareTag("Basket"))
         {
-            bSound.playClothMovement();
+            GameObject bucketSound = Instantiate(clothe) as GameObject;
         }
         animator.SetTrigger(pickUpTriggerHash);    
     }
@@ -75,9 +76,13 @@ public class PlayerItem : MonoBehaviour
         ObjectMaterial obMat = hit.collider.GetComponent<ObjectMaterial>();
 
         if (obMat != null && obMat.Material == ObjectMaterial.MaterialType.water)
-            bSound.playWaterScoop();
-        else if (obMat != null && obMat.Material == ObjectMaterial.MaterialType.soil)
-            bSound.playPouringSound();
+        {
+            GameObject waterscoop = Instantiate(scoop) as GameObject;
+        }   
+        else if (obMat != null && obMat.Material == ObjectMaterial.MaterialType.grass)
+        {
+            GameObject waterpour = Instantiate(pour) as GameObject;
+        }
 
         animator.SetTrigger(dropItemTriggerHash);
     }

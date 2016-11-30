@@ -121,7 +121,7 @@ public class GameManager : MonoBehaviour
         }
 
 
-        //  Instaniate the player at the checkpoint location
+        //  Instantiate the player at the checkpoint location
         GameObject player = Instantiate(playerPrefab, currentCheckpointPosition, Quaternion.identity) as GameObject;
 
         //  Set up camera
