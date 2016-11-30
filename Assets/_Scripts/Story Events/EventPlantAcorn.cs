@@ -27,6 +27,8 @@ public class EventPlantAcorn : MonoBehaviour
 
         yield return new WaitForSeconds(2);
 
+        FindObjectOfType<EventWaterSoil>().isAcornPlanted = true;
+
         acorn.DestroyCollisions();
 
         Destroy(this);

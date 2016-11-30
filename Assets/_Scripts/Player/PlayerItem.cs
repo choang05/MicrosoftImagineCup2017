@@ -20,17 +20,16 @@ public class PlayerItem : MonoBehaviour
     int dropItemTriggerHash = Animator.StringToHash("dropItemTrigger");
 
     // Audio
-    public GameObject clothe;
-    public GameObject scoop;
-    public GameObject pour;
+    GameObject bucket;
+    BucketSound bSound;
 
     void Awake()
     {
         charController = GetComponent<CharacterController2D>();
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
-        //bSound = bucket.GetComponent<BucketSound>();
-        //dstroy = bucket.GetComponent<AudioObjectDestroy>();
+        bucket = GameObject.Find("WaterBucket");
+        bSound = bucket.GetComponent<BucketSound>();
     }
 
     void Update()
@@ -44,11 +43,12 @@ public class PlayerItem : MonoBehaviour
     public void PickUpAnimationStart()
     {
         charController.isControllable = false;
+        charController.velocity = Vector3.zero;
        
         //play audio for bucket pickup
         if (heldItem.CompareTag("Bucket") || heldItem.CompareTag("Basket"))
         {
-            GameObject bucketSound = Instantiate(clothe) as GameObject;
+            bSound.playClothMovement();
         }
         animator.SetTrigger(pickUpTriggerHash);    
     }
@@ -66,6 +66,7 @@ public class PlayerItem : MonoBehaviour
     public void DropItemAnimationStart()
     {
         charController.isControllable = false;
+        charController.velocity = Vector3.zero;
 
         Ray ray = new Ray(Vector3.zero, Vector3.down);
         RaycastHit hit;
@@ -76,13 +77,9 @@ public class PlayerItem : MonoBehaviour
         ObjectMaterial obMat = hit.collider.GetComponent<ObjectMaterial>();
 
         if (obMat != null && obMat.Material == ObjectMaterial.MaterialType.water)
-        {
-            GameObject waterscoop = Instantiate(scoop) as GameObject;
-        }   
-        else if (obMat != null && obMat.Material == ObjectMaterial.MaterialType.grass)
-        {
-            GameObject waterpour = Instantiate(pour) as GameObject;
-        }
+            bSound.playWaterScoop();
+        else if (obMat != null && obMat.Material == ObjectMaterial.MaterialType.soil)
+            bSound.playPouringSound();
 
         animator.SetTrigger(dropItemTriggerHash);
     }
