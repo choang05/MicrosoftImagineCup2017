@@ -22,6 +22,8 @@ public class StartButton : MonoBehaviour
 
     IEnumerator CoTransitionToMasterScene(int sceneIndex)
     {
+        Time.timeScale = 1;
+        
         //  Perform the exit transition
         ProCamera2D.Instance.GetComponent<ProCamera2DTransitionsFX>().TransitionExit();
 
