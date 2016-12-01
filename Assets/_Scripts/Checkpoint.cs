@@ -5,9 +5,8 @@ public class Checkpoint : MonoBehaviour
 {
     public GameObject LevelSegmentsGO;
     public int checkpointID;
-    public delegate void CheckpointHandler();
-    public static event CheckpointHandler OnCheckpointReached;
-    
+    public delegate void CheckpointEvent(int checkpointID);
+    public static event CheckpointEvent OnCheckpoint;
     //  References
     private GameManager gameManager;
 
@@ -22,27 +21,27 @@ public class Checkpoint : MonoBehaviour
     {
         if (other.CompareTag(Tags.Player))
         {
-            if (gameManager.CurrentCheckpointID != checkpointID)
-            {
-                //  Set new checkpoint to gamemanager
-                gameManager.CurrentCheckpointID = checkpointID;
+            //  Set new checkpoint to gamemanager
+            gameManager.CurrentCheckpointID = checkpointID;
 
-                //  Disable the level before the previous level
-                if (checkpointID - 2 >= 0)
-                    gameManager.UnloadLevelSegment(checkpointID - 2);
+            //  Disable the level before the previous level
+            if (checkpointID - 2 >= 0)
+                gameManager.UnloadLevelSegment(checkpointID - 2);
 
-                //  Enable the next level if it exist
-                if (checkpointID + 1 <= gameManager.Checkpoints.Length)
-                    gameManager.LoadLevelSegment(checkpointID + 1);
+            //  Enable the next level if it exist
+            if (checkpointID + 1 <= gameManager.Checkpoints.Length)
+                gameManager.LoadLevelSegment(checkpointID + 1);
 
-                if (OnCheckpointReached != null)
-                    OnCheckpointReached();
+            if (OnCheckpoint != null)
+                OnCheckpoint(checkpointID);
 
-                //  Save data
-                gameManager.SavePlayerData();
+            //  Save data
+            gameManager.SavePlayerData();
 
-                if(Application.isEditor) Debug.Log("Game saved at checkpoint: " + gameManager.CurrentCheckpointID); 
-            }
+            if (Application.isEditor) Debug.Log("Game saved at checkpoint: " + gameManager.CurrentCheckpointID);
+
+            //  Destroy the checkpoint, as we only need to save once.
+            Destroy(gameObject);
         }
     }
 }

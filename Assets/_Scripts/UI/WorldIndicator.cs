@@ -2,79 +2,118 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WorldIndicator : MonoBehaviour {
+public class WorldIndicator : MonoBehaviour
+{
+    public enum IndicatorType { Past, Present, Future };
+    public IndicatorType indicatorType;
 
-    public enum World { Past, Present, Future };
-    public World world;
-    public RectTransform rTransform;
-    public GameManager gameManager;
-    public void Awake()
+    private RectTransform rTransform;
+    private GameManager gameManager;
+
+    void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
         rTransform = GetComponent<RectTransform>();
         rTransform.localScale = new Vector3(0, 0, 0);
     }
 
+    void Start()
+    {
+        UpdateIndicatorScale(WorldChanger.WorldState.Present);
+    }
+
     public void OnEnable()
     {
-        Checkpoint.OnCheckpointReached += ShowHideIndicators;
-        PauseMenu.OnPauseMenuActivated += HideAllIndicators;
-        PauseMenu.OnPauseMenuDeactivated += ShowHideIndicators;
+        Wisp.OnWispAdd += ActivateIndicator;
+        PauseMenu.OnPauseMenuActivated += HideIndicator;
+        PauseMenu.OnPauseMenuDeactivated += ShowIndicator;
+        WorldChanger.OnWorldChangeComplete += UpdateIndicatorScale;
     }
     public void OnDisable()
     {
-        Checkpoint.OnCheckpointReached -= ShowHideIndicators;
-        PauseMenu.OnPauseMenuActivated -= HideAllIndicators;
-        PauseMenu.OnPauseMenuDeactivated -= ShowHideIndicators;
+        Wisp.OnWispAdd -= ActivateIndicator;
+        PauseMenu.OnPauseMenuActivated -= HideIndicator;
+        PauseMenu.OnPauseMenuDeactivated -= ShowIndicator;
+        WorldChanger.OnWorldChangeComplete -= UpdateIndicatorScale;
     }
-    public IEnumerator GrowIndicator(float growSize)
+
+    public IEnumerator GrowIndicator(float growSize, float speed)
     {
-        for(float f = 0.0f; f <= growSize; f+=0.2f)
+        for (float f = rTransform.localScale.x; f <= growSize; f += speed)
         {
             rTransform.localScale = new Vector3(f, f, 1);
             yield return null;
         }
     }
-    public IEnumerator ShrinkIndicator(float shrinkSize)
+    public IEnumerator ShrinkIndicator(float shrinkSize, float speed)
     {
-        for (float f = rTransform.localScale.x; f >= shrinkSize; f -= 0.2f)
+        for (float f = rTransform.localScale.x; f >= shrinkSize; f -= speed)
         {
             rTransform.localScale = new Vector3(f, f, 1);
             yield return null;
         }
     }
-    public void HideAllIndicators()
+    public void HideIndicator()
     {
-        StartCoroutine(ShrinkIndicator(0.0f));
+        StartCoroutine(ShrinkIndicator(0.0f, 0.2f));
     }
-    public void ShowHideIndicators()
+
+    public void ShowIndicator()
     {
         if (rTransform.localScale.Equals(new Vector3(0.0f, 0.0f, 0.0f)))
         {
-            if(world == World.Present)
+            if (indicatorType == IndicatorType.Present && gameManager.hasPresentWisp)
             {
-                // Chad - code to grow present indicator size gradually using animation goes here. Scale the size of this gameobject to 1.5
-                StartCoroutine(GrowIndicator(1.5f));
+                StartCoroutine(GrowIndicator(1.0f, 0.2f));
             }
-            if(gameManager.CurrentCheckpointID >= 55 && gameManager.CurrentCheckpointID < 100)
+            else if (indicatorType == IndicatorType.Future && gameManager.hasFutureWisp)
             {
-                if(world == World.Future)
-                {
-                    // Chad - code to grow future indicator size gradually using animation goes here. Scale the size of this gameobject to 1.0
-                    StartCoroutine(GrowIndicator(1.0f));
-                }
+                StartCoroutine(GrowIndicator(1.0f, 0.2f));
             }
-            else if(gameManager.CurrentCheckpointID >= 100)
+            else if (indicatorType == IndicatorType.Past && gameManager.hasPastWisp)
             {
-                if(world == World.Past || world == World.Future)
-                {
-                    // Chad - code to grow past/future indicator size gradually using animation goes here. Scale the size of this gameobject to 1.0
-                    StartCoroutine(GrowIndicator(1.0f));
-                }
+                StartCoroutine(GrowIndicator(1.0f, 0.2f));
             }
         }
-        
-
     }
-	
+
+    //  Enlarge the indicator relative to the world state when world change completes
+    private void UpdateIndicatorScale(WorldChanger.WorldState worldState)
+    {
+        float growSize = 1.5f;
+
+        // Shrink this indicators scale to normal size
+        StartCoroutine(ShrinkIndicator(1.0f, 0.2f));
+
+        //  Enlarge the new world indicator
+        if (indicatorType == IndicatorType.Present && gameManager.hasPresentWisp && worldState == WorldChanger.WorldState.Present)
+        {
+            StartCoroutine(GrowIndicator(growSize, 0.2f));
+        }
+        else if (indicatorType == IndicatorType.Future && gameManager.hasFutureWisp && worldState == WorldChanger.WorldState.Future)
+        {
+            StartCoroutine(GrowIndicator(growSize, 0.2f));
+        }
+        else if (indicatorType == IndicatorType.Past && gameManager.hasPastWisp && worldState == WorldChanger.WorldState.Past)
+        {
+            StartCoroutine(GrowIndicator(growSize, 0.2f));
+        }
+    }
+
+    //  Activate the indicator when a wisp has been added
+    private void ActivateIndicator(Wisp.WispType wispType)
+    {
+        if (wispType == Wisp.WispType.Present && indicatorType == IndicatorType.Present)
+        {
+            StartCoroutine(GrowIndicator(1.0f, 0.2f));
+        }
+        else if (wispType == Wisp.WispType.Past && indicatorType == IndicatorType.Past)
+        {
+            StartCoroutine(GrowIndicator(1.0f, 0.2f));
+        }
+        else if (wispType == Wisp.WispType.Future && indicatorType == IndicatorType.Future)
+        {
+            StartCoroutine(GrowIndicator(1.0f, 0.2f));
+        }
+    }
 }

@@ -10,7 +10,7 @@ using Com.LuisPedroFonseca.ProCamera2D;
 [Serializable]
 class PlayerData
 {
-    public int lastCheckpointID;  
+    public int lastCheckpointID;
 }
 
 public class GameManager : MonoBehaviour
@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
     //  User Parameters variables
     public GameObject playerPrefab;
     public int CurrentCheckpointID;
+    public bool hasPresentWisp = false;
+    public bool hasPastWisp = false;
+    public bool hasFutureWisp = false;
 
     //  Private
     [HideInInspector] public Checkpoint[] Checkpoints;
@@ -191,6 +194,7 @@ public class GameManager : MonoBehaviour
             PlayerData data = (PlayerData)bf.Deserialize(file);
 
             CurrentCheckpointID = data.lastCheckpointID;
+            Debug.Log(data.lastCheckpointID);
         }
         else
         {
