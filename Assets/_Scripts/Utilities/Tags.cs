@@ -16,4 +16,6 @@
     public const string bone_Cape_CTRL = "bone_Cape_CTRL";
     public const string bone_Cape = "bone_Cape";
     public const string R_Hand_CTRL = "R_Hand_CTRL";
+    public const string Bucket = "Bucket";
+    public const string Basket = "Basket";
 }
