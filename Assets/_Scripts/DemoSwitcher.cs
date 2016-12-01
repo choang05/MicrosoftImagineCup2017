@@ -29,6 +29,8 @@ public class DemoSwitcher : MonoBehaviour
     {
         gameManager.CurrentCheckpointID = checkpointID;
 
+        gameManager.CleanVariablesBeforeLoad();
+
         StartCoroutine(CoReloadScene());
     }
 

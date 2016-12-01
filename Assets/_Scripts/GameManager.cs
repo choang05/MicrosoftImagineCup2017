@@ -85,7 +85,16 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(worldChanger.MainCamera.GetComponent<ProCamera2DTransitionsFX>().DurationExit);
 
+        CleanVariablesBeforeLoad();
+
         SceneManager.LoadScene(1, LoadSceneMode.Single);
+    }
+
+    public void CleanVariablesBeforeLoad()
+    {
+        hasFutureWisp = false;
+        hasPastWisp = false;
+        hasPresentWisp = false;
     }
 
     //  Sets up the scene on master scene loaded
