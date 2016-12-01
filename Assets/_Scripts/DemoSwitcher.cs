@@ -28,11 +28,8 @@ public class DemoSwitcher : MonoBehaviour
     public void ChangeScene(int checkpointID)
     {
         gameManager.CurrentCheckpointID = checkpointID;
-        gameManager.SavePlayerData();
 
         StartCoroutine(CoReloadScene());
-
-        //SceneManager.LoadScene(sceneName);
     }
 
     IEnumerator CoReloadScene()

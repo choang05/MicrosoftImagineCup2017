@@ -11,11 +11,14 @@ public class PauseMenu : MonoBehaviour
     public GameObject PauseMainMenu;
     public AudioMixerSnapshot paused;
     public AudioMixerSnapshot unpaused;
+    public delegate void PauseMenuHandler();
+    public static event PauseMenuHandler OnPauseMenuActivated;
+    public static event PauseMenuHandler OnPauseMenuDeactivated;
 
     private bool isPaused;
 
     private SettingsManager settingsManger;
-
+    
     private LinkedList<GameObject> navigation;
 
     void Awake()
@@ -132,6 +135,9 @@ public class PauseMenu : MonoBehaviour
         PauseMainMenu.SetActive(true);
         IsPaused = true;
 
+        if (OnPauseMenuActivated != null)
+            OnPauseMenuActivated();
+        
         //  Freeze the time so nothing moves
         Time.timeScale = 0;
         Lowpass();
@@ -141,6 +147,9 @@ public class PauseMenu : MonoBehaviour
     {
         PauseMainMenu.SetActive(false);
         IsPaused = false;
+
+        if (OnPauseMenuDeactivated != null)
+            OnPauseMenuDeactivated();
 
         //  Revert game timescale back to normal
         Time.timeScale = 1;

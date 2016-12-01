@@ -1,10 +1,9 @@
 fileFormatVersion: 2
-guid: 44e4806d82072ef4c9865c5f56b7a696
-timeCreated: 1477816397
-licenseType: Free
+guid: d29c3055cd5591a40a316a83128634e1
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - mySkin: {fileID: 11400000, guid: 7953503d9e83f8d469b84619849edd4e, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
