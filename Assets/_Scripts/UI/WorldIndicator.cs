@@ -97,6 +97,7 @@ public class WorldIndicator : MonoBehaviour
             {
                 StartCoroutine(GrowIndicator(1.0f, 0.2f));
             }
+        UpdateIndicatorScale(worldChanger.currentWorldState);
     }
 
     //  Enlarge the indicator relative to the world state when world change completes
