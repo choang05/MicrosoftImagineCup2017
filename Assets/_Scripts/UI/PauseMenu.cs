@@ -15,7 +15,7 @@ public class PauseMenu : MonoBehaviour
     private bool isPaused;
 
     private SettingsManager settingsManger;
-
+    
     private LinkedList<GameObject> navigation;
 
     void Awake()
