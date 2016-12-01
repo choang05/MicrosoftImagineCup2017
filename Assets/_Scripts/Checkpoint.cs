@@ -5,6 +5,8 @@ public class Checkpoint : MonoBehaviour
 {
     public GameObject LevelSegmentsGO;
     public int checkpointID;
+    public delegate void CheckpointHandler();
+    public static event CheckpointHandler OnCheckpointReached;
     
     //  References
     private GameManager gameManager;
@@ -32,6 +34,9 @@ public class Checkpoint : MonoBehaviour
                 //  Enable the next level if it exist
                 if (checkpointID + 1 <= gameManager.Checkpoints.Length)
                     gameManager.LoadLevelSegment(checkpointID + 1);
+
+                if (OnCheckpointReached != null)
+                    OnCheckpointReached();
 
                 //  Save data
                 gameManager.SavePlayerData();
