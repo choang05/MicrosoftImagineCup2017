@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f7ecbf6be5a345a4dbda8fbdb0e29eb0
+guid: 5c366876ae2f6574f942cd03913ff2a8
 TrueTypeFontImporter:
   serializedVersion: 4
   fontSize: 16
@@ -7,11 +7,9 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: Kingthings Calligraphica Italic
-  fontNames:
-  - Kingthings Calligraphica Italic
-  fallbackFontReferences:
-  - {fileID: 12800000, guid: c70504cdd34de484bb5e178466197c3f, type: 3}
+  fontName: 
+  fontNames: []
+  fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

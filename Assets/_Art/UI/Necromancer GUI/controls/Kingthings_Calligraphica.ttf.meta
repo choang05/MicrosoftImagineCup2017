@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5c366876ae2f6574f942cd03913ff2a8
+guid: 04c713e6f5e196f418261c33bc320bc7
 TrueTypeFontImporter:
   serializedVersion: 4
   fontSize: 16
@@ -7,9 +7,11 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: 
-  fontNames: []
-  fallbackFontReferences: []
+  fontName: Kingthings Calligraphica
+  fontNames:
+  - Kingthings Calligraphica
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 5c366876ae2f6574f942cd03913ff2a8, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

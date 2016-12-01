@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class WorldIndicator : MonoBehaviour
 {
-    public enum IndicatorType { Past, Present, Future };
-    public IndicatorType indicatorType;
+    public WorldChanger.WorldState indicatorType;
 
     private RectTransform rTransform;
     private GameManager gameManager;
+    private UnityEngine.UI.Button button;
+    private WorldChanger worldChanger;
 
     void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
+        worldChanger = FindObjectOfType<WorldChanger>();
         rTransform = GetComponent<RectTransform>();
-        rTransform.localScale = new Vector3(0, 0, 0);
+        button = GetComponent<UnityEngine.UI.Button>();
+        rTransform.localScale = new Vector3(0, 0, 1);
     }
 
     void Start()
@@ -27,30 +30,50 @@ public class WorldIndicator : MonoBehaviour
         Wisp.OnWispAdd += ActivateIndicator;
         PauseMenu.OnPauseMenuActivated += HideIndicator;
         PauseMenu.OnPauseMenuDeactivated += ShowIndicator;
-        WorldChanger.OnWorldChangeComplete += UpdateIndicatorScale;
+        WorldChanger.OnWorldChangeStart += UpdateIndicatorScale;
     }
     public void OnDisable()
     {
         Wisp.OnWispAdd -= ActivateIndicator;
         PauseMenu.OnPauseMenuActivated -= HideIndicator;
         PauseMenu.OnPauseMenuDeactivated -= ShowIndicator;
-        WorldChanger.OnWorldChangeComplete -= UpdateIndicatorScale;
+        WorldChanger.OnWorldChangeStart -= UpdateIndicatorScale;
     }
 
     public IEnumerator GrowIndicator(float growSize, float speed)
     {
-        for(float f = rTransform.localScale.x; f <= growSize; f+= speed)
+        for (float f = rTransform.localScale.x; f <= growSize; f += speed)
+        {
+            rTransform.localScale = new Vector3(f, f, 1);
+            yield return null;
+        }
+    }
+    public IEnumerator ShrinkIndicator(float shrinkSize, float speed)
+    {
+        for (float f = rTransform.localScale.x; f >= shrinkSize; f -= speed)
         {
             rTransform.localScale = new Vector3(f, f, 1);
             yield return null;
         }
     }
 
-    public IEnumerator ShrinkIndicator(float shrinkSize, float speed)
+    public IEnumerator DisableIndicator()
     {
-        for (float f = rTransform.localScale.x; f >= shrinkSize; f -= speed)
+        for (float f = button.colors.disabledColor.r; f >= 0.39f; f -= 0.2f)
         {
-            rTransform.localScale = new Vector3(f, f, 1);
+            UnityEngine.UI.ColorBlock buttonColors = button.colors;
+            buttonColors.disabledColor = new Color(f, f, f, 1.0f);
+            button.colors = buttonColors;
+            yield return null;
+        }
+    }
+    public IEnumerator EnableIndicator()
+    {
+        for (float f = button.colors.disabledColor.r; f <= 1.0f; f += 0.2f)
+        {
+            UnityEngine.UI.ColorBlock buttonColors = button.colors;
+            buttonColors.disabledColor = new Color(f, f, f, 1.0f);
+            button.colors = buttonColors;
             yield return null;
         }
     }
@@ -62,60 +85,81 @@ public class WorldIndicator : MonoBehaviour
 
     public void ShowIndicator()
     {
-        if (rTransform.localScale.Equals(new Vector3(0.0f, 0.0f, 0.0f)))
-        {
-            if(indicatorType == IndicatorType.Present && gameManager.hasPresentWisp)
+            if (indicatorType == WorldChanger.WorldState.Present && gameManager.hasPresentWisp)
             {
                 StartCoroutine(GrowIndicator(1.0f, 0.2f));
             }
-            else if(indicatorType == IndicatorType.Future && gameManager.hasFutureWisp)
+            else if (indicatorType == WorldChanger.WorldState.Future && gameManager.hasFutureWisp)
             {
                 StartCoroutine(GrowIndicator(1.0f, 0.2f));
             }
-            else if(indicatorType == IndicatorType.Past && gameManager.hasPastWisp)
+            else if (indicatorType == WorldChanger.WorldState.Past && gameManager.hasPastWisp)
             {
                 StartCoroutine(GrowIndicator(1.0f, 0.2f));
             }
-        }
+        UpdateIndicatorScale(worldChanger.currentWorldState);
     }
 
     //  Enlarge the indicator relative to the world state when world change completes
     private void UpdateIndicatorScale(WorldChanger.WorldState worldState)
     {
         float growSize = 1.5f;
-
-        // Shrink this indicators scale to normal size
-        StartCoroutine(ShrinkIndicator(1.0f, 0.2f));
-
+        if (indicatorType == worldState)
+            StartCoroutine(GrowIndicator(growSize, 0.2f));
+        else StartCoroutine(ShrinkIndicator(1.0f, 0.2f)); // Shrink other indicators scale to normal size
+    /*
         //  Enlarge the new world indicator
-        if (indicatorType == IndicatorType.Present && gameManager.hasPresentWisp && worldState == WorldChanger.WorldState.Present)
+        if (indicatorType == worldState && gameManager.hasPresentWisp)
         {
             StartCoroutine(GrowIndicator(growSize, 0.2f));
         }
-        else if (indicatorType == IndicatorType.Future && gameManager.hasFutureWisp && worldState == WorldChanger.WorldState.Future)
+        else if (indicatorType == worldState && gameManager.hasFutureWisp)
         {
             StartCoroutine(GrowIndicator(growSize, 0.2f));
         }
-        else if (indicatorType == IndicatorType.Past && gameManager.hasPastWisp && worldState == WorldChanger.WorldState.Past)
+        else if (indicatorType == worldState && gameManager.hasPastWisp)
         {
             StartCoroutine(GrowIndicator(growSize, 0.2f));
         }
+    */
     }
-
     //  Activate the indicator when a wisp has been added
     private void ActivateIndicator(Wisp.WispType wispType)
     {
-        if (wispType == Wisp.WispType.Present && indicatorType == IndicatorType.Present)
+        if (wispType == Wisp.WispType.Present && indicatorType == WorldChanger.WorldState.Present)
         {
             StartCoroutine(GrowIndicator(1.0f, 0.2f));
         }
-        else if (wispType == Wisp.WispType.Past && indicatorType == IndicatorType.Past)
+        else if (wispType == Wisp.WispType.Past && indicatorType == WorldChanger.WorldState.Past)
         {
             StartCoroutine(GrowIndicator(1.0f, 0.2f));
         }
-        else if (wispType == Wisp.WispType.Future && indicatorType == IndicatorType.Future)
+        else if (wispType == Wisp.WispType.Future && indicatorType == WorldChanger.WorldState.Future)
         {
             StartCoroutine(GrowIndicator(1.0f, 0.2f));
         }
     }
+    void Update()
+    {
+        if(indicatorType == WorldChanger.WorldState.Past)
+        {
+            if (worldChanger.canSwitchPast)
+                StartCoroutine(EnableIndicator());
+            else StartCoroutine(DisableIndicator());
+        }
+        else if (indicatorType == WorldChanger.WorldState.Present)
+        {
+            if (worldChanger.canSwitchPresent)
+                StartCoroutine(EnableIndicator());
+            else StartCoroutine(DisableIndicator());
+        }
+        else if (indicatorType == WorldChanger.WorldState.Future)
+        {
+            if (worldChanger.canSwitchFuture)
+                StartCoroutine(EnableIndicator());
+            else StartCoroutine(DisableIndicator());
+        }
+    }
 }
+
+

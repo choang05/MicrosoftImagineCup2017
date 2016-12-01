@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3ce4961425d650e42a4222d73f437545
+guid: 4893fb85ba787284097e715256643ab5
 TrueTypeFontImporter:
   serializedVersion: 4
   fontSize: 16
@@ -7,9 +7,11 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: 
-  fontNames: []
-  fallbackFontReferences: []
+  fontName: Kingthings Calligraphica Light
+  fontNames:
+  - Kingthings Calligraphica Light
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 3ce4961425d650e42a4222d73f437545, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
