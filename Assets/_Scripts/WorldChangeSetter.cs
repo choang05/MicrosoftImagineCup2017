@@ -21,9 +21,9 @@ public class WorldChangeSetter : MonoBehaviour
         if (other.CompareTag(Tags.Player))
         {
             //  Set world changer availibilities
-            worldChanger.isPresentAvaliable = isPastAvaliable;
-            worldChanger.isPastAvaliable = isPastAvaliable;
-            worldChanger.isFutureAvaliable = isFutureAvaliable;
+            worldChanger.isPresentWorldAvaliable = isPastAvaliable;
+            worldChanger.isPastWorldAvaliable = isPastAvaliable;
+            worldChanger.isFutureWorldAvaliable = isFutureAvaliable;
         }
     }
 }

@@ -12,9 +12,11 @@ public class PushPullObject : MonoBehaviour
     //  Private variables
     private LayerMask originalLayer;
     private Rigidbody rigidBody;
+    private BoxCollider boxColl;
     [HideInInspector] public bool isColliding;
     private CharacterController2D playerController;
-    WorldChanger worldChanger;
+    private WorldChanger worldChanger;
+    private WorldChanger.WorldState currentWorldState;
 
     void OnEnable()
     {
@@ -31,6 +33,7 @@ public class PushPullObject : MonoBehaviour
     void Awake()
     {
         rigidBody = GetComponent<Rigidbody>();
+        boxColl = GetComponent<BoxCollider>();
         worldChanger = FindObjectOfType<WorldChanger>();
     }
 
@@ -43,16 +46,25 @@ public class PushPullObject : MonoBehaviour
         
         //  Assign the original layer of this game object
         originalLayer = gameObject.layer;
-	}
+
+        //  Determine current worldstate
+        if (transform.position.y == 0)
+            currentWorldState = WorldChanger.WorldState.Present;
+        else if (transform.position.y == 25)
+            currentWorldState = WorldChanger.WorldState.Past;
+        else if (transform.position.y == 50)
+            currentWorldState = WorldChanger.WorldState.Future;
+    }
 
     public void OnPushPullStart()
     {
         if (interactType == InteractableType.Transferable)
         {
             Layers.ChangeLayers(gameObject, Layers.ViewAlways);
+            //StartCoroutine(CoCheckWorldCollisions());
         }
 
-        StartCoroutine(CoCheckForCollisions());
+        StartCoroutine(CoCheckCollisions());
     }
 
     public void OnPushPullEnd()
@@ -62,11 +74,11 @@ public class PushPullObject : MonoBehaviour
         StopAllCoroutines();
     }
 
-    IEnumerator CoCheckForCollisions()
+    #region CoCheckCollisions(): Determine if there is any collisions in front of the box
+    IEnumerator CoCheckCollisions()
     {
         float collisionDistance = .05f;
         RaycastHit hit;
-        BoxCollider boxColl = GetComponent<BoxCollider>();
         
         //  determine Player is facing direction
         Vector3 direction = (transform.position - playerController.transform.position).normalized;
@@ -92,14 +104,51 @@ public class PushPullObject : MonoBehaviour
 
             yield return null;
         }
-        //yield return null;
     }
+    #endregion
+
+    #region CoCheckWorldCollisions(): Determine if there is any collisions in other worlds of the box
+    IEnumerator CoCheckWorldCollisions()
+    {
+        //  Check for collisions while player is pushing/pulling
+        while (true)
+        {
+            switch (currentWorldState)
+            {
+                case WorldChanger.WorldState.Present:
+                    if (CheckWorldCollisions(WorldChanger.WorldState.Past))
+                        worldChanger.canSwitchPast = false;
+                    if (CheckWorldCollisions(WorldChanger.WorldState.Future))
+                        worldChanger.canSwitchFuture = false;
+                    break;
+                case WorldChanger.WorldState.Past:
+                    if (CheckWorldCollisions(WorldChanger.WorldState.Present))
+                        worldChanger.canSwitchPresent = false;
+                    if (CheckWorldCollisions(WorldChanger.WorldState.Future))
+                        worldChanger.canSwitchFuture = false;
+                    break;
+                case WorldChanger.WorldState.Future:
+                    if (CheckWorldCollisions(WorldChanger.WorldState.Present))
+                        worldChanger.canSwitchPresent = false;
+                    if (CheckWorldCollisions(WorldChanger.WorldState.Past))
+                        worldChanger.canSwitchPast = false;
+                    break;
+            }
+            Debug.Log("Present: " + worldChanger.canSwitchPresent + " | Past: " + worldChanger.canSwitchPast + " | Future: " + worldChanger.canSwitchFuture);
+
+            yield return null;
+        }
+    }
+    #endregion
 
     private void EvaluateTransitionStart(WorldChanger.WorldState worldState)
     {
         //  If the interaction type of this object is non transferable then cancel the pushpull operation of the player
         if (interactType == InteractableType.NonTransferable && playerController.pushpullObject == this)
             playerController.CancelPushingPulling();
+
+        if (interactType == InteractableType.Transferable)
+            currentWorldState = worldState;
 
         //  If the object interation type is Always Transferable, evaluate
         if (interactType == InteractableType.AlwaysTransferable && CheckWorldCollisions(worldState))
@@ -115,12 +164,15 @@ public class PushPullObject : MonoBehaviour
                 {
                     case WorldChanger.WorldState.Present:
                         transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+                        currentWorldState = WorldChanger.WorldState.Present;
                         break;
                     case WorldChanger.WorldState.Past:
                         transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+                        currentWorldState = WorldChanger.WorldState.Past;
                         break;
                     case WorldChanger.WorldState.Future:
                         transform.position = new Vector3(transform.position.x, transform.position.y, 50);
+                        currentWorldState = WorldChanger.WorldState.Future;
                         break;
                 }
             }
@@ -142,39 +194,37 @@ public class PushPullObject : MonoBehaviour
     #region CheckWorldCollisions(): Determine which world object can be teleported too if there is non-collidable space
     private bool CheckWorldCollisions(WorldChanger.WorldState worldState)
     {
-        Vector2 objectPos = new Vector2(transform.position.x, transform.position.y);
-        RaycastHit hit;
-        Vector3 rayDir;
-
+        Vector2 colliderExtents = boxColl.size * 3.9f;
+        
         //  Evaluate the world state that player is transferring to.
         switch (worldState)
         {
             //  cast present ray & evaluate
             case WorldChanger.WorldState.Present:
-                rayDir = new Vector3(objectPos.x, objectPos.y, -5);
-                if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
+                if (currentWorldState != WorldChanger.WorldState.Present && Physics.CheckBox(new Vector3(transform.position.x, transform.position.y, 0), colliderExtents, transform.rotation, Layers.Players))
                 {
+                    //Debug.Log("Colliding present...");
                     return false;
                 }
                 break;
             //  cast past ray & evaluate
             case WorldChanger.WorldState.Past:
-                rayDir = new Vector3(objectPos.x, objectPos.y, 20);
-                if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
+                if (currentWorldState != WorldChanger.WorldState.Past && Physics.CheckBox(new Vector3(transform.position.x, transform.position.y, 25), colliderExtents, transform.rotation, Layers.Players))
                 {
+                    //Debug.Log("Colliding past...");
                     return false;
                 }
                 break;
             //  cast future ray & evaluate
             case WorldChanger.WorldState.Future:
-                rayDir = new Vector3(objectPos.x, objectPos.y, 45);
-                if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
+                if (currentWorldState != WorldChanger.WorldState.Future && Physics.CheckBox(new Vector3(transform.position.x, transform.position.y, 50), colliderExtents, transform.rotation, Layers.Players))
                 {
+                    //Debug.Log("Colliding future...");
                     return false;
                 }
                 break;
         }
-
+        //Debug.Log("No Collide...");
         return true;
     }
     #endregion

@@ -16,9 +16,9 @@ public class WorldChanger : MonoBehaviour
     public enum WorldState { Present, Past, Future };
 
     [Space(10)]
-    public bool isPresentAvaliable;
-    public bool isPastAvaliable;
-    public bool isFutureAvaliable;
+    public bool isPresentWorldAvaliable;
+    public bool isPastWorldAvaliable;
+    public bool isFutureWorldAvaliable;
     [HideInInspector] public bool canSwitchPresent = true;
     [HideInInspector] public bool canSwitchPast = true;
     [HideInInspector] public bool canSwitchFuture = true;
@@ -27,7 +27,7 @@ public class WorldChanger : MonoBehaviour
     private LayerMask originalLayer;
 
     public CameraTransition cameraTransition;
-    [HideInInspector] public CharacterController2D charController;
+    [HideInInspector] public CharacterController2D charController2D;
     private bool isCurrentlyTransitioning = false;
     
     //  Events
@@ -52,7 +52,7 @@ public class WorldChanger : MonoBehaviour
 	void Update ()
     {
         //  If character hasn't been spawned yet, do nothing
-        if (charController == null)
+        if (charController2D == null)
             return;
         
         //  Determine which world player can be teleported too if there is open space
@@ -62,13 +62,13 @@ public class WorldChanger : MonoBehaviour
         switch (currentWorldState)
         {
             case WorldState.Present:
-                charController.transform.position = new Vector3(charController.transform.position.x, charController.transform.position.y, 0);
+                charController2D.transform.position = new Vector3(charController2D.transform.position.x, charController2D.transform.position.y, 0);
                 break;
             case WorldState.Past:
-                charController.transform.position = new Vector3(charController.transform.position.x, charController.transform.position.y, 25);
+                charController2D.transform.position = new Vector3(charController2D.transform.position.x, charController2D.transform.position.y, 25);
                 break;
             case WorldState.Future:
-                charController.transform.position = new Vector3(charController.transform.position.x, charController.transform.position.y, 50);
+                charController2D.transform.position = new Vector3(charController2D.transform.position.x, charController2D.transform.position.y, 50);
                 break;
         }
 
@@ -76,15 +76,29 @@ public class WorldChanger : MonoBehaviour
         if (!isCurrentlyTransitioning)
         {
             //  If the player is in any of these states, do not allow switching
-            if (charController.currentState == CharacterController2D.PlayerState.ClimbingLadder
-                || charController.currentState == CharacterController2D.PlayerState.ClimbingRope
-                || charController.currentState == CharacterController2D.PlayerState.ClimbingLedge)
+            if (charController2D.currentState == CharacterController2D.PlayerState.ClimbingLadder
+                || charController2D.currentState == CharacterController2D.PlayerState.ClimbingRope
+                || charController2D.currentState == CharacterController2D.PlayerState.ClimbingLedge)
             {
-                return;
+                if (currentWorldState == WorldState.Present)
+                {
+                    canSwitchPast = false;
+                    canSwitchFuture = false;
+                }
+                else if (currentWorldState == WorldState.Past)
+                {
+                    canSwitchPresent = false;
+                    canSwitchFuture = false;
+                }
+                else if (currentWorldState == WorldState.Future)
+                {
+                    canSwitchPresent = false;
+                    canSwitchPast = false;
+                }
             }
 
             //  Evaluate input from player. 1-3 selects which world to transition to
-            if (Input.GetKeyUp(KeyCode.Alpha2) && currentWorldState != WorldState.Present && isPresentAvaliable && canSwitchPresent)
+            if (Input.GetKeyUp(KeyCode.Alpha2) && currentWorldState != WorldState.Present && isPresentWorldAvaliable && canSwitchPresent)
             {
                 //  Broadcast event delegate
                 if (OnWorldChangeStart != null)
@@ -92,7 +106,7 @@ public class WorldChanger : MonoBehaviour
 
                 SwitchWorld(1); //  Present
             }
-            else if (Input.GetKeyUp(KeyCode.Alpha1) && currentWorldState != WorldState.Past && isPastAvaliable && canSwitchPast)
+            else if (Input.GetKeyUp(KeyCode.Alpha1) && currentWorldState != WorldState.Past && isPastWorldAvaliable && canSwitchPast)
             {
                 //  Broadcast event delegate
                 if (OnWorldChangeStart != null)
@@ -100,7 +114,7 @@ public class WorldChanger : MonoBehaviour
 
                 SwitchWorld(2); //  Past
             }
-            else if (Input.GetKeyUp(KeyCode.Alpha3) && currentWorldState != WorldState.Future && isFutureAvaliable && canSwitchFuture) 
+            else if (Input.GetKeyUp(KeyCode.Alpha3) && currentWorldState != WorldState.Future && isFutureWorldAvaliable && canSwitchFuture) 
             {
                 //  Broadcast event delegate
                 if (OnWorldChangeStart != null)
@@ -132,10 +146,10 @@ public class WorldChanger : MonoBehaviour
         isCurrentlyTransitioning = true;
 
         //  Update the layer
-        Layers.ChangeLayers(charController.gameObject, Layers.ViewAlways);
+        Layers.ChangeLayers(charController2D.gameObject, Layers.ViewAlways);
 
         //  Cache the player's position in normalized screen space coordinates.
-        Vector2 transitionCenter = currentCamera.WorldToViewportPoint(charController.transform.position);
+        Vector2 transitionCenter = currentCamera.WorldToViewportPoint(charController2D.transform.position);
 
         //  Determine which world ID to switch to and check if world is already active.
         if (worldID == 1)
@@ -197,56 +211,57 @@ public class WorldChanger : MonoBehaviour
     #region CheckWorldCollisions(): Determine which world player can be teleported too if there is open space
     private void CheckWorldCollisions()
     {
-        Vector2 playerPos = new Vector2(charController.transform.position.x, charController.transform.position.y);
-        RaycastHit hit;
-        Vector3 rayDir;
+        //float distanceFromCenter = charController2D.charController.height / 2 - charController2D.charController.radius;
+        float distanceFromCenter = charController2D.charController.height / 10.5f;
+
+        Vector3 topCenterOfCapsule = charController2D.transform.position + charController2D.charController.center + Vector3.up * distanceFromCenter;
+        Vector3 bottomCenterOfCapsule = charController2D.transform.position + charController2D.charController.center - Vector3.up * distanceFromCenter;
+
+        float castRadius = charController2D.charController.radius * 0.95f;
 
         //  If player is not in the Present, check collisions for the Present
         if (currentWorldState != WorldState.Present)
         {
-            //  cast present ray & evaluate
-            rayDir = new Vector3(playerPos.x, playerPos.y, -5);
-            if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
+            //  cast present capsule collider & evaluate
+            topCenterOfCapsule = new Vector3(topCenterOfCapsule.x, topCenterOfCapsule.y, 0);
+            bottomCenterOfCapsule = new Vector3(bottomCenterOfCapsule.x, bottomCenterOfCapsule.y, 0);
+            if (Physics.CheckCapsule(topCenterOfCapsule, bottomCenterOfCapsule, castRadius))
             {
                 canSwitchPresent = false;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.01f);
             }
             else
             {
                 canSwitchPresent = true;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.01f);
             }
         }
         //  If player is not in the past, check collisions for the past
         if (currentWorldState != WorldState.Past)
         {
-            //  cast past ray & evaluate
-            rayDir = new Vector3(playerPos.x, playerPos.y, 20);
-            if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
+            //  cast past capsule collider & evaluate
+            topCenterOfCapsule = new Vector3(topCenterOfCapsule.x, topCenterOfCapsule.y, 25);
+            bottomCenterOfCapsule = new Vector3(bottomCenterOfCapsule.x, bottomCenterOfCapsule.y, 25);
+            if (Physics.CheckCapsule(topCenterOfCapsule, bottomCenterOfCapsule, castRadius))
             {
                 canSwitchPast = false;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.01f);
             }
             else
             {
                 canSwitchPast = true;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.01f);
             }
         }
         //  If player is not in the Future, check collisions for the Future
         if (currentWorldState != WorldState.Future)
         {
-            //  cast future ray & evaluate
-            rayDir = new Vector3(playerPos.x, playerPos.y, 45);
-            if (Physics.Raycast(rayDir, Vector3.forward * 10, out hit, 15))
+            //  cast future capsule collider & evaluate
+            topCenterOfCapsule = new Vector3(topCenterOfCapsule.x, topCenterOfCapsule.y, 50);
+            bottomCenterOfCapsule = new Vector3(bottomCenterOfCapsule.x, bottomCenterOfCapsule.y, 50);
+            if (Physics.CheckCapsule(topCenterOfCapsule, bottomCenterOfCapsule, castRadius))
             {
                 canSwitchFuture = false;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.red, 0.01f);
             }
             else
             {
                 canSwitchFuture = true;
-                if (Application.isEditor) Debug.DrawRay(rayDir, Vector3.forward * 10, Color.green, 0.01f);
             }
         }
     }
@@ -260,6 +275,6 @@ public class WorldChanger : MonoBehaviour
         isCurrentlyTransitioning = false;
 
         //  Update the layer
-        Layers.ChangeLayers(charController.gameObject, originalLayer);
+        Layers.ChangeLayers(charController2D.gameObject, originalLayer);
     }
 }

@@ -44,7 +44,7 @@ public class CharacterController2D : MonoBehaviour
     private bool canSwingLeft;
 
     //  References variables
-    private CharacterController charController;
+    [HideInInspector] public CharacterController charController;
     private Puppet2D_GlobalControl puppet2DGlobalControl;
 
     //  Animation variables
@@ -91,7 +91,7 @@ public class CharacterController2D : MonoBehaviour
 	}
 
     #region Update(): check and evaluate input and states every frame
-    void Update ()
+    void Update()
     {
         if (!isEnabled)
             return;
@@ -99,10 +99,12 @@ public class CharacterController2D : MonoBehaviour
         //  Check and update the facing direction of the player
         if (currentState == PlayerState.None)
             UpdateFacingDirection();
-        
+
         //  Apply gravity
         if (useGravity && currentState == PlayerState.None)
             ApplyGravity();
+        else
+            velocity.y = 0;
 
         //  Align character to ground
         if (currentState == PlayerState.None)
@@ -119,7 +121,7 @@ public class CharacterController2D : MonoBehaviour
 
         //  Climbing Ladders
         if (isControllable && currentState == PlayerState.ClimbingLadder)
-            ClimbLadder();
+            ClimbLadder();            
 
         //  Climbing Ropes
         if (isControllable && currentState == PlayerState.ClimbingRope)
@@ -150,8 +152,7 @@ public class CharacterController2D : MonoBehaviour
             if (currentState == PlayerState.ClimbingLadder || currentState == PlayerState.ClimbingRope)
                 CancelClimbing();
 
-            //  Animation
-            animator.SetTrigger(jumpTriggerHash);
+            Jump();
         }
 
         //  Move
@@ -241,7 +242,7 @@ public class CharacterController2D : MonoBehaviour
         velocity.y = verticalJumpForce;
 
         //  Animation
-        //animator.SetTrigger(jumpTriggerHash);
+        animator.SetTrigger(jumpTriggerHash);
 
         //  Events
         if (OnJumpLaunch != null)

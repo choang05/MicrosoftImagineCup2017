@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour
 
         //  Set up world changer
         WorldChanger worldChanger = FindObjectOfType<WorldChanger>();
-        worldChanger.charController = player.GetComponent<CharacterController2D>();
+        worldChanger.charController2D = player.GetComponent<CharacterController2D>();
         worldChanger.TransitionCameraEnter();
 
         //  Set up the parallax
