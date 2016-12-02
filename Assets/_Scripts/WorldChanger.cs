@@ -84,7 +84,7 @@ public class WorldChanger : MonoBehaviour
             }
 
             //  Evaluate input from player. 1-3 selects which world to transition to
-            if (Input.GetKeyUp(KeyCode.Alpha1) && currentWorldState != WorldState.Present && isPresentAvaliable && canSwitchPresent)
+            if (Input.GetKeyUp(KeyCode.Alpha2) && currentWorldState != WorldState.Present && isPresentAvaliable && canSwitchPresent)
             {
                 //  Broadcast event delegate
                 if (OnWorldChangeStart != null)
@@ -92,7 +92,7 @@ public class WorldChanger : MonoBehaviour
 
                 SwitchWorld(1); //  Present
             }
-            else if (Input.GetKeyUp(KeyCode.Alpha2) && currentWorldState != WorldState.Past && isPastAvaliable && canSwitchPast)
+            else if (Input.GetKeyUp(KeyCode.Alpha1) && currentWorldState != WorldState.Past && isPastAvaliable && canSwitchPast)
             {
                 //  Broadcast event delegate
                 if (OnWorldChangeStart != null)
