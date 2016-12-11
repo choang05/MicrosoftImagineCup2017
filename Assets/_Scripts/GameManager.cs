@@ -99,6 +99,10 @@ public class GameManager : MonoBehaviour
         Checkpoints = FindObjectsOfType<Checkpoint>();
         SortCheckpointsByQuickSort(Checkpoints, 0, Checkpoints.Length-1);
 
+        //  Turn off all level segments as a clean slate
+        for (int i = 0; i < Checkpoints.Length; i++)
+            Checkpoints[i].LevelSegmentsGO.SetActive(false);
+
         //  Find the current areaID the player is in
         Vector3 currentCheckpointPosition = Vector3.zero;
         for (int i = 0; i < Checkpoints.Length; i++)
@@ -139,17 +143,9 @@ public class GameManager : MonoBehaviour
         worldChanger.TransitionCameraEnter();
 
         //  Set up the parallax
-        /*FreeParallax[] parallaxes = FindObjectsOfType<FreeParallax>();
-        for (int i = 0; i < parallaxes.Length; i++)
-        {
-            parallaxes[i].transform.position = new Vector3(player.transform.position.x, parallaxes[i].transform.position.y, parallaxes[i].transform.position.z);
-            //parallaxes[i].transform.GetChild(0).position = new Vector3(0, parallaxes[i].transform.GetChild(0).position.y, parallaxes[i].transform.GetChild(0).position.z);
-            //parallaxes[i].Elements[0].GameObjects[0].transform.position = new Vector3(0, parallaxes[i].Elements[0].GameObjects[0].transform.position.y, parallaxes[i].Elements[0].GameObjects[0].transform.position.z);
-            for (int j = 0; j < parallaxes[i].transform.childCount - 3; j++)
-            {
-                //parallaxes[i].transform.GetChild(j).position = new Vector3(0, parallaxes[i].transform.GetChild(j).position.y, parallaxes[i].transform.GetChild(j).position.z);
-            }
-        }*/
+        EZParallax[] EZparallaxes = FindObjectsOfType<EZParallax>();
+        for (int i = 0; i < EZparallaxes.Length; i++)
+            EZparallaxes[i].m_playerObj = player;
 
         //  Set up the cape helper
         CapePhysicsHelper capeHelper = FindObjectOfType<CapePhysicsHelper>();

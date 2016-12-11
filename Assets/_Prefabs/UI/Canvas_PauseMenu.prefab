@@ -941,7 +941,7 @@ GameObject:
   - component: {fileID: 114000011096519752}
   - component: {fileID: 114000012272835054}
   m_Layer: 5
-  m_Name: Panel_PauseMenu
+  m_Name: Panel_Main
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2051,7 +2051,7 @@ MonoBehaviour:
   m_MinValue: -80
   m_MaxValue: 20
   m_WholeNumbers: 1
-  m_Value: 1
+  m_Value: -21
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:

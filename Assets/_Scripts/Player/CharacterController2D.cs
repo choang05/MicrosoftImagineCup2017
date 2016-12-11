@@ -101,7 +101,7 @@ public class CharacterController2D : MonoBehaviour
             UpdateFacingDirection();
 
         //  Apply gravity
-        if (useGravity && currentState == PlayerState.None)
+        if (useGravity && currentState == PlayerState.None || currentState == PlayerState.PushingPulling)
             ApplyGravity();
         else
             velocity.y = 0;
@@ -394,7 +394,6 @@ public class CharacterController2D : MonoBehaviour
         }
         else
             CancelPushingPulling();
-
     }
     #endregion
 

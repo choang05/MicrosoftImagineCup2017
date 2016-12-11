@@ -268,3 +268,19 @@ MonoBehaviour:
     Type: 1
     SmallIcon: {fileID: 2800000, guid: 92b0bc9ddf47e7c439b816e4f3358617, type: 3}
     LargeIcon: {fileID: 2800000, guid: 3e9903716db29884db10c4761158194a, type: 3}
+  - Key: Assets/SpriteSharp
+    Type: 1
+    SmallIcon: {fileID: 2800000, guid: 92b0bc9ddf47e7c439b816e4f3358617, type: 3}
+    LargeIcon: {fileID: 2800000, guid: 3e9903716db29884db10c4761158194a, type: 3}
+  - Key: Assets/SpriteDeformerTool
+    Type: 1
+    SmallIcon: {fileID: 2800000, guid: 92b0bc9ddf47e7c439b816e4f3358617, type: 3}
+    LargeIcon: {fileID: 2800000, guid: 3e9903716db29884db10c4761158194a, type: 3}
+  - Key: Assets/PostProcessing
+    Type: 1
+    SmallIcon: {fileID: 2800000, guid: 92b0bc9ddf47e7c439b816e4f3358617, type: 3}
+    LargeIcon: {fileID: 2800000, guid: 3e9903716db29884db10c4761158194a, type: 3}
+  - Key: Assets/Heureka
+    Type: 1
+    SmallIcon: {fileID: 2800000, guid: 92b0bc9ddf47e7c439b816e4f3358617, type: 3}
+    LargeIcon: {fileID: 2800000, guid: 3e9903716db29884db10c4761158194a, type: 3}

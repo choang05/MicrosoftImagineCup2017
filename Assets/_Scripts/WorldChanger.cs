@@ -65,10 +65,10 @@ public class WorldChanger : MonoBehaviour
                 charController2D.transform.position = new Vector3(charController2D.transform.position.x, charController2D.transform.position.y, 0);
                 break;
             case WorldState.Past:
-                charController2D.transform.position = new Vector3(charController2D.transform.position.x, charController2D.transform.position.y, 25);
+                charController2D.transform.position = new Vector3(charController2D.transform.position.x, charController2D.transform.position.y, 50);
                 break;
             case WorldState.Future:
-                charController2D.transform.position = new Vector3(charController2D.transform.position.x, charController2D.transform.position.y, 50);
+                charController2D.transform.position = new Vector3(charController2D.transform.position.x, charController2D.transform.position.y, 100);
                 break;
         }
 
@@ -157,35 +157,34 @@ public class WorldChanger : MonoBehaviour
             //  Update world state
             currentWorldState = WorldState.Present;
 
+            //  Update the parallax cameras
+            UpdateParallaxes(currentWorldState);
+
             //  Perform transition
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PresentCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
-
-            //  Set new Z position for player
-            //charController.transform.position = new Vector3(charController.transform.position.x, transform.position.y, 0);
         }
         else if (worldID == 2)
         {
             //  Update world state
             currentWorldState = WorldState.Past;
-            
+
+            //  Update the parallax cameras
+            UpdateParallaxes(currentWorldState);
+
             //  Perform transition
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, PastCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
-
-            //  Set new Z position for player
-            //transform.position = new Vector3(transform.position.x, transform.position.y, 25);
         }
         else if (worldID == 3)
         {
             //  Update world state
             currentWorldState = WorldState.Future;
-            
+
+            //  Update the parallax cameras
+            UpdateParallaxes(currentWorldState);
+
             //  Perform transition
             cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, currentCamera, FutureCamera, transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
-
-            //  Set new Z position for player
-            //transform.position = new Vector3(transform.position.x, transform.position.y, 50);
         }
-
     }
     #endregion
 
@@ -238,8 +237,8 @@ public class WorldChanger : MonoBehaviour
         if (currentWorldState != WorldState.Past)
         {
             //  cast past capsule collider & evaluate
-            topCenterOfCapsule = new Vector3(topCenterOfCapsule.x, topCenterOfCapsule.y, 25);
-            bottomCenterOfCapsule = new Vector3(bottomCenterOfCapsule.x, bottomCenterOfCapsule.y, 25);
+            topCenterOfCapsule = new Vector3(topCenterOfCapsule.x, topCenterOfCapsule.y, 50);
+            bottomCenterOfCapsule = new Vector3(bottomCenterOfCapsule.x, bottomCenterOfCapsule.y, 50);
             if (Physics.CheckCapsule(topCenterOfCapsule, bottomCenterOfCapsule, castRadius))
             {
                 canSwitchPast = false;
@@ -253,8 +252,8 @@ public class WorldChanger : MonoBehaviour
         if (currentWorldState != WorldState.Future)
         {
             //  cast future capsule collider & evaluate
-            topCenterOfCapsule = new Vector3(topCenterOfCapsule.x, topCenterOfCapsule.y, 50);
-            bottomCenterOfCapsule = new Vector3(bottomCenterOfCapsule.x, bottomCenterOfCapsule.y, 50);
+            topCenterOfCapsule = new Vector3(topCenterOfCapsule.x, topCenterOfCapsule.y, 100);
+            bottomCenterOfCapsule = new Vector3(bottomCenterOfCapsule.x, bottomCenterOfCapsule.y, 100);
             if (Physics.CheckCapsule(topCenterOfCapsule, bottomCenterOfCapsule, castRadius))
             {
                 canSwitchFuture = false;
@@ -277,4 +276,27 @@ public class WorldChanger : MonoBehaviour
         //  Update the layer
         Layers.ChangeLayers(charController2D.gameObject, originalLayer);
     }
+
+    #region UpdateParallaxes()
+    private void UpdateParallaxes(WorldState currentWorldState)
+    {
+        EZParallax[] EZparallaxes = FindObjectsOfType<EZParallax>();
+
+        switch (currentWorldState)
+        {
+            case WorldState.Present:
+                for (int i = 0; i < EZparallaxes.Length; i++)
+                    EZparallaxes[i].m_mainCamera = PresentCamera.gameObject;
+                break;
+            case WorldState.Past:
+                for (int i = 0; i < EZparallaxes.Length; i++)
+                    EZparallaxes[i].m_mainCamera = PastCamera.gameObject;
+                break;
+            case WorldState.Future:
+                for (int i = 0; i < EZparallaxes.Length; i++)
+                    EZparallaxes[i].m_mainCamera = FutureCamera.gameObject;
+                break;
+        }
+    }
+    #endregion
 }

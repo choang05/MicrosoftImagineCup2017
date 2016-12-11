@@ -24,7 +24,7 @@ public class MainMenuController : MonoBehaviour
     public float PlayerMoveSpeed;
     public Camera parallaxCamera;
 
-    private FreeParallax[] parallaxes;
+    //private FreeParallax[] parallaxes;
     private CharacterController2D charController;
 
     public AudioClip[] timeWarps;
@@ -35,7 +35,7 @@ public class MainMenuController : MonoBehaviour
         //  Find and assign references
         cameraTransition = FindObjectOfType<CameraTransition>();
         charController = FindObjectOfType<CharacterController2D>();
-        parallaxes = FindObjectsOfType<FreeParallax>();
+        //parallaxes = FindObjectsOfType<FreeParallax>();
         menuSound = GetComponent<AudioSource>();
     }
 
@@ -64,8 +64,8 @@ public class MainMenuController : MonoBehaviour
         charController.animator.SetFloat("xVelocity", PlayerMoveSpeed);
 
         //  Update parallaxes
-        for (int i = 0; i < parallaxes.Length; i++)
-            parallaxes[i].Speed = parallaxCamera.velocity.x * PlayerMoveSpeed * -1;
+        //for (int i = 0; i < parallaxes.Length; i++)
+            //parallaxes[i].Speed = parallaxCamera.velocity.x * PlayerMoveSpeed * -1;
     }
     
     public void TransitionToCamera(int CameraIndex)

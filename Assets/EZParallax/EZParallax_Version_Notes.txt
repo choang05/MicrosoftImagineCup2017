@@ -1,0 +1,79 @@
+/*
+V1.3 - 10/25/2015
+----------
+Massive code cleanup (still in progress for next releases), performance increase, demo scene cleanup, and customer discovered bug fix pass. Added Undo support, default tag creation, and properly marking scene "dirty".
+
+Fixes:
+
+-- Now takes into account non-centered pivots on parallaxing objects, which previously could lead to objects popping out before they were off the screen
+-- Duplicate object spawning at different zoom levels now works properly
+-- Fixed issues with motorization and spawning
+-- Fixed an issue with objects being out of place when users use things, such as respawn points, to move the player rapidly to various points in their level
+
+
+V1.2 - 6/25/2014
+----------
+Added some new customer-requested features. Made the script console feedback more helpful for some common issues that users have been running into.
+
+Fixes:
+-- Added API for pausing and starting motorization
+-- Added the ability to have randomly spawning objects also spawn with a random Y offset. Object position history tracks this offset as well.
+-- Converted various generic console debug prints to warnings and errors based on severity
+-- Added error messages for when users place a parallaxing element at the same z-depth as the player
+
+
+V1.1.3 - 3/4/2014
+----------
+Retracted the submission from the store yet again to make the starting experience a bit more user friendly.
+
+Fixes:
+-- Tag names do not have default text anymore. Those were misleading, as they made it look like the tags were actually created, when in fact they were not.
+-- Warnings now appear if the user tries to initialize EZP without a camera or player set. EZP will abort initialization after warning.
+-- Fixed some code that was assuming the user would be using at least one infinitely wrapping object... assumptions are bad.
+
+
+V1.1.2 - 3/4/2014
+----------
+Noticed some last minute things that needed to be fixed/added before v1.1.1 went live on the store.
+
+Fixes:
+-- Got rid of occasional blinking sprite edges
+-- Added buttons to add and remove parallax elements to the parallax list in the inspector, so that users don't accidentally wipe out their entire parallax list when changing the total size
+--Fixed a miscaled element in the demo sene
+
+V1.1.1 - 3/4/2014
+----------
+Some minor tweaks to the code.
+
+Fixes:
+-- Random "house cleaning" fixes that I missed the first time through
+
+V1.1 - 3/4/2013
+----------
+Complete overhaul of the system to enable customizable properties on each parallaxing element. Added many new features.
+
+Fixes:
+-- Fixed improper math when using scalars that was present in the first release.
+-- EZ Parallax now uses the LateUpdate instead of the Update loop.
+
+Feature Additions:
+-- Tag system
+-- Private speed scalars for element parallax effects
+-- Infinite wrapping is now possible
+-- Randomized spawn distances for wrapping elements
+-- History for placement of randomly spawned elements
+-- Motorization
+-- Dolly "zoom" effect
+-- Custom Inspector
+
+V1.0 - 7/12/2013
+----------
+Finished first version. Pushing to asset store for the first time. (Woohoo!)
+
+Fixes: N/A
+
+Feature Additions: N/A
+
+
+
+*/

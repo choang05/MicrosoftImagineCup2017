@@ -16,7 +16,7 @@ public class PushPullObject : MonoBehaviour
     [HideInInspector] public bool isColliding;
     private CharacterController2D playerController;
     private WorldChanger worldChanger;
-    private WorldChanger.WorldState currentWorldState;
+    public WorldChanger.WorldState currentWorldState;
 
     void OnEnable()
     {
@@ -48,11 +48,11 @@ public class PushPullObject : MonoBehaviour
         originalLayer = gameObject.layer;
 
         //  Determine current worldstate
-        if (transform.position.y == 0)
+        if (transform.position.z - 0 < .1f)
             currentWorldState = WorldChanger.WorldState.Present;
-        else if (transform.position.y == 25)
+        else if (transform.position.z - 50 < .1f)
             currentWorldState = WorldChanger.WorldState.Past;
-        else if (transform.position.y == 50)
+        else if (transform.position.z - 100 < .1f)
             currentWorldState = WorldChanger.WorldState.Future;
     }
 
@@ -61,7 +61,8 @@ public class PushPullObject : MonoBehaviour
         if (interactType == InteractableType.Transferable)
         {
             Layers.ChangeLayers(gameObject, Layers.ViewAlways);
-            //StartCoroutine(CoCheckWorldCollisions());
+            Debug.Log("started pushpull");
+            StartCoroutine(CoCheckWorldCollisions());
         }
 
         StartCoroutine(CoCheckCollisions());
@@ -70,7 +71,7 @@ public class PushPullObject : MonoBehaviour
     public void OnPushPullEnd()
     {
         Layers.ChangeLayers(gameObject, originalLayer);
-
+        Debug.Log("ended pushpull");
         StopAllCoroutines();
     }
 
@@ -134,7 +135,7 @@ public class PushPullObject : MonoBehaviour
                         worldChanger.canSwitchPast = false;
                     break;
             }
-            Debug.Log("Present: " + worldChanger.canSwitchPresent + " | Past: " + worldChanger.canSwitchPast + " | Future: " + worldChanger.canSwitchFuture);
+            //Debug.Log("Present: " + worldChanger.canSwitchPresent + " | Past: " + worldChanger.canSwitchPast + " | Future: " + worldChanger.canSwitchFuture);
 
             yield return null;
         }
@@ -167,11 +168,11 @@ public class PushPullObject : MonoBehaviour
                         currentWorldState = WorldChanger.WorldState.Present;
                         break;
                     case WorldChanger.WorldState.Past:
-                        transform.position = new Vector3(transform.position.x, transform.position.y, 25);
+                        transform.position = new Vector3(transform.position.x, transform.position.y, 50);
                         currentWorldState = WorldChanger.WorldState.Past;
                         break;
                     case WorldChanger.WorldState.Future:
-                        transform.position = new Vector3(transform.position.x, transform.position.y, 50);
+                        transform.position = new Vector3(transform.position.x, transform.position.y, 100);
                         currentWorldState = WorldChanger.WorldState.Future;
                         break;
                 }
@@ -194,14 +195,18 @@ public class PushPullObject : MonoBehaviour
     #region CheckWorldCollisions(): Determine which world object can be teleported too if there is non-collidable space
     private bool CheckWorldCollisions(WorldChanger.WorldState worldState)
     {
-        Vector2 colliderExtents = boxColl.size * 3.9f;
+        Vector2 colliderExtents = boxColl.size * .39f;
         
         //  Evaluate the world state that player is transferring to.
         switch (worldState)
         {
             //  cast present ray & evaluate
             case WorldChanger.WorldState.Present:
-                if (currentWorldState != WorldChanger.WorldState.Present && Physics.CheckBox(new Vector3(transform.position.x, transform.position.y, 0), colliderExtents, transform.rotation, Layers.Players))
+                Vector3 presentPos = new Vector3(transform.position.x, transform.position.y, 0);
+
+                if(Application.isEditor) ExtDebug.DrawBox(presentPos, colliderExtents, transform.rotation, Color.blue); 
+
+                if (currentWorldState != WorldChanger.WorldState.Present && Physics.CheckBox(presentPos, colliderExtents, transform.rotation, Layers.Players))
                 {
                     //Debug.Log("Colliding present...");
                     return false;
@@ -209,7 +214,11 @@ public class PushPullObject : MonoBehaviour
                 break;
             //  cast past ray & evaluate
             case WorldChanger.WorldState.Past:
-                if (currentWorldState != WorldChanger.WorldState.Past && Physics.CheckBox(new Vector3(transform.position.x, transform.position.y, 25), colliderExtents, transform.rotation, Layers.Players))
+                Vector3 pastPos = new Vector3(transform.position.x, transform.position.y, 50);
+
+                if (Application.isEditor) ExtDebug.DrawBox(pastPos, colliderExtents, transform.rotation, Color.blue);
+
+                if (currentWorldState != WorldChanger.WorldState.Past && Physics.CheckBox(pastPos, colliderExtents, transform.rotation, Layers.Players))
                 {
                     //Debug.Log("Colliding past...");
                     return false;
@@ -217,7 +226,11 @@ public class PushPullObject : MonoBehaviour
                 break;
             //  cast future ray & evaluate
             case WorldChanger.WorldState.Future:
-                if (currentWorldState != WorldChanger.WorldState.Future && Physics.CheckBox(new Vector3(transform.position.x, transform.position.y, 50), colliderExtents, transform.rotation, Layers.Players))
+                Vector3 futurePos = new Vector3(transform.position.x, transform.position.y, 100);
+
+                if (Application.isEditor) ExtDebug.DrawBox(futurePos, colliderExtents, transform.rotation, Color.blue);
+
+                if (currentWorldState != WorldChanger.WorldState.Future && Physics.CheckBox(futurePos, colliderExtents, transform.rotation, Layers.Players))
                 {
                     //Debug.Log("Colliding future...");
                     return false;
