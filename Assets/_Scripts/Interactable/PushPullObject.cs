@@ -61,7 +61,7 @@ public class PushPullObject : MonoBehaviour
         if (interactType == InteractableType.Transferable)
         {
             Layers.ChangeLayers(gameObject, Layers.ViewAlways);
-            Debug.Log("started pushpull");
+            //Debug.Log("started pushpull");
             StartCoroutine(CoCheckWorldCollisions());
         }
 
@@ -71,7 +71,7 @@ public class PushPullObject : MonoBehaviour
     public void OnPushPullEnd()
     {
         Layers.ChangeLayers(gameObject, originalLayer);
-        Debug.Log("ended pushpull");
+        //Debug.Log("ended pushpull");
         StopAllCoroutines();
     }
 
@@ -195,8 +195,8 @@ public class PushPullObject : MonoBehaviour
     #region CheckWorldCollisions(): Determine which world object can be teleported too if there is non-collidable space
     private bool CheckWorldCollisions(WorldChanger.WorldState worldState)
     {
-        Vector2 colliderExtents = boxColl.size * .39f;
-        
+        Vector3 colliderExtents = transform.lossyScale * .49f;
+
         //  Evaluate the world state that player is transferring to.
         switch (worldState)
         {
@@ -208,7 +208,7 @@ public class PushPullObject : MonoBehaviour
 
                 if (currentWorldState != WorldChanger.WorldState.Present && Physics.CheckBox(presentPos, colliderExtents, transform.rotation, Layers.Players))
                 {
-                    //Debug.Log("Colliding present...");
+                    Debug.Log("Colliding present...");
                     return false;
                 }
                 break;
@@ -220,7 +220,7 @@ public class PushPullObject : MonoBehaviour
 
                 if (currentWorldState != WorldChanger.WorldState.Past && Physics.CheckBox(pastPos, colliderExtents, transform.rotation, Layers.Players))
                 {
-                    //Debug.Log("Colliding past...");
+                    Debug.Log("Colliding past...");
                     return false;
                 }
                 break;
@@ -232,7 +232,7 @@ public class PushPullObject : MonoBehaviour
 
                 if (currentWorldState != WorldChanger.WorldState.Future && Physics.CheckBox(futurePos, colliderExtents, transform.rotation, Layers.Players))
                 {
-                    //Debug.Log("Colliding future...");
+                    Debug.Log("Colliding future...");
                     return false;
                 }
                 break;
