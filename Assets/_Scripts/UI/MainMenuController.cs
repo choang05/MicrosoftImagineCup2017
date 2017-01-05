@@ -7,6 +7,7 @@ using CameraTransitions;
 public class MainMenuController : MonoBehaviour
 {
     [Space(10)]
+    public Transform playerTransform;
     public GameObject[] PanelObjects;
     public Camera[] Cameras;
 
@@ -83,6 +84,9 @@ public class MainMenuController : MonoBehaviour
 
         //  Perform the transition
         cameraTransition.DoTransition(CameraTransitionEffects.SmoothCircle, Cameras[currentCameraIndex], Cameras[CameraIndex], transitionDuration, new object[] { false, transitionEdgeSmoothness, transitionCenter });
+
+        //  Update player position
+        playerTransform.position = new Vector3(playerTransform.position.x, playerTransform.position.y, Cameras[CameraIndex].transform.position.z + 5);
 
         currentCameraIndex = CameraIndex;
     }
