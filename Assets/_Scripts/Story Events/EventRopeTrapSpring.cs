@@ -9,6 +9,7 @@ public class EventRopeTrapSpring : MonoBehaviour
     private AudioSource trapSound;
 
     public int yPullTarget;
+    public float yOffSet;
 
     void Awake()
     {
@@ -36,7 +37,7 @@ public class EventRopeTrapSpring : MonoBehaviour
         charController.isEnabled = false;
         charController.animator.SetBool(Animator.StringToHash("isGrounded"), false);
         charController.transform.SetParent(hookRopeSegment);
-        charController.transform.localPosition = new Vector3(0, 1.5f, 0);
+        charController.transform.localPosition = new Vector3(0, yOffSet, 0);
         charController.transform.localRotation = Quaternion.identity;
 
         mainRope.connectedAnchor = new Vector3(mainRope.connectedAnchor.x, 13, mainRope.connectedAnchor.z);
