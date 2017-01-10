@@ -1,5 +1,5 @@
 ﻿//////////////////////////////////////////////
-/// 2DxFX - 2D SPRITE FX - by VETASOFT 2015 //
+/// 2DxFX - 2D SPRITE FX - by VETASOFT 2016 //
 /// http://unity3D.vetasoft.com/            //
 //////////////////////////////////////////////
 
@@ -11,6 +11,14 @@ _MainTex ("Base (RGB)", 2D) = "white" {}
 _Color ("_Color", Color) = (1,1,1,1)
 _Distortion ("Distortion", Range(0,1)) = 0
 _Alpha ("Alpha", Range (0,1)) = 1.0
+// required for UI.Mask
+_StencilComp ("Stencil Comparison", Float) = 8
+_Stencil ("Stencil ID", Float) = 0
+_StencilOp ("Stencil Operation", Float) = 0
+_StencilWriteMask ("Stencil Write Mask", Float) = 255
+_StencilReadMask ("Stencil Read Mask", Float) = 255
+_ColorMask ("Color Mask", Float) = 15
+
 }
 
 SubShader
@@ -18,6 +26,16 @@ SubShader
 
 Tags {"Queue"="Transparent" "IgnoreProjector"="true" "RenderType"="Transparent"}
 ZWrite Off Blend SrcAlpha OneMinusSrcAlpha Cull Off
+
+// required for UI.Mask
+Stencil
+{
+Ref [_Stencil]
+Comp [_StencilComp]
+Pass [_StencilOp] 
+ReadMask [_StencilReadMask]
+WriteMask [_StencilWriteMask]
+}
 
 
 Pass
@@ -117,25 +135,15 @@ float4 plasma(float2 uv)
 
 float4 frag (v2f i) : COLOR
 {
-float2 uv 		=  i.texcoord.xy ;
-  
+	float2 uv 		=  i.texcoord.xy ;
     float4 noise = tex2D(_MainTex, uv);
     float lum = dot(noise.rgb, float3 (0.2126, 0.7152, 0.0722));
-    
     float maxTemp = 4000.0;
     float tempScale = maxTemp;
     float3 c = Metal(lum * tempScale);
-    
-	
-	
-//
 	float alpha = tex2D(_MainTex, i.texcoord).a;
-	
 	float4 sortie=plasma(i.texcoord);
 	sortie.a=sortie.a*alpha-_Alpha;
-//	return sortie;	
-	
-	//c.rgb = c.rgb*sortie.a;
 	sortie.r=sortie.a;
 	sortie.g=sortie.a;
 	sortie.b=sortie.a;

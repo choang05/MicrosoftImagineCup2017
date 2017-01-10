@@ -1,5 +1,5 @@
 ﻿//////////////////////////////////////////////
-/// 2DxFX - 2D SPRITE FX - by VETASOFT 2015 //
+/// 2DxFX - 2D SPRITE FX - by VETASOFT 2016 //
 /// http://unity3D.vetasoft.com/            //
 //////////////////////////////////////////////
 
@@ -13,6 +13,15 @@ _Alpha ("Alpha", Range (0,1)) = 1.0
 _Color ("_Color", Color) = (1,1,1,1)
 _ColorX ("Tint", Color) = (1,1,1,1)
 
+// required for UI.Mask
+_StencilComp ("Stencil Comparison", Float) = 8
+_Stencil ("Stencil ID", Float) = 0
+_StencilOp ("Stencil Operation", Float) = 0
+_StencilWriteMask ("Stencil Write Mask", Float) = 255
+_StencilReadMask ("Stencil Read Mask", Float) = 255
+_ColorMask ("Color Mask", Float) = 15
+
+
 }
 
 SubShader
@@ -20,6 +29,15 @@ SubShader
 
 Tags {"Queue"="Transparent" "IgnoreProjector"="true" "RenderType"="Transparent"}
 ZWrite Off Blend SrcAlpha OneMinusSrcAlpha Cull Off
+// required for UI.Mask
+Stencil
+{
+Ref [_Stencil]
+Comp [_StencilComp]
+Pass [_StencilOp] 
+ReadMask [_StencilReadMask]
+WriteMask [_StencilWriteMask]
+}
 
 
 Pass
@@ -52,7 +70,7 @@ float _Distortion;
 float4 _ColorX;
 
 fixed _Alpha;
-	
+
 v2f vert(appdata_t IN)
 {
 v2f OUT;
@@ -65,19 +83,19 @@ return OUT;
 
 float4 getPixel(in int x, in int y, v2f i)
 {
-	return tex2D(_MainTex, ((i.texcoord.xy ) + float2(x, y)/64.0));
+return tex2D(_MainTex, ((i.texcoord.xy ) + float2(x, y)/64.0));
 }
 
 float4 frag (v2f i) : COLOR
 {
- 		 fixed4 sum = abs(getPixel(0, 1, i) - getPixel(0, -1, i));
-				sum += abs(getPixel(1, 0, i) - getPixel(-1, 0, i));
-				sum /= 2.0;
-				fixed4 color = getPixel(0, 0, i)*i.color;
-				color += length(sum) * _ColorX;
-				color.a = color.a*(1-_Alpha);
-				return color;
-	
+fixed4 sum = abs(getPixel(0, 1, i) - getPixel(0, -1, i));
+sum += abs(getPixel(1, 0, i) - getPixel(-1, 0, i));
+sum /= 2.0;
+fixed4 color = getPixel(0, 0, i)*i.color;
+color += length(sum) * _ColorX;
+color.a = color.a*(1-_Alpha);
+return color;
+
 }
 
 ENDCG

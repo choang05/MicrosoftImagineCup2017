@@ -1,5 +1,5 @@
 ﻿//////////////////////////////////////////////
-/// 2DxFX - 2D SPRITE FX - by VETASOFT 2015 //
+/// 2DxFX - 2D SPRITE FX - by VETASOFT 2016 //
 /// http://unity3D.vetasoft.com/            //
 //////////////////////////////////////////////
 
@@ -16,6 +16,15 @@ _Value4 ("_Value4", Range(0,1)) = 1
 _Value5 ("_Value5", Range(0,1)) = 1
 
 _Alpha ("Alpha", Range (0,1)) = 1.0
+
+// required for UI.Mask
+_StencilComp ("Stencil Comparison", Float) = 8
+_Stencil ("Stencil ID", Float) = 0
+_StencilOp ("Stencil Operation", Float) = 0
+_StencilWriteMask ("Stencil Write Mask", Float) = 255
+_StencilReadMask ("Stencil Read Mask", Float) = 255
+_ColorMask ("Color Mask", Float) = 15
+
 }
 
 SubShader
@@ -23,6 +32,15 @@ SubShader
 
 Tags {"Queue"="Transparent" "IgnoreProjector"="true" "RenderType"="Transparent"}
 ZWrite Off Blend SrcAlpha OneMinusSrcAlpha Cull Off
+// required for UI.Mask
+Stencil
+{
+Ref [_Stencil]
+Comp [_StencilComp]
+Pass [_StencilOp] 
+ReadMask [_StencilReadMask]
+WriteMask [_StencilWriteMask]
+}
 
 Pass
 {
@@ -66,24 +84,19 @@ OUT.texcoord = IN.texcoord;
 OUT.color = IN.color;
 return OUT;
 }
- 
+
 float4 frag (v2f i) : COLOR
 {
 
 float2 uv=i.texcoord;
 fixed4 mainColor = tex2D(_MainTex, i.texcoord)*i.color;
-_Value1=_Value1;
 float energy= smoothstep( _Value1-_Value2,_Value1+_Value2, uv.x);
 float xx=smoothstep( 0.15-0.1,0.15+0.1, uv.x)*_Value1;
-
 float3 C1 = float3(1,0,0);
 float3 C2 = mainColor.rgb;
 C1=lerp(mainColor.rgb,C1,_Value4);
 C1=lerp(C1,mainColor.rgb,xx);
-_Value1=_Value1;
 float3 CR = lerp(C1,C2,_Value1);
-
-
 float4 CRA= float4(CR,mainColor.a);
 mainColor= lerp(CRA,mainColor-float4(_Value3,_Value3,_Value3,1-_Value5),energy);
 mainColor.a = mainColor.a-_Alpha;

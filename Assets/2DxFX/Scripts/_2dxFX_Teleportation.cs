@@ -230,13 +230,14 @@ public class _2dxFX_Teleportation_Editor : Editor
 	}
 	
 	public override void OnInspectorGUI()
-	{
+	{ 
 		m_object.Update();
 		DrawDefaultInspector();
 		
 		_2dxFX_Teleportation _2dxScript = (_2dxFX_Teleportation)target;
 	
 		Texture2D icon = Resources.Load ("2dxfxinspector") as Texture2D;
+
 		if (icon)
 		{
 			Rect r;

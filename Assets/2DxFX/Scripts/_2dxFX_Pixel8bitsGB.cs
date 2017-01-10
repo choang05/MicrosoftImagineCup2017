@@ -116,8 +116,11 @@ public class _2dxFX_Pixel8bitsGB : MonoBehaviour
 			this.GetComponent<Renderer>().sharedMaterial.SetFloat("_Alpha", 1-_Alpha);
 			this.GetComponent<Renderer>().sharedMaterial.SetFloat("_Size", _Size);
 			this.GetComponent<Renderer>().sharedMaterial.SetFloat("_Offset2", _Offset);
-			}
-			else if(this.gameObject.GetComponent<Image>() != null)
+            this.GetComponent<SpriteRenderer>().sprite.texture.mipMapBias = -10;
+            this.GetComponent<SpriteRenderer>().sprite.texture.filterMode = FilterMode.Point;
+
+            }
+            else if(this.gameObject.GetComponent<Image>() != null)
 			{
 			CanvasImage.material.SetFloat("_Alpha", 1-_Alpha);
 			CanvasImage.material.SetFloat("_Size", _Size);

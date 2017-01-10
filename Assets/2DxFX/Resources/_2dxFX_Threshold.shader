@@ -1,5 +1,5 @@
 ﻿//////////////////////////////////////////////
-/// 2DxFX - 2D SPRITE FX - by VETASOFT 2015 //
+/// 2DxFX - 2D SPRITE FX - by VETASOFT 2016 //
 /// http://unity3D.vetasoft.com/            //
 //////////////////////////////////////////////
 
@@ -12,6 +12,13 @@ _Distortion ("Distortion", Range(0,1)) = 0
 _Alpha ("Alpha", Range (0,1)) = 1.0
 _Color ("Tint", Color) = (1,1,1,1)
 
+// required for UI.Mask
+_StencilComp ("Stencil Comparison", Float) = 8
+_Stencil ("Stencil ID", Float) = 0
+_StencilOp ("Stencil Operation", Float) = 0
+_StencilWriteMask ("Stencil Write Mask", Float) = 255
+_StencilReadMask ("Stencil Read Mask", Float) = 255
+_ColorMask ("Color Mask", Float) = 15
 }
 
 SubShader
@@ -20,6 +27,15 @@ SubShader
 Tags {"Queue"="Transparent" "IgnoreProjector"="true" "RenderType"="Transparent"}
 ZWrite Off Blend SrcAlpha OneMinusSrcAlpha Cull Off
 
+// required for UI.Mask
+Stencil
+{
+Ref [_Stencil]
+Comp [_StencilComp]
+Pass [_StencilOp] 
+ReadMask [_StencilReadMask]
+WriteMask [_StencilWriteMask]
+}
 
 Pass
 {
@@ -62,28 +78,11 @@ return OUT;
 }
 	
 	
-inline float4 sharp(float2 uv)
-{
-	float r = 1.0/256.0; 
-	float strength = 9.0 * _Distortion;
-
-	float4 c0 = tex2D(_MainTex,uv);
-	float4 c1 = tex2D(_MainTex,uv-float2(r,.0));
-	float4 c2 = tex2D(_MainTex,uv+float2(r,.0));
-	float4 c3 = tex2D(_MainTex,uv-float2(.0,r));
-	float4 c4 = tex2D(_MainTex,uv+float2(.0,r));
-	float4 c5 = c0+c1+c2+c3+c4; c5*=0.2;
-	float4 mi = min(c0,c1); mi = min(mi,c2); mi = min(mi,c3); mi = min(mi,c4);
-	float4 ma = max(c0,c1); ma = max(ma,c2); ma = max(ma,c3); ma = max(ma,c4);
-	return clamp(mi,(strength+1.0)*c0-c5*strength,ma);
-}
-
 float4 frag (v2f i) : COLOR
 {
 	fixed4 tx 	= tex2D(_MainTex, i.texcoord);
 	float l 	= (tx.x + tx.y + tx.z) / 3.0;
-  	float r = l;
-   	tx.rgb = smoothstep(_Distortion, _Distortion+0.0001, r);
+   	tx.rgb = smoothstep(_Distortion, _Distortion+0.0001, l);
 	
 	tx.a = tx.a*1-_Alpha;
 	

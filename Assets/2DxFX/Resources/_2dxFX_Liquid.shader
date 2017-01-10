@@ -1,5 +1,5 @@
 ﻿//////////////////////////////////////////////
-/// 2DxFX - 2D SPRITE FX - by VETASOFT 2015 //
+/// 2DxFX - 2D SPRITE FX - by VETASOFT 2016 //
 /// http://unity3D.vetasoft.com/            //
 //////////////////////////////////////////////
 
@@ -14,6 +14,14 @@ _Alpha ("Alpha", Range (0,1)) = 1.0
 _Speed ("Speed", Range (0,1)) = 1.0
 EValue ("EValue", Range (0,1)) = 1.0
 Light ("Light", Range (0,1)) = 1.0
+// required for UI.Mask
+_StencilComp ("Stencil Comparison", Float) = 8
+_Stencil ("Stencil ID", Float) = 0
+_StencilOp ("Stencil Operation", Float) = 0
+_StencilWriteMask ("Stencil Write Mask", Float) = 255
+_StencilReadMask ("Stencil Read Mask", Float) = 255
+_ColorMask ("Color Mask", Float) = 15
+
 }
 
 SubShader
@@ -21,6 +29,16 @@ SubShader
 
 Tags {"Queue"="Transparent" "IgnoreProjector"="true" "RenderType"="Transparent"}
 ZWrite Off Blend SrcAlpha OneMinusSrcAlpha Cull Off
+
+// required for UI.Mask
+Stencil
+{
+Ref [_Stencil]
+Comp [_StencilComp]
+Pass [_StencilOp] 
+ReadMask [_StencilReadMask]
+WriteMask [_StencilWriteMask]
+}
 
 
 Pass
@@ -72,19 +90,46 @@ float time = _Time*10;
 float delta_theta = 0.897597901025655210989326680937;
 float col = 0.0;
 float theta = 0.0;
-for (int i = 0; i < 8; i++)
-{
+
+
 float _Value=_Speed;
 float _Value2=_Distortion;
 float _Value3=_Distortion;
 float _Value4=_Distortion;
 
 float2 adjc = coord;
-theta = delta_theta*float(i);
+theta = delta_theta * 1;
 adjc.x += cos(theta)*time*_Value + time * _Value2;
 adjc.y -= sin(theta)*time*_Value - time * _Value3;
 col = col + cos( (adjc.x*cos(theta) - adjc.y*sin(theta))*6.0);
-}
+theta = delta_theta * 2;
+adjc.x += cos(theta)*time*_Value + time * _Value2;
+adjc.y -= sin(theta)*time*_Value - time * _Value3;
+col = col + cos((adjc.x*cos(theta) - adjc.y*sin(theta))*6.0);
+theta = delta_theta * 3;
+adjc.x += cos(theta)*time*_Value + time * _Value2;
+adjc.y -= sin(theta)*time*_Value - time * _Value3;
+col = col + cos((adjc.x*cos(theta) - adjc.y*sin(theta))*6.0);
+theta = delta_theta * 4;
+adjc.x += cos(theta)*time*_Value + time * _Value2;
+adjc.y -= sin(theta)*time*_Value - time * _Value3;
+col = col + cos((adjc.x*cos(theta) - adjc.y*sin(theta))*6.0);
+theta = delta_theta * 5;
+adjc.x += cos(theta)*time*_Value + time * _Value2;
+adjc.y -= sin(theta)*time*_Value - time * _Value3;
+col = col + cos((adjc.x*cos(theta) - adjc.y*sin(theta))*6.0);
+theta = delta_theta * 6;
+adjc.x += cos(theta)*time*_Value + time * _Value2;
+adjc.y -= sin(theta)*time*_Value - time * _Value3;
+col = col + cos((adjc.x*cos(theta) - adjc.y*sin(theta))*6.0);
+theta = delta_theta * 7;
+adjc.x += cos(theta)*time*_Value + time * _Value2;
+adjc.y -= sin(theta)*time*_Value - time * _Value3;
+col = col + cos((adjc.x*cos(theta) - adjc.y*sin(theta))*6.0);
+theta = delta_theta * 8;
+adjc.x += cos(theta)*time*_Value + time * _Value2;
+adjc.y -= sin(theta)*time*_Value - time * _Value3;
+col = col + cos((adjc.x*cos(theta) - adjc.y*sin(theta))*6.0);
 return cos(col);
 }
 

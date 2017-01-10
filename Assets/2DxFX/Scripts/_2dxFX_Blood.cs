@@ -21,11 +21,9 @@ public class _2dxFX_Blood : MonoBehaviour
 	[HideInInspector] [Range(0, 1)] public float _Alpha = 1f;
 
 	[HideInInspector] public Texture2D __MainTex2; 
-	[HideInInspector] [Range(0f, 1f)] public float TurnToLiquid = 0.052f;
-	[HideInInspector] [Range(0.0f, 1f)] public float Heat =  1.0f;
-	[HideInInspector] [Range(0.0f, 4f)] public float Speed = 1.0f;
-	[HideInInspector] [Range(0.0f, 1f)] public float EValue = 1.0f;
-	[HideInInspector] [Range(-4.0f, 4f)] public float Light = 3.0f;
+	[HideInInspector] [Range(0f, 1f)] public float TurnToBlood = 0.140f;
+	[HideInInspector] [Range(0.0f, 1f)] public float Blood =  0.141f;
+
 
 
 	[HideInInspector] public int ShaderChange=0;
@@ -125,20 +123,16 @@ public class _2dxFX_Blood : MonoBehaviour
 			if(this.gameObject.GetComponent<SpriteRenderer>() != null)
 			{
 			this.GetComponent<Renderer>().sharedMaterial.SetFloat("_Alpha", 1-_Alpha);
-			this.GetComponent<Renderer>().sharedMaterial.SetFloat("_Distortion", Heat);
-			this.GetComponent<Renderer>().sharedMaterial.SetFloat("_Speed", Speed);
-			this.GetComponent<Renderer>().sharedMaterial.SetFloat("EValue",EValue);
-			this.GetComponent<Renderer>().sharedMaterial.SetFloat("Light",Light);
-			this.GetComponent<Renderer>().sharedMaterial.SetFloat("TurnToLiquid",TurnToLiquid);
+			this.GetComponent<Renderer>().sharedMaterial.SetFloat("_Distortion", Blood);
+	
+			this.GetComponent<Renderer>().sharedMaterial.SetFloat("TurnToLiquid", TurnToBlood);
 			}
 			else if(this.gameObject.GetComponent<Image>() != null)
 			{
 			CanvasImage.material.SetFloat("_Alpha", 1-_Alpha);
-			CanvasImage.material.SetFloat("_Distortion", Heat);
-			CanvasImage.material.SetFloat("_Speed", Speed);
-			CanvasImage.material.SetFloat("EValue",EValue);
-			CanvasImage.material.SetFloat("Light",Light);
-			CanvasImage.material.SetFloat("TurnToLiquid",TurnToLiquid);
+			CanvasImage.material.SetFloat("_Distortion", Blood);
+			
+			CanvasImage.material.SetFloat("TurnToLiquid",TurnToBlood);
 			}
 		}
 		
@@ -271,6 +265,7 @@ public class _2dxFX_Blood_Editor : Editor
 		
 		_2dxFX_Blood _2dxScript = (_2dxFX_Blood)target;
 	
+	
 
 		Texture2D icon = Resources.Load ("2dxfxinspector-anim") as Texture2D;
 		if (icon)
@@ -310,9 +305,9 @@ public class _2dxFX_Blood_Editor : Editor
 			EditorGUILayout.BeginVertical("Box");
 
 			Texture2D icone = Resources.Load ("2dxfx-icon-distortion") as Texture2D;
-			EditorGUILayout.PropertyField(m_object.FindProperty("TurnToLiquid"), new GUIContent("Turn To Blood", icone, "Turn to Blood = 0 = normal sprite : 1 = Blood Liquified"));
+			EditorGUILayout.PropertyField(m_object.FindProperty("TurnToBlood"), new GUIContent("Turn To Blood", icone, "Turn to Blood = 0 = normal sprite : 1 = Blood Liquified"));
 			icone = Resources.Load ("2dxfx-icon-time") as Texture2D;
-			EditorGUILayout.PropertyField(m_object.FindProperty("Heat"), new GUIContent("Blood Distortion", icone, "Change the distortion of the blood"));
+			EditorGUILayout.PropertyField(m_object.FindProperty("Blood"), new GUIContent("Blood Distortion", icone, "Change the distortion of the blood"));
 
 			EditorGUILayout.BeginVertical("Box");
 

@@ -1,5 +1,5 @@
 ﻿//////////////////////////////////////////////
-/// 2DxFX - 2D SPRITE FX - by VETASOFT 2015 //
+/// 2DxFX - 2D SPRITE FX - by VETASOFT 2016 //
 /// http://unity3D.vetasoft.com/            //
 //////////////////////////////////////////////
 
@@ -11,6 +11,15 @@ _MainTex ("Base (RGB)", 2D) = "white" {}
 _Color ("_Color", Color) = (1,1,1,1)
 _Distortion ("Distortion", Range(0,1)) = 0
 _Alpha ("Alpha", Range (0,1)) = 1.0
+
+// required for UI.Mask
+_StencilComp ("Stencil Comparison", Float) = 8
+_Stencil ("Stencil ID", Float) = 0
+_StencilOp ("Stencil Operation", Float) = 0
+_StencilWriteMask ("Stencil Write Mask", Float) = 255
+_StencilReadMask ("Stencil Read Mask", Float) = 255
+_ColorMask ("Color Mask", Float) = 15
+
 }
 
 SubShader
@@ -18,6 +27,15 @@ SubShader
 
 Tags {"Queue"="Transparent" "IgnoreProjector"="true" "RenderType"="Transparent"}
 ZWrite Off Blend SrcAlpha OneMinusSrcAlpha Cull Off
+// required for UI.Mask
+Stencil
+{
+Ref [_Stencil]
+Comp [_StencilComp]
+Pass [_StencilOp] 
+ReadMask [_StencilReadMask]
+WriteMask [_StencilWriteMask]
+}
 
 Pass
 {
@@ -63,12 +81,12 @@ float4 frag (v2f i) : COLOR
 float stepU = 0.00390625f * _Distortion;
 float stepV = stepU;
 
-fixed3x3 gaussian = fixed3x3( 1.0,	2.0,	1.0, 2.0,	4.0,	2.0, 1.0,	2.0,	1.0);
+fixed3x3 gaussian = fixed3x3( 1.0,	2.0,1.0, 2.0,	4.0,	2.0, 1.0,	2.0,	1.0);
 					
-float4 result = 0;
+float4 result = float4 (0,0,0,0);
 float4 Alpha = tex2D(_MainTex, i.texcoord);
 			
-float2 texCoord;
+float2 texCoord=float2(0,0);
 
 texCoord = i.texcoord.xy + float2( -stepU, -stepV ); result += tex2D(_MainTex,texCoord);
 texCoord = i.texcoord.xy + float2( -stepU, 0 ); result += 2.0 * tex2D(_MainTex,texCoord);

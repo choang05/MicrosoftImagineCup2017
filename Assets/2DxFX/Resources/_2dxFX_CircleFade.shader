@@ -1,5 +1,5 @@
 ﻿//////////////////////////////////////////////
-/// 2DxFX - 2D SPRITE FX - by VETASOFT 2015 //
+/// 2DxFX - 2D SPRITE FX - by VETASOFT 2016 //
 /// http://unity3D.vetasoft.com/            //
 //////////////////////////////////////////////
 
@@ -12,12 +12,30 @@ _Color ("_Color", Color) = (1,1,1,1)
 _Offset ("Offset", Range(-1,1)) = 0.5
 _InOut ("InOut", Range(0,1)) = 0.5
 _Alpha ("Alpha", Range (0,1)) = 1.0
+
+// required for UI.Mask
+_StencilComp ("Stencil Comparison", Float) = 8
+_Stencil ("Stencil ID", Float) = 0
+_StencilOp ("Stencil Operation", Float) = 0
+_StencilWriteMask ("Stencil Write Mask", Float) = 255
+_StencilReadMask ("Stencil Read Mask", Float) = 255
+_ColorMask ("Color Mask", Float) = 15
+
 }
 
 SubShader
 {
 Tags {"Queue"="Transparent" "IgnoreProjector"="true" "RenderType"="Transparent"}
 ZWrite Off Blend SrcAlpha OneMinusSrcAlpha Cull Off
+// required for UI.Mask
+Stencil
+{
+Ref [_Stencil]
+Comp [_StencilComp]
+Pass [_StencilOp] 
+ReadMask [_StencilReadMask]
+WriteMask [_StencilWriteMask]
+}
 
 Pass
 {
@@ -62,17 +80,13 @@ float4 frag (v2f i) : COLOR
 {
 
 float2 uv = i.texcoord.xy;
-		float4 tex = tex2D(_MainTex, uv)*i.color;
-		float alpha = tex.a;
-		float2 center = float2(0.5,0.5);
-		float dist = 1.0 - smoothstep( _Offset,_Offset+0.15, length(center-uv) );
-		
-		float c;
-		
-		if (_InOut==0) { c = dist; } else { c= 1-dist; }
-	
-		tex.a = alpha*c-_Alpha;
-
+float4 tex = tex2D(_MainTex, uv)*i.color;
+float alpha = tex.a;
+float2 center = float2(0.5,0.5);
+float dist = 1.0 - smoothstep( _Offset,_Offset+0.15, length(center-uv) );
+float c;
+if (_InOut==0) { c = dist; } else { c= 1-dist; }
+tex.a = alpha*c-_Alpha;
 return tex;
 }
 ENDCG

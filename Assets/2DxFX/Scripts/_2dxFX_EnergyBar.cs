@@ -19,7 +19,7 @@ public class _2dxFX_EnergyBar : MonoBehaviour
 	private string shader = "2DxFX/Standard/EnergyBar";
 
 	[HideInInspector] [Range(0, 1)] public float _Alpha = 1f;
-	[HideInInspector] [Range(0f, 1f)] public float BarProgress = 1f;
+	[HideInInspector] [Range(0f, 1f)] public float BarProgress = 0.5f;
 	[HideInInspector] [Range(0.9f, 1f)] public float _Value2 = 0.975f;
 	[HideInInspector] [Range(0f, 0.5f)] public float _Value3 = 0.5f;
 	[HideInInspector] [Range(0f, 1f)] public float _Value4 = 1.0f;
