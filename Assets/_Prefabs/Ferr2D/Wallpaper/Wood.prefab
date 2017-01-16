@@ -59,8 +59,42 @@ MonoBehaviour:
     yOffset: 0
     leftCap:
       serializedVersion: 2
-      x: 0.20999375
+      x: 0
       y: 0
+      width: 0.075503565
+      height: 0.50140244
+    innerLeftCap:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    rightCap:
+      serializedVersion: 2
+      x: 0.66275156
+      y: 0
+      width: 0.08557057
+      height: 0.5086717
+    innerRightCap:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    body:
+    - serializedVersion: 2
+      x: 0.07718124
+      y: 0
+      width: 0.5872492
+      height: 0.5061337
+    capOffset: 0
+  - applyTo: 1
+    zOffset: 0.1
+    yOffset: 0
+    leftCap:
+      serializedVersion: 2
+      x: 0.04535323
+      y: 0.50418526
       width: 0
       height: 0
     innerLeftCap:
@@ -71,8 +105,8 @@ MonoBehaviour:
       height: 0
     rightCap:
       serializedVersion: 2
-      x: 0.797243
-      y: 0
+      x: 0.60745096
+      y: 0.50418526
       width: 0
       height: 0
     innerRightCap:
@@ -83,18 +117,18 @@ MonoBehaviour:
       height: 0
     body:
     - serializedVersion: 2
-      x: 0.20999375
-      y: 0
-      width: 0.5872493
-      height: 0.49832118
+      x: 0.04535323
+      y: 0.50418526
+      width: 0.5620977
+      height: 0.15269633
     capOffset: 0
-  - applyTo: 0
+  - applyTo: 2
     zOffset: 0
     yOffset: 0
     leftCap:
       serializedVersion: 2
-      x: 0
-      y: 0
+      x: 0.050403822
+      y: 0.5006121
       width: 0
       height: 0
     innerLeftCap:
@@ -105,8 +139,8 @@ MonoBehaviour:
       height: 0
     rightCap:
       serializedVersion: 2
-      x: 0
-      y: 0
+      x: 0.60912853
+      y: 0.5006121
       width: 0
       height: 0
     innerRightCap:
@@ -117,20 +151,20 @@ MonoBehaviour:
       height: 0
     body:
     - serializedVersion: 2
-      x: 0
-      y: 0
-      width: 50
-      height: 50
+      x: 0.050403822
+      y: 0.5006121
+      width: 0.5587247
+      height: 0.1559245
     capOffset: 0
-  - applyTo: 0
+  - applyTo: 3
     zOffset: 0
     yOffset: 0
     leftCap:
       serializedVersion: 2
-      x: 0
-      y: 0
-      width: 0
-      height: 0
+      x: 0.6441246
+      y: 0.4569819
+      width: 0.08740193
+      height: 0.21898152
     innerLeftCap:
       serializedVersion: 2
       x: 0
@@ -139,10 +173,10 @@ MonoBehaviour:
       height: 0
     rightCap:
       serializedVersion: 2
-      x: 0
-      y: 0
-      width: 0
-      height: 0
+      x: 0.77013445
+      y: 0.29523382
+      width: 0.082214564
+      height: 0.22240396
     innerRightCap:
       serializedVersion: 2
       x: 0
@@ -151,43 +185,9 @@ MonoBehaviour:
       height: 0
     body:
     - serializedVersion: 2
-      x: 0
-      y: 0
-      width: 50
-      height: 50
-    capOffset: 0
-  - applyTo: 0
-    zOffset: 0
-    yOffset: 0
-    leftCap:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 0
-      height: 0
-    innerLeftCap:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 0
-      height: 0
-    rightCap:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 0
-      height: 0
-    innerRightCap:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 0
-      height: 0
-    body:
-    - serializedVersion: 2
-      x: 0
-      y: 0
-      width: 50
-      height: 50
-    capOffset: 0
+      x: 0.1794791
+      y: 0.7728021
+      width: 0.50838935
+      height: 0.22041057
+    capOffset: -0.63
   isPixel: 0

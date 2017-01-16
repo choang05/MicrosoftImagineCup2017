@@ -833,6 +833,48 @@
       },
       {
          "k" : {
+            "Guid" : "06b0e03e7a063c54787bd1ff4d1df24b",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Interactables & Props/signRight.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
             "Guid" : "fcef20745c77ac0428145c902c4c7d00",
             "LocalIdentifier" : 21300000,
             "LastPath" : "Assets/_Art/Interactables & Props/Template_Box01.png"
@@ -1088,6 +1130,48 @@
             "Guid" : "449ed93e8d2d77d4883a76dd025cd643",
             "LocalIdentifier" : 21300000,
             "LastPath" : "Assets/_Art/Interactables & Props/House Interior/Table.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "8f1c639817f869441a8b03c93db0fcf1",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Interactables & Props/House Exterior/StoneFoundation.png"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -3511,90 +3595,6 @@
             "Guid" : "0edebcca45e98cd49a9f053f505bd330",
             "LocalIdentifier" : 21300000,
             "LastPath" : "Assets/_Art/Environment/Grass/Grass_005.png"
-         },
-         "v" : {
-            "PlatformSharedTightMeshSettings" : {
-               
-            },
-            "PerPlatformTightMeshSettings" : [
-               
-            ],
-            "DefaultTightMeshSettings" : {
-               "IsOverriding" : false,
-               "ProcessingMethod" : "Normal",
-               "SharedTightMeshSettings" : {
-                  "Detail" : 0.3,
-                  "AlphaTolerance" : 10
-               },
-               "UnityMethodTightMeshSettings" : {
-                  "VertexMergeDistance" : 3,
-                  "DetectHoles" : true
-               },
-               "AlphaSeparationTightMeshSettings" : {
-                  "OpaqueVertexMergeDistance" : 2,
-                  "OpaqueNegativeExtrude" : 3,
-                  "ReduceAlphaBleed" : false
-               },
-               "PreciseTightMeshSettings" : {
-                  "EdgeInflation" : 2
-               },
-               "RectGridTightMeshSettings" : {
-                  "XSubdivisions" : 5,
-                  "YSubdivisions" : 5,
-                  "CullByBoundingBox" : true,
-                  "RemoveEmptyCells" : true,
-                  "EdgeInflation" : 0
-               }
-            }
-         }
-      },
-      {
-         "k" : {
-            "Guid" : "389e94e04cb59ab46ae320576cedca22",
-            "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/House Exterior/Foundation_stone.png"
-         },
-         "v" : {
-            "PlatformSharedTightMeshSettings" : {
-               
-            },
-            "PerPlatformTightMeshSettings" : [
-               
-            ],
-            "DefaultTightMeshSettings" : {
-               "IsOverriding" : false,
-               "ProcessingMethod" : "Normal",
-               "SharedTightMeshSettings" : {
-                  "Detail" : 0.3,
-                  "AlphaTolerance" : 10
-               },
-               "UnityMethodTightMeshSettings" : {
-                  "VertexMergeDistance" : 3,
-                  "DetectHoles" : true
-               },
-               "AlphaSeparationTightMeshSettings" : {
-                  "OpaqueVertexMergeDistance" : 2,
-                  "OpaqueNegativeExtrude" : 3,
-                  "ReduceAlphaBleed" : false
-               },
-               "PreciseTightMeshSettings" : {
-                  "EdgeInflation" : 2
-               },
-               "RectGridTightMeshSettings" : {
-                  "XSubdivisions" : 5,
-                  "YSubdivisions" : 5,
-                  "CullByBoundingBox" : true,
-                  "RemoveEmptyCells" : true,
-                  "EdgeInflation" : 0
-               }
-            }
-         }
-      },
-      {
-         "k" : {
-            "Guid" : "c91696172d6e14c4bbedcc593ce6118b",
-            "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Fruits/banana.png"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
