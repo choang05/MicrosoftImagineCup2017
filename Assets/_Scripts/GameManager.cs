@@ -127,7 +127,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-
         //  Instaniate the player at the checkpoint location
         GameObject player = Instantiate(playerPrefab, currentCheckpointPosition, Quaternion.identity) as GameObject;
 
@@ -143,9 +142,9 @@ public class GameManager : MonoBehaviour
         worldChanger.TransitionCameraEnter();
 
         //  Set up the parallax
-        EZParallax[] EZparallaxes = FindObjectsOfType<EZParallax>();
-        for (int i = 0; i < EZparallaxes.Length; i++)
-            EZparallaxes[i].m_playerObj = player;
+        //EZParallax[] EZparallaxes = FindObjectsOfType<EZParallax>();
+        //for (int i = 0; i < EZparallaxes.Length; i++)
+        //    EZparallaxes[i].m_playerObj = player;
 
         //  Set up the cape helper
         CapePhysicsHelper capeHelper = FindObjectOfType<CapePhysicsHelper>();
