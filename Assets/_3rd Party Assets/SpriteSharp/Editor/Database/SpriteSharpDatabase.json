@@ -583,7 +583,7 @@
          "k" : {
             "Guid" : "50ce865303679c24d8a5a89741463eb7",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/BridgePlank.psd"
+            "LastPath" : "Assets/_Art/Props/BridgePlank.psd"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -709,7 +709,7 @@
          "k" : {
             "Guid" : "5336012a4f1905f439a3630e94320044",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/Fence.psd"
+            "LastPath" : "Assets/_Art/Props/Fence.psd"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -793,7 +793,7 @@
          "k" : {
             "Guid" : "b1f0367fc90be0e4b946b01ddbbc18b0",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/SeeSaw_Pivot.png"
+            "LastPath" : "Assets/_Art/Props/SeeSaw_Pivot.png"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -835,7 +835,7 @@
          "k" : {
             "Guid" : "06b0e03e7a063c54787bd1ff4d1df24b",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/signRight.png"
+            "LastPath" : "Assets/_Art/Props/signRight.png"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -961,7 +961,7 @@
          "k" : {
             "Guid" : "36110f36e3e639e438a6cfca5a0dfe18",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/House Interior/Bed.psd"
+            "LastPath" : "Assets/_Art/Props/House Interior/Bed.psd"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -1003,7 +1003,7 @@
          "k" : {
             "Guid" : "fd14e7b227e041d47a75c33005b3e904",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/House Interior/Chair.psd"
+            "LastPath" : "Assets/_Art/Props/House Interior/Chair.psd"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -1045,7 +1045,7 @@
          "k" : {
             "Guid" : "e68cdb7e8e2ea9446968eb46f6daaf8f",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/House Interior/Drawer.psd"
+            "LastPath" : "Assets/_Art/Props/House Interior/Drawer.psd"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -1087,7 +1087,7 @@
          "k" : {
             "Guid" : "0941b1d23828db54f967627f6ca45ee4",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/House Interior/Portrait.psd"
+            "LastPath" : "Assets/_Art/Props/House Interior/Portrait.psd"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -1129,7 +1129,7 @@
          "k" : {
             "Guid" : "449ed93e8d2d77d4883a76dd025cd643",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/House Interior/Table.png"
+            "LastPath" : "Assets/_Art/Props/House Interior/Table.png"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -1171,7 +1171,7 @@
          "k" : {
             "Guid" : "8f1c639817f869441a8b03c93db0fcf1",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/House Exterior/StoneFoundation.png"
+            "LastPath" : "Assets/_Art/Props/House Exterior/StoneFoundation.png"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -1213,7 +1213,7 @@
          "k" : {
             "Guid" : "ca606a12c768b344e8ae1ffea5a1f4e5",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/House Exterior/WoodenPlank_Uncolored.png"
+            "LastPath" : "Assets/_Art/Props/House Exterior/WoodenPlank_Uncolored.png"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -1255,7 +1255,7 @@
          "k" : {
             "Guid" : "bf3ddc2ca8a6720499aae5532d38b2eb",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/House Exterior/WoodenRoof_Uncolored.png"
+            "LastPath" : "Assets/_Art/Props/House Exterior/WoodenRoof_Uncolored.png"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -3187,7 +3187,7 @@
          "k" : {
             "Guid" : "3404e3be77ae947479caf93780149c48",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/Well.png"
+            "LastPath" : "Assets/_Art/Props/Well.png"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -3552,7 +3552,7 @@
          "k" : {
             "Guid" : "bd285531aee258043b3c837dfbeb6a4a",
             "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Interactables & Props/Sign_Right.png"
+            "LastPath" : "Assets/_Art/Props/Sign_Right.png"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
@@ -3655,6 +3655,174 @@
                "UnityMethodTightMeshSettings" : {
                   "VertexMergeDistance" : 3,
                   "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "d41cc151a5131274ba53a8867d06162a",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/UI/keyboard & controller icons/Keyboard & Mouse/Light/Keyboard_White_Mouse_Middle.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "b7bad82e07ded15468d78d175e8c42be",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/UI/keyboard & controller icons/Keyboard & Mouse/Light/Keyboard_White_Arrow_Right.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "728a26bf817fcef40a4002144d28da4f",
+            "LocalIdentifier" : 21300002,
+            "LastPath" : "Assets/_Art/Interactables & Props/WoodenLever.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "728a26bf817fcef40a4002144d28da4f",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Interactables & Props/WoodenLever.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : true,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.142,
+                  "AlphaTolerance" : 0
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 4,
+                  "DetectHoles" : false
                },
                "AlphaSeparationTightMeshSettings" : {
                   "OpaqueVertexMergeDistance" : 2,
