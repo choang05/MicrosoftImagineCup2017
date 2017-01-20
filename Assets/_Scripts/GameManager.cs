@@ -69,6 +69,7 @@ public class GameManager : MonoBehaviour
             if (Checkpoints[i].checkpointID == checkpointID)
             {
                 Checkpoints[i].LevelSegmentsGO.SetActive(true);
+                //Debug.Log("checkpoint " + Checkpoints[i].checkpointID + " loaded" + Checkpoints[i].LevelSegmentsGO.activeSelf);
                 break;
             }
     }
@@ -98,6 +99,8 @@ public class GameManager : MonoBehaviour
         //  Fetch & Cache all the checkpoints, then sort by their checkpoint IDs
         Checkpoints = FindObjectsOfType<Checkpoint>();
         SortCheckpointsByQuickSort(Checkpoints, 0, Checkpoints.Length-1);
+        //for (int i = 0; i < Checkpoints.Length; i++)
+            //Debug.Log(Checkpoints[i].checkpointID);
 
         //  Turn off all level segments as a clean slate
         for (int i = 0; i < Checkpoints.Length; i++)

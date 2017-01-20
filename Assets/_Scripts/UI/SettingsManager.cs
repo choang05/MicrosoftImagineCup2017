@@ -187,14 +187,15 @@ public class SettingsManager : MonoBehaviour
         {
             ResolutionWidth = Screen.resolutions[0].width;
             ResolutionHeight = Screen.resolutions[0].height;
-            IsWindowed = false;
+            IsWindowed = true;
             MasterVol = 0.5F;
             SfxVol = 0.5F;
             MusicVol = 0.5F;
         }
+
         volChanger.SetMasterLvl(MasterVol);
         volChanger.SetSfxLvl(SfxVol);
         volChanger.SetMusicLvl(MusicVol);
-        Screen.SetResolution(ResolutionWidth, ResolutionHeight, !IsWindowed);
+        //Screen.SetResolution(ResolutionWidth, ResolutionHeight, IsWindowed);
     }
 }

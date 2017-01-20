@@ -24,7 +24,7 @@ public class BoxSliding : MonoBehaviour {
     }
 
     // audio for push/pull box
-    public void sliding()
+    public void sliding(PushPullObject pushPullObject)
     {
         playerAudio.randomizePitch(boxAudioSrc);
         boxAudioSrc.PlayOneShot(boxSlide, boxAudioSrc.volume * playerAudio.randomVolume());

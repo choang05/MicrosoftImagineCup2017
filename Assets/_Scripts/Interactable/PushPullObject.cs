@@ -5,6 +5,7 @@ using CameraTransitions;
 public class PushPullObject : MonoBehaviour
 {
     //  User defined parameters
+    public int PushPullObjectID;
     public InteractableType interactType; 
     public enum InteractableType
     {   Transferable, NonTransferable, AlwaysTransferable   };

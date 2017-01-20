@@ -71,10 +71,11 @@ public class CharacterController2D : MonoBehaviour
     public delegate void PlayerActionEvent();
     public static event PlayerActionEvent OnJumpLaunch;
     public static event PlayerActionEvent OnLanding;
-    public static event PlayerActionEvent OnPushPullStart;
-    public static event PlayerActionEvent OnPushing;
-    public static event PlayerActionEvent OnPulling;
-    public static event PlayerActionEvent OnPushPullEnd;
+    public delegate void PlayerActionEvent_PushPull(PushPullObject pushPullObject);
+    public static event PlayerActionEvent_PushPull OnPushPullStart;
+    public static event PlayerActionEvent_PushPull OnPushing;
+    public static event PlayerActionEvent_PushPull OnPulling;
+    public static event PlayerActionEvent_PushPull OnPushPullEnd;
     public static event PlayerActionEvent OnRopeClimbStart;
     public static event PlayerActionEvent OnRopeClimbExit;
     public static event PlayerActionEvent OnRopeClimbing;
@@ -297,7 +298,7 @@ public class CharacterController2D : MonoBehaviour
 
                 //  Events
                 if (OnPushPullStart != null)
-                    OnPushPullStart();
+                    OnPushPullStart(pushpullObject);
             }
         }
     }
@@ -334,7 +335,7 @@ public class CharacterController2D : MonoBehaviour
 
                     //  Events
                     if (OnPushing != null)
-                        OnPushing();
+                        OnPushing(pushpullObject);
                 }
                 //  Pushing - LEFT
                 else if (velocity.x < 0 && facingDirection == FacingDirection.Left)
@@ -349,7 +350,7 @@ public class CharacterController2D : MonoBehaviour
 
                     //  Events
                     if (OnPushing != null)
-                        OnPushing();
+                        OnPushing(pushpullObject);
                 }
                 //  Pulling - RIGHT
                 else if (velocity.x > 0 && facingDirection == FacingDirection.Left)
@@ -360,7 +361,7 @@ public class CharacterController2D : MonoBehaviour
 
                     //  Events
                     if (OnPulling != null)
-                        OnPulling();
+                        OnPulling(pushpullObject);
                 }
                 //  Pulling - LEFT
                 else if (velocity.x < 0 && facingDirection == FacingDirection.Right)
@@ -371,7 +372,7 @@ public class CharacterController2D : MonoBehaviour
 
                     //  Events
                     if (OnPulling != null)
-                        OnPulling();
+                        OnPulling(pushpullObject);
                 }
 
                 //  Correct pushpull object colliding against a wall, still buggy
@@ -405,6 +406,10 @@ public class CharacterController2D : MonoBehaviour
 
         //  Process push/pull end event
         pushpullObject.GetComponent<PushPullObject>().OnPushPullEnd();
+        
+        //  Events
+        if (OnPushPullEnd != null)
+            OnPushPullEnd(pushpullObject);
 
         //  Return parent of pushing/pulling body
         pushpullObject.transform.SetParent(null);
@@ -416,9 +421,6 @@ public class CharacterController2D : MonoBehaviour
         animator.SetBool(isPullingHash, false);
         animator.SetBool(isPushPullingHash, false);
 
-        //  Events
-        if (OnPushPullEnd != null)
-            OnPushPullEnd();
     }
     #endregion
 
