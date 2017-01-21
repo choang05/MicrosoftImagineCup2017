@@ -833,48 +833,6 @@
       },
       {
          "k" : {
-            "Guid" : "06b0e03e7a063c54787bd1ff4d1df24b",
-            "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Props/signRight.png"
-         },
-         "v" : {
-            "PlatformSharedTightMeshSettings" : {
-               
-            },
-            "PerPlatformTightMeshSettings" : [
-               
-            ],
-            "DefaultTightMeshSettings" : {
-               "IsOverriding" : false,
-               "ProcessingMethod" : "Normal",
-               "SharedTightMeshSettings" : {
-                  "Detail" : 0.3,
-                  "AlphaTolerance" : 10
-               },
-               "UnityMethodTightMeshSettings" : {
-                  "VertexMergeDistance" : 3,
-                  "DetectHoles" : true
-               },
-               "AlphaSeparationTightMeshSettings" : {
-                  "OpaqueVertexMergeDistance" : 2,
-                  "OpaqueNegativeExtrude" : 3,
-                  "ReduceAlphaBleed" : false
-               },
-               "PreciseTightMeshSettings" : {
-                  "EdgeInflation" : 2
-               },
-               "RectGridTightMeshSettings" : {
-                  "XSubdivisions" : 5,
-                  "YSubdivisions" : 5,
-                  "CullByBoundingBox" : true,
-                  "RemoveEmptyCells" : true,
-                  "EdgeInflation" : 0
-               }
-            }
-         }
-      },
-      {
-         "k" : {
             "Guid" : "fcef20745c77ac0428145c902c4c7d00",
             "LocalIdentifier" : 21300000,
             "LastPath" : "Assets/_Art/Interactables & Props/Template_Box01.png"
@@ -1337,48 +1295,6 @@
       },
       {
          "k" : {
-            "Guid" : "0f9f1e216bfd60b44b82060c1515f07d",
-            "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Environment/plant.png"
-         },
-         "v" : {
-            "PlatformSharedTightMeshSettings" : {
-               
-            },
-            "PerPlatformTightMeshSettings" : [
-               
-            ],
-            "DefaultTightMeshSettings" : {
-               "IsOverriding" : false,
-               "ProcessingMethod" : "Normal",
-               "SharedTightMeshSettings" : {
-                  "Detail" : 0.3,
-                  "AlphaTolerance" : 10
-               },
-               "UnityMethodTightMeshSettings" : {
-                  "VertexMergeDistance" : 3,
-                  "DetectHoles" : true
-               },
-               "AlphaSeparationTightMeshSettings" : {
-                  "OpaqueVertexMergeDistance" : 2,
-                  "OpaqueNegativeExtrude" : 3,
-                  "ReduceAlphaBleed" : false
-               },
-               "PreciseTightMeshSettings" : {
-                  "EdgeInflation" : 2
-               },
-               "RectGridTightMeshSettings" : {
-                  "XSubdivisions" : 5,
-                  "YSubdivisions" : 5,
-                  "CullByBoundingBox" : true,
-                  "RemoveEmptyCells" : true,
-                  "EdgeInflation" : 0
-               }
-            }
-         }
-      },
-      {
-         "k" : {
             "Guid" : "4ed65f9e60ea35f4bb686e05a4a541be",
             "LocalIdentifier" : 21300000,
             "LastPath" : "Assets/_Art/Backgrounds/Clouds_01.png"
@@ -1610,174 +1526,6 @@
                "UnityMethodTightMeshSettings" : {
                   "VertexMergeDistance" : 30,
                   "DetectHoles" : false
-               },
-               "AlphaSeparationTightMeshSettings" : {
-                  "OpaqueVertexMergeDistance" : 2,
-                  "OpaqueNegativeExtrude" : 3,
-                  "ReduceAlphaBleed" : false
-               },
-               "PreciseTightMeshSettings" : {
-                  "EdgeInflation" : 2
-               },
-               "RectGridTightMeshSettings" : {
-                  "XSubdivisions" : 5,
-                  "YSubdivisions" : 5,
-                  "CullByBoundingBox" : true,
-                  "RemoveEmptyCells" : true,
-                  "EdgeInflation" : 0
-               }
-            }
-         }
-      },
-      {
-         "k" : {
-            "Guid" : "c9b3e703fce51ff49b3a472d426a181f",
-            "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/underConstruction.png"
-         },
-         "v" : {
-            "PlatformSharedTightMeshSettings" : {
-               
-            },
-            "PerPlatformTightMeshSettings" : [
-               
-            ],
-            "DefaultTightMeshSettings" : {
-               "IsOverriding" : false,
-               "ProcessingMethod" : "Normal",
-               "SharedTightMeshSettings" : {
-                  "Detail" : 0.3,
-                  "AlphaTolerance" : 10
-               },
-               "UnityMethodTightMeshSettings" : {
-                  "VertexMergeDistance" : 3,
-                  "DetectHoles" : true
-               },
-               "AlphaSeparationTightMeshSettings" : {
-                  "OpaqueVertexMergeDistance" : 2,
-                  "OpaqueNegativeExtrude" : 3,
-                  "ReduceAlphaBleed" : false
-               },
-               "PreciseTightMeshSettings" : {
-                  "EdgeInflation" : 2
-               },
-               "RectGridTightMeshSettings" : {
-                  "XSubdivisions" : 5,
-                  "YSubdivisions" : 5,
-                  "CullByBoundingBox" : true,
-                  "RemoveEmptyCells" : true,
-                  "EdgeInflation" : 0
-               }
-            }
-         }
-      },
-      {
-         "k" : {
-            "Guid" : "fef39ac30e05b044796620311a2b8b8c",
-            "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/FX/Water_Edge.psd"
-         },
-         "v" : {
-            "PlatformSharedTightMeshSettings" : {
-               
-            },
-            "PerPlatformTightMeshSettings" : [
-               
-            ],
-            "DefaultTightMeshSettings" : {
-               "IsOverriding" : false,
-               "ProcessingMethod" : "Normal",
-               "SharedTightMeshSettings" : {
-                  "Detail" : 0.3,
-                  "AlphaTolerance" : 10
-               },
-               "UnityMethodTightMeshSettings" : {
-                  "VertexMergeDistance" : 3,
-                  "DetectHoles" : true
-               },
-               "AlphaSeparationTightMeshSettings" : {
-                  "OpaqueVertexMergeDistance" : 2,
-                  "OpaqueNegativeExtrude" : 3,
-                  "ReduceAlphaBleed" : false
-               },
-               "PreciseTightMeshSettings" : {
-                  "EdgeInflation" : 2
-               },
-               "RectGridTightMeshSettings" : {
-                  "XSubdivisions" : 5,
-                  "YSubdivisions" : 5,
-                  "CullByBoundingBox" : true,
-                  "RemoveEmptyCells" : true,
-                  "EdgeInflation" : 0
-               }
-            }
-         }
-      },
-      {
-         "k" : {
-            "Guid" : "ac04c08751a87f44aae2f1d648b3a30b",
-            "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/FX/Pond_Edge.psd"
-         },
-         "v" : {
-            "PlatformSharedTightMeshSettings" : {
-               
-            },
-            "PerPlatformTightMeshSettings" : [
-               
-            ],
-            "DefaultTightMeshSettings" : {
-               "IsOverriding" : false,
-               "ProcessingMethod" : "Normal",
-               "SharedTightMeshSettings" : {
-                  "Detail" : 0.3,
-                  "AlphaTolerance" : 10
-               },
-               "UnityMethodTightMeshSettings" : {
-                  "VertexMergeDistance" : 3,
-                  "DetectHoles" : true
-               },
-               "AlphaSeparationTightMeshSettings" : {
-                  "OpaqueVertexMergeDistance" : 2,
-                  "OpaqueNegativeExtrude" : 3,
-                  "ReduceAlphaBleed" : false
-               },
-               "PreciseTightMeshSettings" : {
-                  "EdgeInflation" : 2
-               },
-               "RectGridTightMeshSettings" : {
-                  "XSubdivisions" : 5,
-                  "YSubdivisions" : 5,
-                  "CullByBoundingBox" : true,
-                  "RemoveEmptyCells" : true,
-                  "EdgeInflation" : 0
-               }
-            }
-         }
-      },
-      {
-         "k" : {
-            "Guid" : "8838016976d88f04e84e4994ff2b91b5",
-            "LocalIdentifier" : 21300000,
-            "LastPath" : "Assets/_Art/Environment/bush_00.png"
-         },
-         "v" : {
-            "PlatformSharedTightMeshSettings" : {
-               
-            },
-            "PerPlatformTightMeshSettings" : [
-               
-            ],
-            "DefaultTightMeshSettings" : {
-               "IsOverriding" : false,
-               "ProcessingMethod" : "Normal",
-               "SharedTightMeshSettings" : {
-                  "Detail" : 0.3,
-                  "AlphaTolerance" : 10
-               },
-               "UnityMethodTightMeshSettings" : {
-                  "VertexMergeDistance" : 3,
-                  "DetectHoles" : true
                },
                "AlphaSeparationTightMeshSettings" : {
                   "OpaqueVertexMergeDistance" : 2,
@@ -3847,6 +3595,216 @@
             "Guid" : "7fe6404ff889ef348b7287efe70dab17",
             "LocalIdentifier" : 21300000,
             "LastPath" : "Assets/_Art/Environment/Flowers/Flower_001.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "476d61d1019aaec428af697ead4427ad",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/FX/Water_Edge_HD.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "c9208ea15c4f1de4799b33df2641927c",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Environment/Bushes/Bush_001.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "f5dfe3eb40a5aff44a198fae1edd058a",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Environment/Bushes/Bush_002.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "f6f0f283aeadcd745ac7e85adfa67d2f",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Environment/Bushes/Bush_004.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "2588ae5a3a3142845b37d4e5106f08a3",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Environment/Platforms/platformEdges_HD.png"
          },
          "v" : {
             "PlatformSharedTightMeshSettings" : {
