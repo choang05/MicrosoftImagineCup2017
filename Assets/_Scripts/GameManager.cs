@@ -52,26 +52,17 @@ public class GameManager : MonoBehaviour
     }
 
     //  Function to unload a level segment given its checkpoint ID
-    public void UnloadLevelSegment(int checkpointID)
+    public void UnloadLevelSegment(int checkpointIndex)
     {
-        for (int i = 0; i < Checkpoints.Length; i++)
-            if (Checkpoints[i].checkpointID == checkpointID)
-            {
-                Checkpoints[i].LevelSegmentsGO.SetActive(false);
-                break;
-            }
+        Checkpoints[checkpointIndex].LevelSegmentsGO.SetActive(false);
+        if (Application.isEditor) Debug.Log("Checkpoint " + Checkpoints[checkpointIndex].checkpointID + " unloaded." + " Index: " + checkpointIndex);
     }
 
     //  Function to load in a level segment given its checkpoint ID
-    public void LoadLevelSegment(int checkpointID)
+    public void LoadLevelSegment(int checkpointIndex)
     {
-        for (int i = 0; i < Checkpoints.Length; i++)
-            if (Checkpoints[i].checkpointID == checkpointID)
-            {
-                Checkpoints[i].LevelSegmentsGO.SetActive(true);
-                //Debug.Log("checkpoint " + Checkpoints[i].checkpointID + " loaded" + Checkpoints[i].LevelSegmentsGO.activeSelf);
-                break;
-            }
+        Checkpoints[checkpointIndex].LevelSegmentsGO.SetActive(true);
+        if (Application.isEditor) Debug.Log("Checkpoint " + Checkpoints[checkpointIndex].checkpointID + " unloaded." + " Index: " + checkpointIndex);
     }
 
     //  Public function to start the coroutine
@@ -155,6 +146,21 @@ public class GameManager : MonoBehaviour
         capeHelper.capeControlNode = GameObject.FindGameObjectWithTag(Tags.bone_Cape_CTRL).transform;
         capeHelper.GetComponent<DistanceJoint2D>().connectedBody = GameObject.FindGameObjectWithTag(Tags.bone_Cape).GetComponent<Rigidbody2D>();
     }
+
+    #region GetCurrentCheckpointIndex()
+    public int GetCurrentCheckpointIndex(int checkpointID)
+    {
+        for (int i = 0; i < Checkpoints.Length; i++)
+        {
+            if (Checkpoints[i].checkpointID == checkpointID)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+    #endregion
 
     #region Saving & loading
     public void SavePlayerData()

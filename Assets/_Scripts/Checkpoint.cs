@@ -26,13 +26,15 @@ public class Checkpoint : MonoBehaviour
             //  Set new checkpoint to gamemanager
             gameManager.CurrentCheckpointID = checkpointID;
 
+            int currentCheckpointIndex = gameManager.GetCurrentCheckpointIndex(checkpointID);
+
             //  Disable the level before the previous level
-            if (checkpointID - 2 >= 0)
-                gameManager.UnloadLevelSegment(checkpointID - 2);
+            if (currentCheckpointIndex - 2 >= 0)
+                gameManager.UnloadLevelSegment(currentCheckpointIndex - 2);
 
             //  Enable the next level if it exist
-            if (checkpointID + 1 <= gameManager.Checkpoints.Length)
-                gameManager.LoadLevelSegment(checkpointID + 1);
+            if (currentCheckpointIndex + 1 <= gameManager.Checkpoints.Length)
+                gameManager.LoadLevelSegment(currentCheckpointIndex + 1);
 
             if (OnCheckpoint != null)
                 OnCheckpoint(checkpointID);
