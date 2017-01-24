@@ -126,7 +126,7 @@ Material:
       second: 0
     - first:
         name: _WaveSpeed
-      second: 1.5
+      second: 2
     - first:
         name: _ZWrite
       second: 1

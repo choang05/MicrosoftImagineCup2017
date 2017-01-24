@@ -1,0 +1,265 @@
+fileFormatVersion: 2
+guid: 0eb0e01370f927f4da44e39e7b713c96
+timeCreated: 1445483913
+licenseType: Store
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: Tree_BigForeground
+    21300002: Tree_Mid_Big_Left
+    21300004: Tree_Mid_Big_Right
+    21300006: ParallaxSpriteSheetLayout_5
+    21300008: Rock_Foreground
+    21300010: Atmosphere_1
+    21300012: ParallaxSpriteSheetLayout_9
+    21300014: Ground_BumpyWithObjects
+    21300016: ParallaxSpriteSheetLayout_12
+    21300018: Atmosphere_2
+    21300020: Ground_Hilly
+    21300022: Atmosphere_3
+    21300024: Ground_Mid_Hilly
+    21300026: Ground_Mid_Hilly_Flipped
+    21300028: Atmosphere_4
+    21300030: Ground_Mid_wTrees
+    21300032: Atmosphere_5
+    21300034: Background
+    21300036: Ground_Grassy
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 8
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 4096
+  textureSettings:
+    filterMode: 2
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: Tree_BigForeground
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 3368
+        width: 598
+        height: 722
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Tree_Mid_Big_Left
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 3323
+        width: 280
+        height: 773
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Tree_Mid_Big_Right
+      rect:
+        serializedVersion: 2
+        x: 1672
+        y: 3320
+        width: 262
+        height: 726
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: ParallaxSpriteSheetLayout_5
+      rect:
+        serializedVersion: 2
+        x: 4063
+        y: 3838
+        width: 33
+        height: 36
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Rock_Foreground
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 3358
+        width: 296
+        height: 228
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Atmosphere_1
+      rect:
+        serializedVersion: 2
+        x: 2826
+        y: 3376
+        width: 1260
+        height: 720
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: ParallaxSpriteSheetLayout_9
+      rect:
+        serializedVersion: 2
+        x: 2979
+        y: 3350
+        width: 14
+        height: 8
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Ground_BumpyWithObjects
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 2885
+        width: 1276
+        height: 450
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: ParallaxSpriteSheetLayout_12
+      rect:
+        serializedVersion: 2
+        x: 2816
+        y: 3254
+        width: 7
+        height: 17
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Atmosphere_2
+      rect:
+        serializedVersion: 2
+        x: 2826
+        y: 2638
+        width: 1260
+        height: 720
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Ground_Hilly
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 2181
+        width: 1274
+        height: 340
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Atmosphere_3
+      rect:
+        serializedVersion: 2
+        x: 2826
+        y: 1907
+        width: 1260
+        height: 720
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Ground_Mid_Hilly
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 1705
+        width: 1276
+        height: 475
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Ground_Mid_Hilly_Flipped
+      rect:
+        serializedVersion: 2
+        x: 1296
+        y: 1705
+        width: 1276
+        height: 476
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Atmosphere_4
+      rect:
+        serializedVersion: 2
+        x: 2826
+        y: 1162
+        width: 1260
+        height: 720
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Ground_Mid_wTrees
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 730
+        width: 1271
+        height: 720
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Atmosphere_5
+      rect:
+        serializedVersion: 2
+        x: 2826
+        y: 424
+        width: 1260
+        height: 720
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Background
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 6
+        width: 1280
+        height: 720
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Ground_Grassy
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 2763
+        width: 1274
+        height: 118
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

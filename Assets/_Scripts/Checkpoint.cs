@@ -33,8 +33,8 @@ public class Checkpoint : MonoBehaviour
                 gameManager.UnloadLevelSegment(currentCheckpointIndex - 2);
 
             //  Enable the next level if it exist
-            if (currentCheckpointIndex + 1 <= gameManager.Checkpoints.Length)
-                gameManager.LoadLevelSegment(currentCheckpointIndex + 1);
+            if (currentCheckpointIndex < gameManager.Checkpoints.Length)
+                gameManager.LoadLevelSegment(currentCheckpointIndex);
 
             if (OnCheckpoint != null)
                 OnCheckpoint(checkpointID);

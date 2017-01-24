@@ -125,10 +125,14 @@ public class GameManager : MonoBehaviour
         GameObject player = Instantiate(playerPrefab, currentCheckpointPosition, Quaternion.identity) as GameObject;
 
         //  Set up camera
-        ProCamera2D camera = ProCamera2D.Instance;
-        camera.MoveCameraInstantlyToPosition(new Vector2(player.transform.position.x, player.transform.position.y));
-        camera.AddCameraTarget(player.transform);
-        camera.GetComponent<ProCamera2DRails>().AddRailsTarget(player.transform);
+        ProCamera2D proCamera2D = ProCamera2D.Instance;
+        proCamera2D.AddCameraTarget(player.transform);
+        //  camera railing
+        ProCamera2DRails proCamera2DRails = proCamera2D.GetComponent<ProCamera2DRails>();
+        if (proCamera2DRails != null)
+            proCamera2D.GetComponent<ProCamera2DRails>().AddRailsTarget(player.transform);
+        //  move instant so theres no late follow upon loading.
+        proCamera2D.MoveCameraInstantlyToPosition(new Vector2(player.transform.position.x, player.transform.position.y));
 
         //  Set up world changer
         WorldChanger worldChanger = FindObjectOfType<WorldChanger>();

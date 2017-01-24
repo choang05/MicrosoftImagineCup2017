@@ -1,0 +1,257 @@
+{
+   "Version" : 1,
+   "AlphaSpriteToOpaqueSpriteDictionary" : [
+      
+   ],
+   "SpriteMeshSettings" : [
+      {
+         "k" : {
+            "Guid" : "4ed65f9e60ea35f4bb686e05a4a541be",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Backgrounds/Clouds_01.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : true,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "8548dc96436ab64408e3758a60ea99d4",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Backgrounds/Background_Mountain_001.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "27cd98052ace5594d9602ba9ea8e9f07",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Backgrounds/Background1.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "1ec8b0ecdcdc30c4d9d8218b24b6e2e7",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Backgrounds/Background_Tree_003.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "e19f7c9eea0418d4fb77e4e4d1498e7f",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Backgrounds/Background_Tree_004.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      }
+   ],
+   "Preferences" : {
+      "IsDisabled" : false,
+      "SkipTextureSpriteExtrude" : false,
+      "DefaultSettings" : {
+         "PlatformSharedTightMeshSettings" : {
+            
+         },
+         "PerPlatformTightMeshSettings" : [
+            
+         ],
+         "DefaultTightMeshSettings" : {
+            "IsOverriding" : true,
+            "ProcessingMethod" : "Normal",
+            "SharedTightMeshSettings" : {
+               "Detail" : 0.3,
+               "AlphaTolerance" : 10
+            },
+            "UnityMethodTightMeshSettings" : {
+               "VertexMergeDistance" : 3,
+               "DetectHoles" : true
+            },
+            "AlphaSeparationTightMeshSettings" : {
+               "OpaqueVertexMergeDistance" : 2,
+               "OpaqueNegativeExtrude" : 3,
+               "ReduceAlphaBleed" : false
+            },
+            "PreciseTightMeshSettings" : {
+               "EdgeInflation" : 2
+            },
+            "RectGridTightMeshSettings" : {
+               "XSubdivisions" : 5,
+               "YSubdivisions" : 5,
+               "CullByBoundingBox" : true,
+               "RemoveEmptyCells" : true,
+               "EdgeInflation" : 0
+            }
+         }
+      }
+   }
+}
