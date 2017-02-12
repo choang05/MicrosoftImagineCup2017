@@ -38,7 +38,7 @@ namespace DigitalRuby.RainMaker
                 GUI.DrawTexture(r, logo, ScaleMode.StretchToFill);
                 if (GUI.Button(r, "", new GUIStyle()))
                 {
-                    Application.OpenURL("http://u3d.as/s0Z");
+                    Application.OpenURL("https://www.assetstore.unity3d.com/en/#!/content/60955?aid=1011lGnL");
                 }
                 EditorGUILayout.Separator();
             }

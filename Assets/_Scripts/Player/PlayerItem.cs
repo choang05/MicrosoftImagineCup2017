@@ -11,8 +11,8 @@ public class PlayerItem : MonoBehaviour
     public bool hasItem;
 
     //  References
-    CharacterController2D charController;
-    CharacterController controller;
+    CharacterController charController;
+    PlayerController playerController;
 
     //  Animation
     private Animator animator;
@@ -25,8 +25,8 @@ public class PlayerItem : MonoBehaviour
 
     void Awake()
     {
-        charController = GetComponent<CharacterController2D>();
-        controller = GetComponent<CharacterController>();
+        charController = GetComponent<CharacterController>();
+        playerController = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
         //bucket = GameObject.Find("WaterBucket");
         //bSound = bucket.GetComponent<BucketSound>();
@@ -34,7 +34,7 @@ public class PlayerItem : MonoBehaviour
 
     void Update()
     {
-        if (canDropItem && Input.GetButtonDown("Interact") && hasItem && controller.isGrounded)
+        if (canDropItem && Input.GetButtonDown("Interact") && hasItem && charController.isGrounded)
         {
             DropItemAnimationStart();    
         }
@@ -42,8 +42,8 @@ public class PlayerItem : MonoBehaviour
 
     public void PickUpAnimationStart()
     {
-        charController.isControllable = false;
-        charController.velocity = Vector3.zero;
+        playerController.isControllable = false;
+        playerController.velocity = Vector3.zero;
        
         //play audio for bucket pickup
         /*if (heldItem.CompareTag("Bucket") || heldItem.CompareTag("Basket"))
@@ -55,7 +55,7 @@ public class PlayerItem : MonoBehaviour
 
     public void PickUpAnimationComplete()
     {
-        charController.isControllable = true;
+        playerController.isControllable = true;
 
         //  Set item parent to player hand
         hasItem = true;
@@ -65,8 +65,8 @@ public class PlayerItem : MonoBehaviour
 
     public void DropItemAnimationStart()
     {
-        charController.isControllable = false;
-        charController.velocity = Vector3.zero;
+        playerController.isControllable = false;
+        playerController.velocity = Vector3.zero;
 
         Ray ray = new Ray(Vector3.zero, Vector3.down);
         RaycastHit hit;
@@ -86,7 +86,7 @@ public class PlayerItem : MonoBehaviour
 
     public void DropItemAnimationComplete()
     {
-        charController.isControllable = true;
+        playerController.isControllable = true;
 
         DropItem();
     }
@@ -101,7 +101,7 @@ public class PlayerItem : MonoBehaviour
         //  Remove parent hand
         holdableItem.transform.SetParent(null);
         
-        if (charController.facingDirection == CharacterController2D.FacingDirection.Left)
+        if (playerController.facingDirection == PlayerController.FacingDirection.Left)
             holdableItem.transform.position = new Vector3(holdableItem.transform.position.x - 1, holdableItem.transform.position.y, transform.position.z);
         else
             holdableItem.transform.position = new Vector3(holdableItem.transform.position.x + 1, holdableItem.transform.position.y, transform.position.z);

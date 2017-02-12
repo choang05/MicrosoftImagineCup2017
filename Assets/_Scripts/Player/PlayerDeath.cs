@@ -8,7 +8,7 @@ public class PlayerDeath : MonoBehaviour
 
     //  References
     private GameManager gameManager;
-    private CharacterController2D charController;
+    private PlayerController charController;
 
     //  Animation
     private Animator animator;
@@ -17,7 +17,7 @@ public class PlayerDeath : MonoBehaviour
     void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
-        charController = GetComponent<CharacterController2D>();
+        charController = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
     }
 

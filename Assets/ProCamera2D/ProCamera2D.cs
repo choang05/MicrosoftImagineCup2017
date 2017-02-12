@@ -16,7 +16,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
     [RequireComponent(typeof(Camera))]
     public class ProCamera2D : MonoBehaviour, ISerializationCallbackReceiver
     {
-        public static readonly Version Version = new Version("2.2.2");
+        public static readonly Version Version = new Version("2.2.8");
 
         #region Inspector Variables
 
@@ -134,6 +134,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
         public Action<float> PreMoveUpdate;
         public Action<float> PostMoveUpdate;
+        public Action<Vector2> OnCameraResize;
         
         public Action OnReset;
 
@@ -175,6 +176,8 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
         float _previousCameraTargetHorizontalPositionSmoothed;
         float _previousCameraTargetVerticalPositionSmoothed;
+        int _previousScreenWidth;
+        int _previousScreenHeight;
 
         WaitForFixedUpdate _waitForFixedUpdate = new WaitForFixedUpdate();
 
@@ -221,8 +224,11 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                 }
             }
 
-            _screenSizeInWorldCoordinates = _startScreenSizeInWorldCoordinates = Utils.GetScreenSizeInWorldCoords(GameCamera, Mathf.Abs(Vector3D(_transform.localPosition)));
+            // Calculates current screen size
+            CalculateScreenSize();
+            _startScreenSizeInWorldCoordinates = _screenSizeInWorldCoordinates;
 
+            // We save this so we know the direction of the camera when moving it on the depth axis
             _originalCameraDepthSign = Mathf.Sign(Vector3D(_transform.localPosition));
         }
 
@@ -437,22 +443,62 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         /// <summary>Resets the camera movement and size and also all of its extensions to their start values.
         /// This could be useful if, for example, your player dies and respawns somewhere else on the level</summary>
         /// <param name="centerOnTargets">If true, the camera will move to the "final" targets position</param>
-        public void Reset(bool centerOnTargets = true)
+        /// <param name="resetSize">If true, resets the camera size to the start value</param>
+        /// <param name="resetExtensions">If true, resets all active extensions to their start values</param>
+        public void Reset(bool centerOnTargets = true, bool resetSize = true, bool resetExtensions = true)
         {
             if (centerOnTargets)
-            {
-                var targetsMidPoint = GetTargetsWeightedMidPoint(CameraTargets);
-                var finalPos = new Vector2(Vector3H(targetsMidPoint), Vector3V(targetsMidPoint));
-                finalPos += new Vector2(OverallOffset.x, OverallOffset.y);
-                MoveCameraInstantlyToPosition(finalPos);
-            }
+                CenterOnTargets();
             else
                 ResetMovement();
 
-            ResetSize();
+            if(resetSize)
+                ResetSize();
 
+            if (resetExtensions)
+                ResetExtensions();
+        }
+
+        /// <summary>
+        /// Cancels any existing camera movement easing. 
+        /// Also check CenterOnTargets and MoveCameraInstantlyToPosition.
+        /// </summary>
+        public void ResetMovement()
+        {
+            _cameraTargetPosition = _transform.localPosition;
+
+            _cameraTargetHorizontalPositionSmoothed = Vector3H(_cameraTargetPosition);
+            _cameraTargetVerticalPositionSmoothed = Vector3V(_cameraTargetPosition);
+
+            _previousCameraTargetHorizontalPositionSmoothed = _cameraTargetHorizontalPositionSmoothed;
+            _previousCameraTargetVerticalPositionSmoothed = _cameraTargetVerticalPositionSmoothed;
+        }
+
+        /// <summary>
+        /// Resets the camera size to the start value.
+        /// </summary>
+        public void ResetSize()
+        {
+            SetScreenSize(_startScreenSizeInWorldCoordinates.y / 2);
+        }
+
+        /// <summary>
+        /// Resets all active extensions to their start values.
+        /// Notice you can manually reset each extension using the "OnReset" method.
+        /// </summary>
+        public void ResetExtensions()
+        {
             if (OnReset != null)
                 OnReset();
+        }
+
+        /// <summary>Instantly moves the camera to the targets' position.</summary>
+        public void CenterOnTargets()
+        {
+            var targetsMidPoint = GetTargetsWeightedMidPoint(CameraTargets);
+            var finalPos = new Vector2(Vector3H(targetsMidPoint), Vector3V(targetsMidPoint));
+            finalPos += new Vector2(OverallOffset.x, OverallOffset.y);
+            MoveCameraInstantlyToPosition(finalPos);
         }
 
         /// <summary>Resize the camera to the supplied size</summary>
@@ -526,6 +572,10 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         /// <param name="deltaTime">The time in seconds it took to complete the last frame</param>
         public void Move(float deltaTime)
         {
+            //Detect resolution changes
+            if (Screen.width != _previousScreenWidth || Screen.height != _previousScreenHeight)
+                CalculateScreenSize();
+
             // Delta time
             _deltaTime = deltaTime;
             if (_deltaTime < .0001f)
@@ -845,7 +895,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
             _screenSizeInWorldCoordinates = new Vector2(newSize * 2f * GameCamera.aspect, newSize * 2f);
 
-            #if PC2D_TK2D_SUPPORT
+#if PC2D_TK2D_SUPPORT
             if (Tk2dCam == null)
                 return;
 
@@ -855,29 +905,24 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                     Tk2dCam.ZoomFactor = Tk2dCam.CameraSettings.orthographicSize / newSize;
                 else
                 {
-                    #if UNITY_EDITOR
+#if UNITY_EDITOR
                     if (Application.isPlaying)
-                    #endif
+#endif
                         Tk2dCam.ZoomFactor = (_startScreenSizeInWorldCoordinates.y * .5f) / newSize;
                 }
             }
-            #endif
+#endif
+
+            if (OnCameraResize != null)
+                OnCameraResize(_screenSizeInWorldCoordinates);
         }
 
-        void ResetMovement()
+        void CalculateScreenSize()
         {
-            _cameraTargetPosition = _transform.localPosition;
-
-            _cameraTargetHorizontalPositionSmoothed = Vector3H(_cameraTargetPosition);
-            _cameraTargetVerticalPositionSmoothed = Vector3V(_cameraTargetPosition);
-
-            _previousCameraTargetHorizontalPositionSmoothed = _cameraTargetHorizontalPositionSmoothed;
-            _previousCameraTargetVerticalPositionSmoothed = _cameraTargetVerticalPositionSmoothed;
-        }
-
-        void ResetSize()
-        {
-            SetScreenSize(_startScreenSizeInWorldCoordinates.y / 2);
+            GameCamera.ResetAspect();
+            _screenSizeInWorldCoordinates = Utils.GetScreenSizeInWorldCoords(GameCamera, Mathf.Abs(Vector3D(_transform.localPosition)));
+            _previousScreenWidth = Screen.width;
+            _previousScreenHeight = Screen.height;
         }
 
         float GetCameraDistanceForFOV(float fov, float cameraHeight)

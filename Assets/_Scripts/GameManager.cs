@@ -54,15 +54,15 @@ public class GameManager : MonoBehaviour
     //  Function to unload a level segment given its checkpoint ID
     public void UnloadLevelSegment(int checkpointIndex)
     {
-        Checkpoints[checkpointIndex].LevelSegmentsGO.SetActive(false);
+        Checkpoints[checkpointIndex].SegmentGO.SetActive(false);
         if (Application.isEditor) Debug.Log("Checkpoint " + Checkpoints[checkpointIndex].checkpointID + " unloaded." + " Index: " + checkpointIndex);
     }
 
     //  Function to load in a level segment given its checkpoint ID
     public void LoadLevelSegment(int checkpointIndex)
     {
-        Checkpoints[checkpointIndex].LevelSegmentsGO.SetActive(true);
-        if (Application.isEditor) Debug.Log("Checkpoint " + Checkpoints[checkpointIndex].checkpointID + " unloaded." + " Index: " + checkpointIndex);
+        Checkpoints[checkpointIndex].SegmentGO.SetActive(true);
+        if (Application.isEditor) Debug.Log("Checkpoint " + Checkpoints[checkpointIndex].checkpointID + " loaded." + " Index: " + checkpointIndex);
     }
 
     //  Public function to start the coroutine
@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
 
         //  Turn off all level segments as a clean slate
         for (int i = 0; i < Checkpoints.Length; i++)
-            Checkpoints[i].LevelSegmentsGO.SetActive(false);
+            Checkpoints[i].SegmentGO.SetActive(false);
 
         //  Find the current areaID the player is in
         Vector3 currentCheckpointPosition = Vector3.zero;
@@ -108,14 +108,14 @@ public class GameManager : MonoBehaviour
 
                 //  Load in the level segment previous of the checkpointID
                 if (i - 1 >= 0)
-                    Checkpoints[i - 1].LevelSegmentsGO.SetActive(true);
+                    Checkpoints[i - 1].SegmentGO.SetActive(true);
 
                 //  Load in the level of the checkpoint ID
-                Checkpoints[i].LevelSegmentsGO.SetActive(true);
+                Checkpoints[i].SegmentGO.SetActive(true);
 
                 //  Load the level segment after the checkpoint ID
                 if (i + 1 < Checkpoints.Length)
-                    Checkpoints[i + 1].LevelSegmentsGO.SetActive(true);
+                    Checkpoints[i + 1].SegmentGO.SetActive(true);
 
                 break;
             }
@@ -130,19 +130,18 @@ public class GameManager : MonoBehaviour
         //  camera railing
         ProCamera2DRails proCamera2DRails = proCamera2D.GetComponent<ProCamera2DRails>();
         if (proCamera2DRails != null)
-            proCamera2D.GetComponent<ProCamera2DRails>().AddRailsTarget(player.transform);
+        {
+            proCamera2DRails.AddRailsTarget(player.transform);
+            proCamera2D.CameraTargets[0].TargetInfluenceH = 0.5f;
+            proCamera2D.CameraTargets[0].TargetInfluenceV = 0.5f;
+        }
         //  move instant so theres no late follow upon loading.
         proCamera2D.MoveCameraInstantlyToPosition(new Vector2(player.transform.position.x, player.transform.position.y));
 
         //  Set up world changer
         WorldChanger worldChanger = FindObjectOfType<WorldChanger>();
-        worldChanger.charController2D = player.GetComponent<CharacterController2D>();
+        worldChanger.charController2D = player.GetComponent<PlayerController>();
         worldChanger.TransitionCameraEnter();
-
-        //  Set up the parallax
-        //EZParallax[] EZparallaxes = FindObjectsOfType<EZParallax>();
-        //for (int i = 0; i < EZparallaxes.Length; i++)
-        //    EZparallaxes[i].m_playerObj = player;
 
         //  Set up the cape helper
         CapePhysicsHelper capeHelper = FindObjectOfType<CapePhysicsHelper>();

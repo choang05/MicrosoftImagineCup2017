@@ -37,6 +37,34 @@ Twitter - http://www.twitter.com/lpfonseca
 
 ## CHANGELOG ##
 
+2.2.8
+- Core - Support for Unity 5.6 (beta 5)
+- Core - Added an event (OnCameraResize<Vector2>) that fires when the camera resizes
+- Core - Automatically detect screen resolution changes during runtime and update necessary values accordingly
+
+2.2.7
+- Core - Support for Unity 5.6 (beta 3)
+- Repeater - Fixed a bug where an unnecessary object was created at edit time
+
+2.2.6
+- Rooms - Only add an initial room when creating the component, not if there's none present
+- Core - Added some new methods: "ResetMovement", "ResetSize", "ResetExtensions" and "CenterOnTargets"
+- PlayMaker - Added a new action: ShakeStop
+
+2.2.5
+- ForwardFocus - Added a parameter (MovementThreshold) that prevents the focus from being changed if the camera movement is smaller than it
+- Rails - Added a new method (RemoveRailsTarget)
+- Core - Improved error handling in case of missing ProCamera2D core component
+
+2.2.4
+- TriggerBoundaries - Fixed a bug that prevented them from working if no trigger was set as starting boundaries
+- Cinematics - Fixed a bug on the editor that prevented it from showing the CinematicTargetReached UnityEvent
+
+2.2.3
+- Rooms - Removed the dependency from having the NumericBoundaries extension on the same GameObject
+- Rooms - Added an event that fires when the camera target has exited all rooms
+- Cinematics - Replaced standard C# events with Unity events for easier integration with the editor
+
 2.2.2
 - Core - Added a Dolly Zoom (Hitchcock effect) method. Created an example scene for it
 - Rooms - Added a method to set the default numeric boundaries settings for when leaving all rooms

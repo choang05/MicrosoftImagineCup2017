@@ -31,7 +31,7 @@ public class WispFollow : MonoBehaviour
         }
 
         while(playerTransform == null)
-            playerTransform = FindObjectOfType<CharacterController2D>().transform;
+            playerTransform = FindObjectOfType<PlayerController>().transform;
 
         transform.position = new Vector3(playerTransform.position.x, playerTransform.position.y, transform.position.z);
         //wisp1.position = Vector3.zero;

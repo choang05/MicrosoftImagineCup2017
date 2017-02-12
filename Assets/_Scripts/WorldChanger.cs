@@ -27,7 +27,7 @@ public class WorldChanger : MonoBehaviour
     private LayerMask originalLayer;
 
     public CameraTransition cameraTransition;
-    [HideInInspector] public CharacterController2D charController2D;
+    [HideInInspector] public PlayerController charController2D;
     private bool isCurrentlyTransitioning = false;
     
     //  Events
@@ -76,9 +76,9 @@ public class WorldChanger : MonoBehaviour
         if (!isCurrentlyTransitioning)
         {
             //  If the player is in any of these states, do not allow switching
-            if (charController2D.currentState == CharacterController2D.PlayerState.ClimbingLadder
-                || charController2D.currentState == CharacterController2D.PlayerState.ClimbingRope
-                || charController2D.currentState == CharacterController2D.PlayerState.ClimbingLedge)
+            if (charController2D.currentState == PlayerController.PlayerState.ClimbingLadder
+                || charController2D.currentState == PlayerController.PlayerState.ClimbingRope
+                || charController2D.currentState == PlayerController.PlayerState.ClimbingLedge)
             {
                 if (currentWorldState == WorldState.Present)
                 {
@@ -211,7 +211,7 @@ public class WorldChanger : MonoBehaviour
     private void CheckWorldCollisions()
     {
         //float distanceFromCenter = charController2D.charController.height / 2 - charController2D.charController.radius;
-        float distanceFromCenter = charController2D.charController.height / 10.5f;
+        float distanceFromCenter = charController2D.charController.height / 11.5f;
 
         Vector3 topCenterOfCapsule = charController2D.transform.position + charController2D.charController.center + Vector3.up * distanceFromCenter;
         Vector3 bottomCenterOfCapsule = charController2D.transform.position + charController2D.charController.center - Vector3.up * distanceFromCenter;

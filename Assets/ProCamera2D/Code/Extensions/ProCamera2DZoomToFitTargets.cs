@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections;
 
 namespace Com.LuisPedroFonseca.ProCamera2D
 {
@@ -36,11 +37,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
             if (ProCamera2D == null)
                 return;
-
-            _initialCamSize = ProCamera2D.ScreenSizeInWorldCoordinates.y * .5f;
-            _targetCamSize = _initialCamSize;
-            _targetCamSizeSmoothed = _targetCamSize;
-
+            
             ProCamera2D.AddSizeOverrider(this);
         }
 
@@ -49,6 +46,15 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             base.OnDestroy();
 
             ProCamera2D.RemoveSizeOverrider(this);
+        }
+
+        IEnumerator Start()
+        {
+            yield return new WaitForEndOfFrame();
+
+            _initialCamSize = ProCamera2D.ScreenSizeInWorldCoordinates.y * .5f;
+            _targetCamSize = _initialCamSize;
+            _targetCamSizeSmoothed = _targetCamSize;
         }
 
         #region ISizeOverrider implementation

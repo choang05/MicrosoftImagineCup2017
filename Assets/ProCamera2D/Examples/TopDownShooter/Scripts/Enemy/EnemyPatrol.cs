@@ -80,7 +80,12 @@ namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
         public void PausePatrol()
         {
             IsPaused = true;
+
+            #if UNITY_5_6 || UNITY_5_6_OR_NEWER
+            _navMeshAgent.isStopped = true;
+            #else
             _navMeshAgent.Stop();
+            #endif
         }
 
         public void ResumePatrol()

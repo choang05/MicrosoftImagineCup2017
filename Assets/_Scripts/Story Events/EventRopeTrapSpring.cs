@@ -23,7 +23,7 @@ public class EventRopeTrapSpring : MonoBehaviour
 
         if (other.CompareTag(Tags.Player))
         {
-            StartCoroutine(CoSpringPlayerTrap(other.GetComponent<CharacterController2D>()));
+            StartCoroutine(CoSpringPlayerTrap(other.GetComponent<PlayerController>()));
         }
         else if (other.CompareTag(Tags.PushPullable))
         {
@@ -32,7 +32,7 @@ public class EventRopeTrapSpring : MonoBehaviour
         }
     }
 
-    IEnumerator CoSpringPlayerTrap(CharacterController2D charController)
+    IEnumerator CoSpringPlayerTrap(PlayerController charController)
     {
         charController.isEnabled = false;
         charController.animator.SetBool(Animator.StringToHash("isGrounded"), false);
@@ -51,8 +51,8 @@ public class EventRopeTrapSpring : MonoBehaviour
 
     IEnumerator CoSpringTrap(Rigidbody rigidBody)
     {
-        CharacterController2D charController = FindObjectOfType<CharacterController2D>();
-        if (charController != null && charController.currentState == CharacterController2D.PlayerState.PushingPulling)
+        PlayerController charController = FindObjectOfType<PlayerController>();
+        if (charController != null && charController.currentState == PlayerController.PlayerState.PushingPulling)
             charController.CancelPushingPulling();
 
         rigidBody.isKinematic = true;

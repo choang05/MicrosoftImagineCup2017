@@ -24,17 +24,17 @@ namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
             var cinematics = FindObjectsOfType<ProCamera2DCinematics>();
             for (int i = 0; i < cinematics.Length; i++)
             {
-                cinematics[i].CinematicStarted += () =>
+                cinematics[i].OnCinematicStarted.AddListener(() =>
                     {
                         _movementAllowed = false; 
                         _currentSpeedH = 0;
                         _currentSpeedV = 0;
-                    };
+                    });
 
-                cinematics[i].CinematicEnded += () =>
+                cinematics[i].OnCinematicFinished.AddListener(() =>
                     {
                         _movementAllowed = true; 
-                    };
+                    });
             }
         }
 

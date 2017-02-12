@@ -140,12 +140,13 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             if (NumericBoundaries.CurrentBoundariesTrigger != null)
                 StartCoroutine(TurnOffPreviousTrigger(NumericBoundaries.CurrentBoundariesTrigger));
 
-            if (NumericBoundaries.CurrentBoundariesTrigger != null && 
-                NumericBoundaries.CurrentBoundariesTrigger._instanceID != _instanceID)
+            if ((NumericBoundaries.CurrentBoundariesTrigger != null &&
+                 NumericBoundaries.CurrentBoundariesTrigger._instanceID != _instanceID) || 
+                NumericBoundaries.CurrentBoundariesTrigger == null) 
             {
                 NumericBoundaries.CurrentBoundariesTrigger = this;
 
-                StartCoroutine(Transition());
+                StartCoroutine (Transition ());
             }
         }
 

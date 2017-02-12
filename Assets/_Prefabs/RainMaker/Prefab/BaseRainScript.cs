@@ -308,6 +308,8 @@ namespace DigitalRuby.RainMaker
             AudioSource = script.gameObject.AddComponent<AudioSource>();
             AudioSource.loop = true;
             AudioSource.clip = clip;
+            AudioSource.playOnAwake = false;
+            AudioSource.volume = 0.0f;
             AudioSource.Stop();
             TargetVolume = 1.0f;
         }

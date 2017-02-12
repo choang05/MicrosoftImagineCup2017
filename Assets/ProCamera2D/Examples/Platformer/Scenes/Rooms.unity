@@ -406,6 +406,46 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
+--- !u!1 &1257411167
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1257411169}
+  - 114: {fileID: 1257411168}
+  m_Layer: 0
+  m_Name: RoomsEventsExample
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1257411168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1257411167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a96c73d73ba1b4d54b98533b114212d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1257411169
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1257411167}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
 --- !u!1 &1316862494
 GameObject:
   m_ObjectHideFlags: 0
@@ -620,6 +660,7 @@ MonoBehaviour:
   IsCameraPositionTopBounded: 0
   IsCameraPositionBottomBounded: 0
   GameCamera: {fileID: 1347611045}
+  Tk2dCam: {fileID: 0}
 --- !u!114 &1347611048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -633,7 +674,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ProCamera2D: {fileID: 1347611047}
   Rooms:
-  - Dimensions:
+  - ID: 
+    Dimensions:
       serializedVersion: 2
       x: -6.2499995
       y: 5.05
@@ -644,7 +686,8 @@ MonoBehaviour:
     ScaleCameraToFit: 0
     Zoom: 1
     ZoomScale: 1
-  - Dimensions:
+  - ID: 
+    Dimensions:
       serializedVersion: 2
       x: 6.2500033
       y: 2.8000007
@@ -655,7 +698,8 @@ MonoBehaviour:
     ScaleCameraToFit: 1
     Zoom: 0
     ZoomScale: 1.5
-  - Dimensions:
+  - ID: 
+    Dimensions:
       serializedVersion: 2
       x: 8.500009
       y: 7.650001
@@ -666,7 +710,8 @@ MonoBehaviour:
     ScaleCameraToFit: 1
     Zoom: 0
     ZoomScale: 1.5
-  - Dimensions:
+  - ID: 
+    Dimensions:
       serializedVersion: 2
       x: 2.250009
       y: 7.650001
@@ -677,7 +722,8 @@ MonoBehaviour:
     ScaleCameraToFit: 0
     Zoom: 0
     ZoomScale: 1.5
-  - Dimensions:
+  - ID: 
+    Dimensions:
       serializedVersion: 2
       x: -10.899994
       y: 3.2000012
@@ -698,14 +744,41 @@ MonoBehaviour:
   AutomaticRoomActivation: 1
   OnStartedTransition:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1257411168}
+        m_MethodName: StartedRoomTransition
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: Com.LuisPedroFonseca.ProCamera2D.RoomEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   OnFinishedTransition:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1257411168}
+        m_MethodName: FinishedRoomTransition
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: Com.LuisPedroFonseca.ProCamera2D.RoomEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+  OnExitedAllRooms:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!114 &1347611049
 MonoBehaviour:
   m_ObjectHideFlags: 0

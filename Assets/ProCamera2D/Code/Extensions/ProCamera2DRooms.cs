@@ -45,7 +45,6 @@ namespace Com.LuisPedroFonseca.ProCamera2D
     #if UNITY_5_3_OR_NEWER
     [HelpURL("http://www.procamera2d.com/user-guide/extension-rooms/")]
     #endif
-    [RequireComponent(typeof(ProCamera2DNumericBoundaries))]
     public class ProCamera2DRooms : BasePC2D, IPositionOverrider, ISizeOverrider
     {
         public const string ExtensionName = "Rooms";
@@ -54,12 +53,14 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         {
             get { return _currentRoomIndex; }
         }
+
         int _currentRoomIndex = -1;
-        
+
         public int PreviousRoomIndex
         {
             get { return _previousRoomIndex; }
         }
+
         int _previousRoomIndex = -1;
 
         public List<Room> Rooms = new List<Room>();
@@ -79,7 +80,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
         public RoomEvent OnStartedTransition;
         public RoomEvent OnFinishedTransition;
-
+        public UnityEvent OnExitedAllRooms;
 
         ProCamera2DNumericBoundaries _numericBoundaries;
         NumericBoundariesSettings _defaultNumericBoundariesSettings;
@@ -96,7 +97,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         {
             base.Awake();
 
-            _numericBoundaries = GetComponent<ProCamera2DNumericBoundaries>();
+            _numericBoundaries = ProCamera2D.GetComponent<ProCamera2DNumericBoundaries>();
             _defaultNumericBoundariesSettings = _numericBoundaries.Settings;
 
             _originalSize = ProCamera2D.ScreenSizeInWorldCoordinates.y / 2;
@@ -132,6 +133,20 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
             ProCamera2D.RemovePositionOverrider(this);
             ProCamera2D.RemoveSizeOverrider(this);
+        }
+
+        void Reset()
+        {
+            // Create rooms if non-existant
+            if (Rooms.Count == 0)
+            {
+                Rooms.Add(new Room()
+                {
+                    Dimensions = new Rect(0, 0, 10, 10),
+                    TransitionDuration = 1f,
+                    ZoomScale = 1.5f
+                });
+            }
         }
 
         #region IPositionOverrider implementation
@@ -269,6 +284,9 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                 
                 _transitionRoutine = StartCoroutine(TransitionRoutine(_defaultNumericBoundariesSettings, _originalSize, RestoreDuration, RestoreEaseType));
             }
+
+            if (OnExitedAllRooms != null)
+                OnExitedAllRooms.Invoke();
         }
 
         /// <summary>

@@ -13,14 +13,14 @@ public class BoxSliding : MonoBehaviour {
 
     void OnEnable()
     {
-        CharacterController2D.OnPushing += sliding;
-        CharacterController2D.OnPulling += sliding;
+        PlayerController.OnPushing += sliding;
+        PlayerController.OnPulling += sliding;
     }
 
     void OnDisable()
     {
-        CharacterController2D.OnPushing -= sliding;
-        CharacterController2D.OnPulling -= sliding;
+        PlayerController.OnPushing -= sliding;
+        PlayerController.OnPulling -= sliding;
     }
 
     // audio for push/pull box

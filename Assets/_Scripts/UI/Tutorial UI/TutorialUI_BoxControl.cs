@@ -23,18 +23,18 @@ public class TutorialUI_BoxControl : MonoBehaviour
 
     void OnEnable()
     {
-        CharacterController2D.OnPushPullStart += OnPushPullStart;
-        CharacterController2D.OnPushPullEnd += OnPushPullEnd;
-        CharacterController2D.OnPulling += OnPushingOrPulling;
-        CharacterController2D.OnPushing += OnPushingOrPulling;
+        PlayerController.OnPushPullStart += OnPushPullStart;
+        PlayerController.OnPushPullEnd += OnPushPullEnd;
+        PlayerController.OnPulling += OnPushingOrPulling;
+        PlayerController.OnPushing += OnPushingOrPulling;
     }
 
     void OnDisable()
     {
-        CharacterController2D.OnPushPullStart -= OnPushPullStart;
-        CharacterController2D.OnPushPullEnd -= OnPushPullEnd;
-        CharacterController2D.OnPulling -= OnPushingOrPulling;
-        CharacterController2D.OnPushing -= OnPushingOrPulling;
+        PlayerController.OnPushPullStart -= OnPushPullStart;
+        PlayerController.OnPushPullEnd -= OnPushPullEnd;
+        PlayerController.OnPulling -= OnPushingOrPulling;
+        PlayerController.OnPushing -= OnPushingOrPulling;
     }
 
     void Start()
@@ -48,7 +48,7 @@ public class TutorialUI_BoxControl : MonoBehaviour
 
             for (int j = 0; j < graphics.Length; j++)
             {
-                graphics[j].CrossFadeAlpha(0, fadeDuration, false);
+                graphics[j].CrossFadeAlpha(0, 0, false);
                 //graphics[j].DOFade(0, fadeDuration);
             }
         }

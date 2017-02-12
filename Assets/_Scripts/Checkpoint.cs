@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Checkpoint : MonoBehaviour
 {
-    public GameObject LevelSegmentsGO;
+    public GameObject SegmentGO;
     public int checkpointID;
 
     public delegate void CheckpointEvent(int checkpointID);
@@ -16,6 +16,9 @@ public class Checkpoint : MonoBehaviour
     {
         gameManager = FindObjectOfType<GameManager>();
         //gameManager.Checkpoints.Add(this);
+
+        //  Error if SegmentGO does not exist
+        if (SegmentGO == null)  Debug.LogError("SegmentGO is null!");
     }
 
     //  Called when a collider enters another collider with isTrigger enabled
@@ -33,8 +36,8 @@ public class Checkpoint : MonoBehaviour
                 gameManager.UnloadLevelSegment(currentCheckpointIndex - 2);
 
             //  Enable the next level if it exist
-            if (currentCheckpointIndex < gameManager.Checkpoints.Length)
-                gameManager.LoadLevelSegment(currentCheckpointIndex);
+            if (currentCheckpointIndex++ < gameManager.Checkpoints.Length)
+                gameManager.LoadLevelSegment(currentCheckpointIndex++);
 
             if (OnCheckpoint != null)
                 OnCheckpoint(checkpointID);

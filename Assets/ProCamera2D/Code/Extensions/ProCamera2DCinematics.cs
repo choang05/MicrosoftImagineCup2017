@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using UnityEngine.Events;
 
 namespace Com.LuisPedroFonseca.ProCamera2D
 {
-    [System.Serializable]
+    [Serializable]
     public class CinematicTarget
     {
         public Transform TargetTransform;
@@ -18,6 +19,11 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         public string SendMessageParam;
     }
 
+    [Serializable]
+    public class CinematicEvent : UnityEvent<int>
+    {
+    }
+
     #if UNITY_5_3_OR_NEWER
     [HelpURL("http://www.procamera2d.com/user-guide/extension-cinematics/")]
     #endif
@@ -25,9 +31,9 @@ namespace Com.LuisPedroFonseca.ProCamera2D
     {
         public static string ExtensionName = "Cinematics";
 
-        public Action CinematicStarted;
-        public Action<int> CinematicReachedTarget;
-        public Action CinematicEnded;
+        public UnityEvent OnCinematicStarted;
+        public CinematicEvent OnCinematicTargetReached;
+        public UnityEvent OnCinematicFinished;
 
         bool _isPlaying;
 
@@ -73,9 +79,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
             if (UseLetterbox)
                 SetupLetterbox();
-
-            _initialCameraSize = ProCamera2D.ScreenSizeInWorldCoordinates.y * .5f;
-
+            
             ProCamera2D.AddPositionOverrider(this);
             ProCamera2D.AddSizeOverrider(this);
         }
@@ -141,6 +145,8 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                 Debug.LogWarning("No cinematic targets added to the list");
                 return;
             }
+
+            _initialCameraSize = ProCamera2D.ScreenSizeInWorldCoordinates.y * .5f;
 
             if (UseNumericBoundaries && _numericBoundaries == null)
                 _numericBoundaries = ProCamera2D.GetComponentInChildren<ProCamera2DNumericBoundaries>();
@@ -251,8 +257,8 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
         IEnumerator StartCinematicRoutine()
         {
-            if (CinematicStarted != null)
-                CinematicStarted();
+            if (OnCinematicStarted != null)
+                OnCinematicStarted.Invoke();
 
             _startPos = ProCamera2D.LocalPosition;
             _newPos = ProCamera2D.LocalPosition;
@@ -326,8 +332,8 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             }
 
             // Dispatch target reached event
-            if (CinematicReachedTarget != null)
-                CinematicReachedTarget(targetIndex);
+            if (OnCinematicTargetReached != null)
+                OnCinematicTargetReached.Invoke(targetIndex);
 
             // Send target reached message
             if (!string.IsNullOrEmpty(cinematicTarget.SendMessageName))
@@ -401,8 +407,8 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                 yield return ProCamera2D.GetYield();
             }
 
-            if (CinematicEnded != null)
-                CinematicEnded();
+            if (OnCinematicFinished != null)
+                OnCinematicFinished.Invoke();
 
             _isPlaying = false;
 
@@ -484,11 +490,20 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                     var arrowSize = cameraDimensions.x * .1f;
                     if ((nextTargetPos - targetPos).magnitude > arrowSize)
                     {
+#if UNITY_5_5_OR_NEWER
+                        UnityEditor.Handles.ArrowHandleCap(
+                            i, 
+                            targetPos, 
+                            Quaternion.LookRotation(nextTargetPos - targetPos), 
+                            cameraDimensions.x * .1f,
+                            EventType.Repaint);
+#else
                         UnityEditor.Handles.ArrowCap(
                             i, 
                             targetPos, 
                             Quaternion.LookRotation(nextTargetPos - targetPos), 
                             cameraDimensions.x * .1f);
+#endif
                     }
                 }
             }

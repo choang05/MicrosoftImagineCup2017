@@ -934,7 +934,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &480370311
 Transform:
@@ -1041,6 +1041,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ProCamera2D: {fileID: 1852006950}
+  OnCinematicStarted:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1852006952}
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: Com.LuisPedroFonseca.ProCamera2D.CinematicEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  OnCinematicReachedTarget:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Com.LuisPedroFonseca.ProCamera2D.CinematicEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  OnCinematicFinished:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1852006952}
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+    m_TypeName: Com.LuisPedroFonseca.ProCamera2D.CinematicEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   CinematicTargets:
   - TargetTransform: {fileID: 480370311}
     EaseInDuration: 1
@@ -1257,6 +1294,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ProCamera2D: {fileID: 1852006950}
+  OnCinematicStarted:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1852006952}
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: Com.LuisPedroFonseca.ProCamera2D.CinematicEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  OnCinematicReachedTarget:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Com.LuisPedroFonseca.ProCamera2D.CinematicEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  OnCinematicFinished:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1852006952}
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+    m_TypeName: Com.LuisPedroFonseca.ProCamera2D.CinematicEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   CinematicTargets:
   - TargetTransform: {fileID: 1072023583}
     EaseInDuration: 1
@@ -2259,7 +2333,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!114 &1072023579
 MonoBehaviour:
@@ -4124,6 +4198,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ProCamera2D: {fileID: 1852006950}
+  OnCinematicStarted:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1852006952}
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: Com.LuisPedroFonseca.ProCamera2D.CinematicEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  OnCinematicReachedTarget:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Com.LuisPedroFonseca.ProCamera2D.CinematicEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  OnCinematicFinished:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1852006952}
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+    m_TypeName: Com.LuisPedroFonseca.ProCamera2D.CinematicEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   CinematicTargets:
   - TargetTransform: {fileID: 905394643}
     EaseInDuration: 5
@@ -4235,8 +4346,8 @@ GameObject:
   - 81: {fileID: 1852006945}
   - 114: {fileID: 1852006950}
   - 114: {fileID: 1852006952}
-  - 114: {fileID: 1852006951}
   - 114: {fileID: 1852006953}
+  - 114: {fileID: 1852006951}
   - 114: {fileID: 1852006955}
   - 114: {fileID: 1852006954}
   m_Layer: 0
@@ -4348,6 +4459,7 @@ MonoBehaviour:
   IsCameraPositionTopBounded: 0
   IsCameraPositionBottomBounded: 0
   GameCamera: {fileID: 1852006948}
+  Tk2dCam: {fileID: 0}
 --- !u!114 &1852006951
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4360,11 +4472,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ProCamera2D: {fileID: 1852006950}
-  ZoomOutBorder: 0.5
+  ZoomOutBorder: 0.6
   ZoomInBorder: 0.4
   ZoomInSmoothness: 2
   ZoomOutSmoothness: 1
-  MaxZoomInAmount: 1.5
+  MaxZoomInAmount: 2
   MaxZoomOutAmount: 4
   DisableWhenOneTarget: 1
 --- !u!114 &1852006952
@@ -4435,46 +4547,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ProCamera2D: {fileID: 1852006950}
   Rooms:
-  - Dimensions:
+  - ID: 
+    Dimensions:
       serializedVersion: 2
       x: -40.50137
       y: 0.27219844
       width: 31.102245
       height: 16.249643
-    TransitionDuration: 1
+    TransitionDuration: 2
     TransitionEaseType: 0
     ScaleCameraToFit: 1
     Zoom: 0
     ZoomScale: 0
-  - Dimensions:
+  - ID: 
+    Dimensions:
       serializedVersion: 2
       x: -1.5
       y: 0.14957619
       width: 46.9
       height: 30.052984
-    TransitionDuration: 1
+    TransitionDuration: 2
     TransitionEaseType: 0
     ScaleCameraToFit: 1
     Zoom: 0
     ZoomScale: 0
-  - Dimensions:
+  - ID: 
+    Dimensions:
       serializedVersion: 2
       x: 54.194263
       y: 0.14956617
       width: 64.488525
       height: 39.890556
-    TransitionDuration: 1
+    TransitionDuration: 2
     TransitionEaseType: 0
     ScaleCameraToFit: 1
     Zoom: 0
     ZoomScale: 0
-  - Dimensions:
+  - ID: 
+    Dimensions:
       serializedVersion: 2
       x: 107.754684
       y: 0.14956617
       width: 42.632324
       height: 39.890556
-    TransitionDuration: 1
+    TransitionDuration: 2
     TransitionEaseType: 0
     ScaleCameraToFit: 1
     Zoom: 0
@@ -4550,7 +4666,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!23 &1861896933
 MeshRenderer:

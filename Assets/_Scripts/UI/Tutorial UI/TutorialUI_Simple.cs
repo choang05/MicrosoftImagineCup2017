@@ -19,7 +19,7 @@ public class TutorialUI_Simple : MonoBehaviour
 
         for (int i = 0; i < graphics.Length; i++)
         {
-            graphics[i].CrossFadeAlpha(0, fadeDuration, false);
+            graphics[i].CrossFadeAlpha(0, 0, false);
             //graphics[i].DOFade(0, fadeDuration);
         }
     }

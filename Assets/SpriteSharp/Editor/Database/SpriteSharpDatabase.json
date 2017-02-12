@@ -213,6 +213,384 @@
                }
             }
          }
+      },
+      {
+         "k" : {
+            "Guid" : "28f1be9038aa25046a7a5703cef09e66",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Environment/Trees/Tree_Modular_001.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "28f1be9038aa25046a7a5703cef09e66",
+            "LocalIdentifier" : 21300002,
+            "LastPath" : "Assets/_Art/Environment/Trees/Tree_Modular_001.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "28f1be9038aa25046a7a5703cef09e66",
+            "LocalIdentifier" : 21300004,
+            "LastPath" : "Assets/_Art/Environment/Trees/Tree_Modular_001.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "28f1be9038aa25046a7a5703cef09e66",
+            "LocalIdentifier" : 21300006,
+            "LastPath" : "Assets/_Art/Environment/Trees/Tree_Modular_001.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "28f1be9038aa25046a7a5703cef09e66",
+            "LocalIdentifier" : 21300008,
+            "LastPath" : "Assets/_Art/Environment/Trees/Tree_Modular_001.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "28f1be9038aa25046a7a5703cef09e66",
+            "LocalIdentifier" : 21300010,
+            "LastPath" : "Assets/_Art/Environment/Trees/Tree_Modular_001.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "28f1be9038aa25046a7a5703cef09e66",
+            "LocalIdentifier" : 21300012,
+            "LastPath" : "Assets/_Art/Environment/Trees/Tree_Modular_001.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "244af1686728e7247b0bb7881230f5c5",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/TeamVogel Logo.png"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 1E-05,
+                  "AlphaTolerance" : 0
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 0,
+                  "DetectHoles" : false
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
+      },
+      {
+         "k" : {
+            "Guid" : "236ef98199ba0784c810a5342b743f88",
+            "LocalIdentifier" : 21300000,
+            "LastPath" : "Assets/_Art/Characters/MainCharacter.psd"
+         },
+         "v" : {
+            "PlatformSharedTightMeshSettings" : {
+               
+            },
+            "PerPlatformTightMeshSettings" : [
+               
+            ],
+            "DefaultTightMeshSettings" : {
+               "IsOverriding" : false,
+               "ProcessingMethod" : "Normal",
+               "SharedTightMeshSettings" : {
+                  "Detail" : 0.3,
+                  "AlphaTolerance" : 10
+               },
+               "UnityMethodTightMeshSettings" : {
+                  "VertexMergeDistance" : 3,
+                  "DetectHoles" : true
+               },
+               "AlphaSeparationTightMeshSettings" : {
+                  "OpaqueVertexMergeDistance" : 2,
+                  "OpaqueNegativeExtrude" : 3,
+                  "ReduceAlphaBleed" : false
+               },
+               "PreciseTightMeshSettings" : {
+                  "EdgeInflation" : 2
+               },
+               "RectGridTightMeshSettings" : {
+                  "XSubdivisions" : 5,
+                  "YSubdivisions" : 5,
+                  "CullByBoundingBox" : true,
+                  "RemoveEmptyCells" : true,
+                  "EdgeInflation" : 0
+               }
+            }
+         }
       }
    ],
    "Preferences" : {

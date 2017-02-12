@@ -20,6 +20,8 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
         public bool MaintainInfluenceOnStop = true;
 
+        public Vector2 MovementThreshold = Vector2.zero;
+
         [RangeAttribute(EPSILON, .5f)]
         public float LeftFocus = .25f;
 
@@ -102,13 +104,23 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
         void ApplyInfluence(float deltaTime)
         {
-            var currentHVel = (Vector3H(ProCamera2D.TargetsMidPoint) - Vector3H(ProCamera2D.PreviousTargetsMidPoint)) / deltaTime;
-            var currentVVel = (Vector3V(ProCamera2D.TargetsMidPoint) - Vector3V(ProCamera2D.PreviousTargetsMidPoint)) / deltaTime;
+            var currentHVel = Vector3H(ProCamera2D.TargetsMidPoint) - Vector3H(ProCamera2D.PreviousTargetsMidPoint);
+            if (Mathf.Abs(currentHVel) < MovementThreshold.x)
+                currentHVel = 0f;
+            else
+                currentHVel /= deltaTime;
+
+            var currentVVel = Vector3V(ProCamera2D.TargetsMidPoint) - Vector3V(ProCamera2D.PreviousTargetsMidPoint);
+            if (Mathf.Abs(currentVVel) < MovementThreshold.y)
+                currentVVel = 0f;
+            else
+                currentVVel /= deltaTime;
+
             if (Progressive)
             {
                 currentHVel = Mathf.Clamp(currentHVel * SpeedMultiplier, -LeftFocus * ProCamera2D.ScreenSizeInWorldCoordinates.x, RightFocus * ProCamera2D.ScreenSizeInWorldCoordinates.x);
                 currentVVel = Mathf.Clamp(currentVVel * SpeedMultiplier, -BottomFocus * ProCamera2D.ScreenSizeInWorldCoordinates.y, TopFocus * ProCamera2D.ScreenSizeInWorldCoordinates.y);
-                
+
                 if (MaintainInfluenceOnStop)
                 {
                     if ((Mathf.Sign(currentHVel) == 1 && currentHVel < _hVel) ||
@@ -204,7 +216,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
             if (LeftFocus > EPSILON)
             {
-                Gizmos.DrawRay(VectorHVD(Vector3H(transform.position) + cameraDimensions.x * LeftFocus, Vector3V(transform.position) - cameraDimensions.y / 2, cameraDepthOffset), transform.up * cameraDimensions.y);	
+                Gizmos.DrawRay(VectorHVD(Vector3H(transform.position) + cameraDimensions.x * LeftFocus, Vector3V(transform.position) - cameraDimensions.y / 2, cameraDepthOffset), transform.up * cameraDimensions.y);
                 Utils.DrawArrowForGizmo(cameraCenter + VectorHV(cameraDimensions.x * LeftFocus, 0), -transform.right * .3f);
             }
 

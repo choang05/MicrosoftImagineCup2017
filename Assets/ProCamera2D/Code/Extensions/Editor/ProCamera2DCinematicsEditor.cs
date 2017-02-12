@@ -164,18 +164,17 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             {
                 case EventType.DragUpdated:
                 case EventType.DragPerform:
-                    if (!drop_area.Contains(evt.mousePosition))
-                        return;
-
-                    DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-
-                    if (evt.type == EventType.DragPerform)
+                    if (drop_area.Contains(evt.mousePosition))
                     {
-                        DragAndDrop.AcceptDrag();
+                        DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
 
-                        foreach (Object dragged_object in DragAndDrop.objectReferences)
+                        if (evt.type == EventType.DragPerform)
                         {
-                            var newCinematicTarget = new CinematicTarget
+                            DragAndDrop.AcceptDrag();
+
+                            foreach (Object dragged_object in DragAndDrop.objectReferences)
+                            {
+                                var newCinematicTarget = new CinematicTarget
                                 {
                                     TargetTransform = ((GameObject)dragged_object).transform,
                                     EaseInDuration = 1f,
@@ -183,8 +182,9 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                                     EaseType = EaseType.EaseOut
                                 };
 
-                            proCamera2DCinematics.CinematicTargets.Add(newCinematicTarget);
-                            EditorUtility.SetDirty(proCamera2DCinematics);
+                                proCamera2DCinematics.CinematicTargets.Add(newCinematicTarget);
+                                EditorUtility.SetDirty(proCamera2DCinematics);
+                            }
                         }
                     }
                     break;
@@ -236,10 +236,25 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("LetterboxColor"), _tooltip);
             }
 
-            // Test buttons
+            EditorGUILayout.Space();
+
+            // Events
+            // Cinematic started event
+            _tooltip = new GUIContent("OnCinematicStarted", "");
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("OnCinematicStarted"), _tooltip);
+
+            // Cinematic target reached event
+            _tooltip = new GUIContent("OnCinematicTargetReached", "");
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("OnCinematicTargetReached"), _tooltip);
+
+            // Cinematic finished event
+            _tooltip = new GUIContent("OnCinematicFinished", "");
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("OnCinematicFinished"), _tooltip);
+
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
+            // Test buttons
             GUI.enabled = Application.isPlaying && proCamera2DCinematics.CinematicTargets.Count > 0;
             if (GUILayout.Button((proCamera2DCinematics.IsPlaying ? "Stop" : "Start") + " Cinematic"))
             {

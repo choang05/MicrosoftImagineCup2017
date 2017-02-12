@@ -26,6 +26,11 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
             var proCamera2DRooms = (ProCamera2DRooms)target;
 
+            // Add Numeric Boundaries component if needed
+            var numericBoundaries = proCamera2DRooms.ProCamera2D.GetComponent<ProCamera2DNumericBoundaries>();
+            if(numericBoundaries == null)
+                proCamera2DRooms.ProCamera2D.gameObject.AddComponent<ProCamera2DNumericBoundaries>();
+
             // Create Vector conversion methods
             switch (proCamera2DRooms.ProCamera2D.Axis)
             {
@@ -48,17 +53,6 @@ namespace Com.LuisPedroFonseca.ProCamera2D
 
             // Script
             _script = MonoScript.FromMonoBehaviour(proCamera2DRooms);
-
-            // Create rooms if non-existant
-            if (proCamera2DRooms.Rooms.Count == 0)
-            {
-                proCamera2DRooms.Rooms.Add(new Room()
-                    {
-                        Dimensions = new Rect(0, 0, 10, 10),
-                        TransitionDuration = 1f,
-                        ZoomScale = 1.5f
-                    });
-            }
 
             // Rooms List
             _roomsList = new ReorderableList(serializedObject, serializedObject.FindProperty("Rooms"), false, true, true, true);
@@ -286,6 +280,10 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             _tooltip = new GUIContent("OnFinishedTransition", "");
             EditorGUILayout.PropertyField(serializedObject.FindProperty("OnFinishedTransition"), _tooltip);
 
+            // Exited all rooms event
+            _tooltip = new GUIContent("OnExitedAllRooms", "This event fires when the camera target is not currently on any room");
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("OnExitedAllRooms"), _tooltip);
+
             // Apply modified properties
             serializedObject.ApplyModifiedProperties();
         }
@@ -311,7 +309,16 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                 // Button to toggle room editing
                 var buttonSize = Mathf.Min(proCamera2DRooms.Rooms[i].Dimensions.width / 2f, proCamera2DRooms.Rooms[i].Dimensions.height / 2f);
                 buttonSize = Mathf.Min(1, buttonSize);
-                if (Handles.Button(proCamera2DRooms.Rooms[i].Dimensions.position, Quaternion.LookRotation(VectorHVD(0, 0, 1)), buttonSize, buttonSize, Handles.RectangleCap))
+                if (Handles.Button(
+                    proCamera2DRooms.Rooms[i].Dimensions.position, 
+                    Quaternion.LookRotation(VectorHVD(0, 0, 1)), 
+                    buttonSize, 
+                    buttonSize, 
+                    #if UNITY_5_5_OR_NEWER
+                    Handles.RectangleHandleCap))
+                    #else
+                    Handles.RectangleCap))
+                    #endif
                 {
                     if (i == _currentlyEditingRoom)
                         _currentlyEditingRoom = -1;
@@ -334,11 +341,16 @@ namespace Com.LuisPedroFonseca.ProCamera2D
                 // Draw rect editor
                 var newDimensions = ResizeRect(
                                         currentDimensions,
+                                        #if UNITY_5_5_OR_NEWER
+                                        Handles.CubeHandleCap,
+                                        #else
                                         Handles.CubeCap,
+                                        #endif
                                         Color.green,
                                         Color.yellow,
                                         HandleUtility.GetHandleSize(Vector3.zero) * .1f,
                                         snap);
+
 
                 // Undo
                 if (newDimensions.x != currentDimensions.x ||
@@ -356,7 +368,11 @@ namespace Com.LuisPedroFonseca.ProCamera2D
             }
         }
 
+        #if UNITY_5_5_OR_NEWER
+        Rect ResizeRect(Rect rect, UnityEditor.Handles.CapFunction capFunc, Color capCol, Color fillCol, float capSize, float snap)
+        #else
         Rect ResizeRect(Rect rect, UnityEditor.Handles.DrawCapFunction capFunc, Color capCol, Color fillCol, float capSize, float snap)
+        #endif
         {
             Vector2 halfSize = new Vector2(rect.size.x * 0.5f, rect.size.y * 0.5f);
 

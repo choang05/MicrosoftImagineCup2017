@@ -26,7 +26,7 @@ public class MainMenuController : MonoBehaviour
     public Camera parallaxCamera;
 
     //private FreeParallax[] parallaxes;
-    private CharacterController2D charController;
+    private PlayerController charController;
 
     public AudioClip[] timeWarps;
     private AudioSource menuSound;
@@ -35,7 +35,7 @@ public class MainMenuController : MonoBehaviour
     {
         //  Find and assign references
         cameraTransition = FindObjectOfType<CameraTransition>();
-        charController = FindObjectOfType<CharacterController2D>();
+        charController = FindObjectOfType<PlayerController>();
         //parallaxes = FindObjectsOfType<FreeParallax>();
         menuSound = GetComponent<AudioSource>();
     }
