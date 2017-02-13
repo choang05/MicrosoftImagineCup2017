@@ -16,7 +16,7 @@ namespace Com.LuisPedroFonseca.ProCamera2D
     [RequireComponent(typeof(Camera))]
     public class ProCamera2D : MonoBehaviour, ISerializationCallbackReceiver
     {
-        public static readonly Version Version = new Version("2.2.8");
+        public static readonly Version Version = new Version("2.2.9");
 
         #region Inspector Variables
 
@@ -61,6 +61,9 @@ namespace Com.LuisPedroFonseca.ProCamera2D
         }
 
         static ProCamera2D _instance;
+
+        /// <summary>Property to know if there's a ProCamera2D present</summary>
+        public static bool Exists { get { return _instance != null; } }
 
         /// <summary>Update ProCamera2D's camera rect</summary>
         public Rect Rect

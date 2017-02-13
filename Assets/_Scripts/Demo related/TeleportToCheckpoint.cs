@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using DG.Tweening;
+using Com.LuisPedroFonseca.ProCamera2D;
 
 public class TeleportToCheckpoint : MonoBehaviour
 {
@@ -10,11 +12,11 @@ public class TeleportToCheckpoint : MonoBehaviour
     public float fadeDuration;
     public Canvas[] canvases;
 
-    private DemoSwitcher demoSwitcher;
+    private GameManager gameManager;
 
-    void Awake()
+    private void Awake()
     {
-        demoSwitcher = FindObjectOfType<DemoSwitcher>();
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     void Start()
@@ -55,7 +57,7 @@ public class TeleportToCheckpoint : MonoBehaviour
         {
             if (Input.GetButtonDown("Interact"))
             {
-                demoSwitcher.ChangeScene(checkpointToSwitchTo);
+                ChangeScene(checkpointToSwitchTo);
             }
         }
     }
@@ -79,5 +81,25 @@ public class TeleportToCheckpoint : MonoBehaviour
             graphics[i].CrossFadeAlpha(1, fadeDuration, false);
             //graphics[i].DOFade(255, fadeDuration);
         }
+    }
+
+    public void ChangeScene(int checkpointID)
+    {
+        gameManager.CurrentCheckpointID = checkpointID;
+
+        StartCoroutine(CoReloadScene());
+    }
+
+    IEnumerator CoReloadScene()
+    {
+        //  Perform the exit transition
+        ProCamera2D.Instance.GetComponent<ProCamera2DTransitionsFX>().TransitionExit();
+
+        //  Delay until exit transition is complete
+        float delay = ProCamera2D.Instance.GetComponent<ProCamera2DTransitionsFX>().DurationExit;
+        yield return new WaitForSeconds(delay);
+
+        //  Load the Master Scene
+        SceneManager.LoadScene(1);
     }
 }

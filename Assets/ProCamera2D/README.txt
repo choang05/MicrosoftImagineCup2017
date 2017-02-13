@@ -37,6 +37,11 @@ Twitter - http://www.twitter.com/lpfonseca
 
 ## CHANGELOG ##
 
+2.2.9
+- Core - Added a static property (Exists) to know if there's a ProCamera2D present in the scene
+- Parallax - Added an option to toggle the parallax layers size adjustment
+- TriggerZoom - The trigger now has precedence over other zoom extensions
+
 2.2.8
 - Core - Support for Unity 5.6 (beta 5)
 - Core - Added an event (OnCameraResize<Vector2>) that fires when the camera resizes
