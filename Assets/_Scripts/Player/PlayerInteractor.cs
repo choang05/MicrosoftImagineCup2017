@@ -48,6 +48,8 @@ public class PlayerInteractor : MonoBehaviour
 
     public void OnTurnLeverStart(Lever lever)
     {
+        playerController.velocity = Vector3.zero;
+
         leverInUse = lever;
 
         CanUseLever = false;
@@ -56,7 +58,7 @@ public class PlayerInteractor : MonoBehaviour
         transform.position = new Vector3(lever.transform.position.x, transform.position.y, transform.position.z);
 
         //  Disable player controller so player cannot move
-        playerController.isEnabled = false;
+        playerController.isControllable = false;
 
         flipBeforeLever = puppet2DGlobalControl.flip;
 
@@ -91,7 +93,7 @@ public class PlayerInteractor : MonoBehaviour
         CanUseLever = true;
 
         //  Renable player controller so player cannot move
-        playerController.isEnabled = true;
+        playerController.isControllable = true;
     }
 }
 

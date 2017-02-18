@@ -281,9 +281,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ce127a85188dc44181e667a5c94e905, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  transitionMode: 0
+  transitionType: 0
   wayPoints:
   - {fileID: 4000011750341096}
   - {fileID: 4000011737077810}
   transitionSpeed: 3
   idleDuration: 1
-  transitionType: 0
+  AcceptedLeverIDs: 

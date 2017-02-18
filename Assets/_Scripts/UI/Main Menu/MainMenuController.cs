@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using Com.LuisPedroFonseca.ProCamera2D;
 using CameraTransitions;
+using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -27,17 +28,52 @@ public class MainMenuController : MonoBehaviour
 
     //private FreeParallax[] parallaxes;
     private PlayerController charController;
+    private AccountManager accountManager;
 
+    //  Audio
     public AudioClip[] timeWarps;
     private AudioSource menuSound;
+
+    [Space(10)]
+    [Header("Login UI")]
+    public float fadeDuration;
+    public GameObject mainMenuGO;
+    public GameObject loggedInGO;
+    public Button LogoutButton;
+    public Button SignInButton;
+    public Text loggedInText;
+    private Graphic[] mainMenuGraphics;
+    private Graphic[] loginGraphics;
+    private Graphic[] loggedInGraphics;
+    private Button[] mainMenuButtons;
+    private LoginPanel loginPanel;
+
+    private void OnEnable()
+    {
+        AccountManager.OnSignedIn += OnSignedIn;
+        LoginPanel.OnPlayOffline += OnPlayOffline;
+    }
+
+    private void OnDisable()
+    {
+        AccountManager.OnSignedIn -= OnSignedIn;
+        LoginPanel.OnPlayOffline -= OnPlayOffline;
+    }
 
     void Awake()
     {
         //  Find and assign references
         cameraTransition = FindObjectOfType<CameraTransition>();
         charController = FindObjectOfType<PlayerController>();
-        //parallaxes = FindObjectsOfType<FreeParallax>();
+        accountManager = FindObjectOfType<AccountManager>();
+        loginPanel = FindObjectOfType<LoginPanel>();
         menuSound = GetComponent<AudioSource>();
+
+        //  UI
+        mainMenuGraphics = mainMenuGO.GetComponentsInChildren<Graphic>();
+        mainMenuButtons = mainMenuGO.GetComponentsInChildren<Button>();
+        loginGraphics = loginPanel.GetComponentsInChildren<Graphic>();
+        loggedInGraphics = loggedInGO.GetComponentsInChildren<Graphic>();
     }
 
     void Start()
@@ -49,7 +85,12 @@ public class MainMenuController : MonoBehaviour
         for (int i = 1; i < PanelObjects.Length; i++)
             PanelObjects[i].SetActive(false);
 
-        //  Set up visual stuff
+        //  Disable main menu
+        mainMenuGO.SetActive(false);
+        loggedInGO.SetActive(false);
+
+        if (AccountManager.IsLoggedIn)
+            OnSignedIn();
 
         //  Set up the cape helper
         CapePhysicsHelper capeHelper = FindObjectOfType<CapePhysicsHelper>();
@@ -94,5 +135,140 @@ public class MainMenuController : MonoBehaviour
     public void BroadcastTransitionCompleteEvent()
     {
         PanelObjects[previousCameraIndex].SetActive(false);
-    }  
+    }
+
+    private void OnSignedIn()
+    {
+        LogoutButton.gameObject.SetActive(true);
+        SignInButton.gameObject.SetActive(false);
+
+        TransitionToMainMenu();
+    }
+
+    private void OnPlayOffline()
+    {
+        AccountManager.IsLoggedIn = false;
+
+        LogoutButton.gameObject.SetActive(false);
+        SignInButton.gameObject.SetActive(true);
+
+        TransitionToMainMenu();
+    }
+
+    public void OnSignOut()
+    {
+        accountManager.ProcessSignOut();
+
+        //  Reset status msg
+        loginPanel.StatusText.text = "";
+
+        TransitionToLoginMenu();
+    }
+
+    public void TransitionToMainMenu()
+    {
+        StartCoroutine(CoTransitionFromLoginToMainMenu());
+    }
+
+    public void TransitionToLoginMenu()
+    {
+        StartCoroutine(CoTransitionFromMainMenuToLogin());
+    }
+
+    IEnumerator CoTransitionFromMainMenuToLogin()
+    {
+        //  Disable buttons
+        ToggleMainMenuButtons(false);
+        ToggleLoggedInButtons(false);
+
+        //  Fade out main menu
+        for (int i = 0; i < mainMenuGraphics.Length; i++)
+            mainMenuGraphics[i].CrossFadeAlpha(0, fadeDuration, true);
+
+        //  Fade out logged in panel
+        for (int i = 0; i < loggedInGraphics.Length; i++)
+            loggedInGraphics[i].CrossFadeAlpha(0, fadeDuration, true);
+
+        yield return new WaitForSeconds(fadeDuration);
+
+        mainMenuGO.SetActive(false);
+        loggedInGO.SetActive(false);
+
+        loginPanel.gameObject.SetActive(true);
+
+        //  Fade out login menu
+        for (int i = 0; i < loginGraphics.Length; i++)
+            loginGraphics[i].CrossFadeAlpha(0, 0, true);
+
+        //  Fade in login menu
+        for (int i = 0; i < loginGraphics.Length; i++)
+            loginGraphics[i].CrossFadeAlpha(1, fadeDuration, true);
+
+        yield return new WaitForSeconds(fadeDuration);
+
+        loginPanel.toggleInputField(true);
+        loginPanel.ToggleLoginButtons(true);
+    }
+
+    IEnumerator CoTransitionFromLoginToMainMenu()
+    {
+        //  Disable button interaction for the login panel
+        loginPanel.ToggleLoginButtons(false);
+        loginPanel.toggleInputField(false);
+
+        //  Fade out login panel
+        for (int i = 0; i < loginGraphics.Length; i++)
+            loginGraphics[i].CrossFadeAlpha(0, fadeDuration, true);    
+
+        //  Update the logged in text
+        if (AccountManager.IsLoggedIn)
+            loggedInText.text = "Welcome\n" + AccountManager.CurrentUser.username + "!";
+        else
+            loggedInText.text = "Welcome! Login to save to the cloud!";
+
+        yield return new WaitForSeconds(fadeDuration);
+
+        loginPanel.gameObject.SetActive(false);
+
+        mainMenuGO.SetActive(true);
+        loggedInGO.SetActive(true);
+
+        //  Disable button interaction for the main menu panel
+        ToggleMainMenuButtons(false);
+        ToggleLoggedInButtons(false);
+
+        //  Fade out main menu instantly
+        for (int i = 0; i < mainMenuGraphics.Length; i++)
+            mainMenuGraphics[i].CrossFadeAlpha(0, 0, true);
+
+        //  Fade out LoggedIn Info instantly
+        for (int i = 0; i < loggedInGraphics.Length; i++)
+            loggedInGraphics[i].CrossFadeAlpha(0, 0, true);
+
+        //  Fade in main menu
+        for (int i = 0; i < mainMenuGraphics.Length; i++)
+            mainMenuGraphics[i].CrossFadeAlpha(1, fadeDuration, true);
+
+        //  Fade in logged in panel
+        for (int i = 0; i < loggedInGraphics.Length; i++)
+            loggedInGraphics[i].CrossFadeAlpha(1, fadeDuration, true);
+
+        yield return new WaitForSeconds(fadeDuration);
+
+        //  Enable buttons
+        ToggleLoggedInButtons(true);
+        ToggleMainMenuButtons(true);
+    }
+
+    public void ToggleMainMenuButtons(bool isEnabled)
+    {
+        for (int i = 0; i < mainMenuButtons.Length; i++)
+            mainMenuButtons[i].interactable = isEnabled;
+    }
+
+    public void ToggleLoggedInButtons(bool isEnabled)
+    {
+        LogoutButton.interactable = isEnabled;
+        SignInButton.interactable = isEnabled;
+    }
 }

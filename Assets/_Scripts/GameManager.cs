@@ -27,6 +27,12 @@ public class GameManager : MonoBehaviour
 
     //  Private
     [HideInInspector] public Checkpoint[] Checkpoints;
+    private string SaveLoadFileName = "LocalSave" + ".dat";
+    private AccountManager accountManager;
+
+    //  Events
+    public delegate void GameManagerEvent();
+    public static event GameManagerEvent OnSave;
 
     void OnEnable()
     {
@@ -49,6 +55,8 @@ public class GameManager : MonoBehaviour
         else if (control != this)
             Destroy(gameObject);
         #endregion
+
+        accountManager = FindObjectOfType<AccountManager>();
     }
 
     //  Function to unload a level segment given its checkpoint ID
@@ -168,44 +176,61 @@ public class GameManager : MonoBehaviour
     #region Saving & loading
     public void SavePlayerData()
     {
-        BinaryFormatter bf = new BinaryFormatter();
-        if (File.Exists(Application.persistentDataPath + "/playerSave1.dat"))
+        //  Evaluate whether to save locally or online if logged in
+        if (AccountManager.IsLoggedIn)
         {
-            FileStream file = File.Open(Application.persistentDataPath + "/playerSave1.dat", FileMode.Open);
-            PlayerData data = (PlayerData)bf.Deserialize(file);
-
-            data.lastCheckpointID = CurrentCheckpointID;
-
-            bf.Serialize(file, data);
-            file.Close();
+            AccountManager.CurrentUser.checkpointID = CurrentCheckpointID;
+            accountManager.UpdateDatabaseUser();
         }
         else
         {
-            FileStream file = File.Create(Application.persistentDataPath + "/playerSave1.dat");
-            PlayerData data = new PlayerData();
+            BinaryFormatter bf = new BinaryFormatter();
+            if (File.Exists(Application.persistentDataPath + "/" + SaveLoadFileName))
+            {
+                FileStream file = File.Open(Application.persistentDataPath + "/" + SaveLoadFileName, FileMode.Open);
+                PlayerData data = (PlayerData)bf.Deserialize(file);
 
-            data.lastCheckpointID = CurrentCheckpointID;
+                data.lastCheckpointID = CurrentCheckpointID;
 
-            bf.Serialize(file, data);
-            file.Close();
+                bf.Serialize(file, data);
+                file.Close();
+            }
+            else
+            {
+                FileStream file = File.Create(Application.persistentDataPath + "/" + SaveLoadFileName);
+                PlayerData data = new PlayerData();
+
+                data.lastCheckpointID = CurrentCheckpointID;
+
+                bf.Serialize(file, data);
+                file.Close();
+            }
         }
     }
 
     public void LoadPlayerData()
     {
-        if (File.Exists(Application.persistentDataPath + "/playerSave1.dat"))
+        //  Evaluate whether to save locally or online if logged in
+        if (AccountManager.IsLoggedIn)
         {
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "/playerSave1.dat", FileMode.Open);
-
-            PlayerData data = (PlayerData)bf.Deserialize(file);
-
-            CurrentCheckpointID = data.lastCheckpointID;
-            Debug.Log(data.lastCheckpointID);
+            CurrentCheckpointID = AccountManager.CurrentUser.checkpointID;
         }
         else
         {
-            CurrentCheckpointID = 0;
+            if (File.Exists(Application.persistentDataPath + "/" + SaveLoadFileName))
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                FileStream file = File.Open(Application.persistentDataPath + "/" + SaveLoadFileName, FileMode.Open);
+
+                PlayerData data = (PlayerData)bf.Deserialize(file);
+
+                CurrentCheckpointID = data.lastCheckpointID;
+                //Debug.Log(data.lastCheckpointID);
+            }
+            else
+            {
+                CurrentCheckpointID = 0;
+            }
         }
     }
     #endregion

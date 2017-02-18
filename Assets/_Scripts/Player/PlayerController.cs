@@ -37,7 +37,6 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public Vector3 velocity;                      //  The velocity of x and y of the player
     [HideInInspector] public PushPullObject pushpullObject;         //  The transform of the pushing/pulling object
     private float pushpullBreakDistance;                            //  The max distance between the player and the pushing/pulling object before it cancels the interaction
-    private bool isTouchingGround;                                  //  True if the player is on the ground(not platform)
     private BoxCollider currentLadderBoxCollider;                   //  The BoxCollider of the currently using ladder
     private Rigidbody currentRopeRigidBody;
     private bool canSwingRight;
@@ -47,6 +46,7 @@ public class PlayerController : MonoBehaviour
     //  References variables
     [HideInInspector] public CharacterController charController;
     private Puppet2D_GlobalControl puppet2DGlobalControl;
+    private PlayerCollisions playerCollisions;
 
     //  Animation variables
     [HideInInspector] public Animator animator;
@@ -89,9 +89,11 @@ public class PlayerController : MonoBehaviour
     {
         //  Find and assign references
         charController = GetComponent<CharacterController>();
+        playerCollisions = GetComponent<PlayerCollisions>();
         animator = GetComponent<Animator>();
         puppet2DGlobalControl = GetComponentInChildren<Puppet2D_GlobalControl>();
-	}
+
+    }
 
     #region Update(): check and evaluate input and states every frame
     void Update()
@@ -314,7 +316,7 @@ public class PlayerController : MonoBehaviour
         {
             if (Application.isEditor) Debug.DrawLine(transform.position, pushpullObject.transform.position, Color.yellow, 0.05f);
 
-            //  Get input axis with smoothing
+            //  Get input axis
             float xAxis = Input.GetAxisRaw("Horizontal");
             velocity.x = xAxis * pushPullSpeed;
 
@@ -436,7 +438,7 @@ public class PlayerController : MonoBehaviour
         velocity.y = yAxisInput * ladderClimbSpeed;
 
         //  if player inputs up or down...
-        if (yAxisInput > 0)
+        if (yAxisInput > 0.3f)
         {
             //  Animation - ClimbLadder up
             animator.SetBool(isClimbingLadderUpHash, true);
@@ -446,7 +448,7 @@ public class PlayerController : MonoBehaviour
             if (OnLadderClimbing != null)
                 OnLadderClimbing();
         }
-        else if (yAxisInput < 0)
+        else if (yAxisInput < -0.3f)
         {
             //  Animation - ClimbLadder down
             animator.SetBool(isClimbingLadderUpHash, false);
@@ -464,7 +466,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //  Cancels climbing when touching the ground at the bottom of ladder
-        if (isTouchingGround && charController.isGrounded)
+        if (playerCollisions.isTouchingGround && charController.isGrounded)
             CancelClimbing();
 
         //  Cancels climb when distance between ladder length and player is too far. Using this method over OnTriggerExit due to bugs
@@ -691,7 +693,7 @@ public class PlayerController : MonoBehaviour
         {
             //  If the player inputs up or down... evaluate
             float yAxisInput = Input.GetAxisRaw("Vertical");
-            if (yAxisInput > 0 || (yAxisInput < 0 && !isTouchingGround))
+            if (yAxisInput > 0.3f || (yAxisInput < -0.3f && !playerCollisions.isTouchingGround))
             {
                 //  Set state
                 currentState = PlayerState.ClimbingLadder;
@@ -735,7 +737,7 @@ public class PlayerController : MonoBehaviour
         {
             //  If the player inputs up or down... evaluate
             float yAxisInput = Input.GetAxisRaw("Vertical");
-            if (yAxisInput > 0 || (yAxisInput < 0 && !isTouchingGround))
+            if (yAxisInput > 0.3f || (yAxisInput < -0.3f && !playerCollisions.isTouchingGround))
             {
                 //  Set state
                 currentState = PlayerState.ClimbingRope;
@@ -765,16 +767,6 @@ public class PlayerController : MonoBehaviour
             }
         }
         #endregion
-    }
-
-    //  Must use this because OnCollisionEnter/Exit does not work for character controller
-    void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        //  Evaluate what if the object hit is the ground (lowest platform/terrain)
-        if (hit.collider.CompareTag(Tags.Ground))
-            isTouchingGround = true;
-        else
-            isTouchingGround = false;
     }
 }
 
