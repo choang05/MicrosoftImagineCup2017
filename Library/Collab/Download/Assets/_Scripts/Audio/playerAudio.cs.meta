@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 860c29367ce3ddc4cbfceff6576f85d6
+timeCreated: 1487389082
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - grassfootsteps: {fileID: 8300000, guid: e6cae51d7d690ce489ec509aa2c3c4d2, type: 3}
+  - woodfootsteps: {fileID: 8300000, guid: 16cd5f0226893724eb7f225c85e0e88b, type: 3}
+  - stonefootsteps: {fileID: 8300000, guid: 4d6eee59a4b97ba489a237a792a02825, type: 3}
+  - waterfootsteps: {fileID: 8300000, guid: 6a91e13a80e44d84e98434ba95b447db, type: 3}
+  - ladder: {fileID: 8300000, guid: be12ab82d22efea4a8a90467b1d47c75, type: 3}
+  - ropeClimb: {fileID: 8300000, guid: 3a1e03794fcc5a44eb33e835a096fa75, type: 3}
+  - ropeSwing: {fileID: 8300000, guid: 31f5b8cf1c5667d46b95cce6de4c6512, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
