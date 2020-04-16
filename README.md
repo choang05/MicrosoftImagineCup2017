@@ -8,3 +8,5 @@ By the end of Spring 2017, our game has placed national semi-finals at the 2017 
 DEMO DOWNLOAD: https://drive.google.com/file/d/0B6COFL0W6NSAeEdXMXJRYWFYY0U/view (Windows 64-bit)
 
 Project devblog: https://chadhoang.com/portfolio/project-red/
+
+Images & Videos: https://imgur.com/a/3tvFY
