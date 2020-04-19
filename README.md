@@ -5,8 +5,19 @@ Project RED is a 2D puzzle platformer focused on clever puzzle design paired wit
 
 By the end of Spring 2017, our game has placed national semi-finals at the 2017 Microsoft Imagine Cup. Moreover, our game was the only game that received scoring of 90+ across the board during our public demo showcasing collaboration event with the Houston Art Institution and UH.
 
-DEMO DOWNLOAD: https://drive.google.com/file/d/0B6COFL0W6NSAeEdXMXJRYWFYY0U/view (Windows 64-bit)
+**Project devblog**
 
-Project devblog: https://chadhoang.com/portfolio/project-red/
+https://chadhoang.com/portfolio/project-red/
 
-Images & Videos: https://imgur.com/a/3tvFY
+**Images & Videos**
+
+https://imgur.com/a/3tvFY
+
+**DEMO DOWNLOAD**
+
+https://drive.google.com/file/d/0B6COFL0W6NSAeEdXMXJRYWFYY0U/view (Windows 64-bit)
+
+**Demos**
+
+[![](http://img.youtube.com/vi/ZLONrHraiUk/0.jpg)](http://www.youtube.com/watch?v=ZLONrHraiUk)
+[![](http://img.youtube.com/vi/6tFek4LNiqA/0.jpg)](http://www.youtube.com/watch?v=6tFek4LNiqA)
