@@ -13,7 +13,7 @@ https://chadhoang.com/portfolio/project-red/
 
 https://imgur.com/a/3tvFY
 
-**DEMO DOWNLOAD**
+**Demo Download**
 
 https://drive.google.com/file/d/0B6COFL0W6NSAeEdXMXJRYWFYY0U/view (Windows 64-bit)
 
